@@ -13,9 +13,10 @@ services:
       - db
     ports:
       - "2375:3000"
-    env_file: env_file
     restart: always
     environment:
       DB_USERNAME: 'postgres'
       DB_PASSWORD: ''
       DB_HOST: 'db'
+      RACK_ENV: 'production'
+      RAILS_ENV: 'production'
