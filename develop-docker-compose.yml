@@ -12,7 +12,7 @@ services:
     labels:
       - "traefik.backend=develop-db"
       - "traefik.frontend.rule=Host:develop-db.localhost"
-  web:
+  develop-web:
     build: .
     volumes:
       - .:/myapp
@@ -30,7 +30,7 @@ services:
     networks:
       - traefik
     labels:
-      - "traefik.backend=web"
+      - "traefik.backend=develop-web"
       - "traefik.frontend.rule=Host: dev.integra17-1.ing.puc.cl"
 
 networks:
