@@ -6,7 +6,7 @@ services:
       - ./pg_data:/var/lib/postgresql/data
     restart: always
     networks:
-      - web
+      - traefik
     labels:
       - "traefik.backend=db"
       - "traefik.frontend.rule=Host:db.localhost"
@@ -16,22 +16,20 @@ services:
       - .:/myapp
     depends_on:
       - db
-    ports:
-      - "3000"
     restart: always
     environment:
       DB_USERNAME: 'postgres'
       DB_PASSWORD: ''
       DB_HOST: 'db'
-      RACK_ENV: 'development'
-      RAILS_ENV: 'development'
+      RACK_ENV: 'production'
+      RAILS_ENV: 'production'
     networks:
-      - web
+      - traefik
     labels:
       - "traefik.backend=web"
-      - "traefik.frontend.rule=Host: dev.integra17-1.ing.puc.cl"
+      - "traefik.frontend.rule=Host: integra17-1.ing.puc.cl"
 
 networks:
-  web:
+  traefik:
     external:
       name: traefik_webgateway
