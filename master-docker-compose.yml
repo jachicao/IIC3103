@@ -3,7 +3,7 @@ services:
   db:
     image: postgres:alpine
     volumes:
-      - ./pg_data:/var/lib/postgresql/data
+      - ./pg:/var/lib/postgresql/data
     restart: always
     networks:
       - traefik
@@ -23,6 +23,8 @@ services:
       DB_HOST: 'db'
       RACK_ENV: 'development'
       RAILS_ENV: 'development'
+    ports:
+      - "3000"
     networks:
       - traefik
     labels:
