@@ -17,13 +17,16 @@ handler.on('push', function (event) {
   console.log('Received a push event for %s to %s',
     event.payload.repository.name,
     event.payload.ref);
-  require('child_process').exec('sh deploy.sh', function(error, stdout, stderr) {
-    if (error) {
-      console.log(error);
-    }  
-    console.log(`stdout: ${stdout}`);
-    console.log(`stderr: ${stderr}`);
-  }).on('exit', function(code, signal) {
-  	console.log('exit');
-  });
+  if (event.payload.ref == 'refs/heads/master') {
+    require('child_process').exec('sh master-deploy.sh', function(error, stdout, stderr) {
+      console.log(`stdout: ${stdout}`);
+      console.log(`stderr: ${stderr}`);
+    });
+  }
+  else if (event.payload.ref == 'refs/heads/develop') {
+    require('child_process').exec('sh develop-deploy.sh', function(error, stdout, stderr) {
+      console.log(`stdout: ${stdout}`);
+      console.log(`stderr: ${stderr}`);
+    });
+  }
 });
