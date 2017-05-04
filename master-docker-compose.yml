@@ -21,8 +21,10 @@ services:
       DB_USERNAME: 'postgres'
       DB_PASSWORD: ''
       DB_HOST: 'db'
-      RACK_ENV: 'production'
-      RAILS_ENV: 'production'
+      RACK_ENV: 'development'
+      RAILS_ENV: 'development'
+    ports:
+      - "3000"
     networks:
       - traefik
     labels:
