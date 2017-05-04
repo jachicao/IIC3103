@@ -2,6 +2,8 @@
 
 cd "$(dirname "$0")"
 
+git checkout master
+
 git pull
 
 docker-compose -f master-docker-compose.yml build
