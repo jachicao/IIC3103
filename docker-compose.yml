@@ -1,0 +1,17 @@
+version: '2'
+services:
+  db:
+    image: postgres:alpine
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    restart: always
+  web:
+    build: .
+    volumes:
+      - .:/myapp
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    env_file: env_file
+    restart: always
