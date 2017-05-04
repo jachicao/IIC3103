@@ -10,6 +10,8 @@ services:
     labels:
       - "traefik.backend=develop-db"
       - "traefik.frontend.rule=Host:develop-db.localhost"
+    ports:
+      - "5432"
   develop-web:
     build: .
     volumes:
