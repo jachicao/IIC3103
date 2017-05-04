@@ -1,11 +1,5 @@
 version: '2'
 services:
-  nginx-proxy:
-    image: jwilder/nginx-proxy:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
   db:
     image: postgres:alpine
     volumes:
@@ -26,4 +20,3 @@ services:
       DB_HOST: 'db'
       RACK_ENV: 'development'
       RAILS_ENV: 'development'
-      VIRTUAL_HOST: 'dev.integra17-1.ing.puc.cl'
