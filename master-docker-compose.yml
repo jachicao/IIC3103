@@ -5,6 +5,12 @@ services:
     volumes:
       - ./pg_data:/var/lib/postgresql/data
     restart: always
+    networks:
+      - web
+    labels:
+      - "traefik.backend=db"
+      - "traefik.port=5432"
+      - "traefik.frontend.rule=Host:db.localhost"
   web:
     build: .
     volumes:
@@ -12,7 +18,7 @@ services:
     depends_on:
       - db
     ports:
-      - "2375:3000"
+      - "3000"
     restart: always
     environment:
       DB_USERNAME: 'postgres'
@@ -20,3 +26,14 @@ services:
       DB_HOST: 'db'
       RACK_ENV: 'development'
       RAILS_ENV: 'development'
+    networks:
+      - web
+    labels:
+      - "traefik.backend=web"
+      - "traefik.port=3000"
+      - "traefik.frontend.rule=Host:web.localhost"
+
+networks:
+  web:
+    external:
+      name: traefik_webgateway
