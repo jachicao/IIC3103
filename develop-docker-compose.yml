@@ -5,13 +5,13 @@ services:
     volumes:
       - ./pg_data:/var/lib/postgresql/data
     restart: always
+    ports:
+      - "5432"
     networks:
       - traefik
     labels:
       - "traefik.backend=develop-db"
       - "traefik.frontend.rule=Host:develop-db.localhost"
-    ports:
-      - "5432"
   develop-web:
     build: .
     volumes:
@@ -25,6 +25,8 @@ services:
       DB_HOST: 'develop-db'
       RACK_ENV: 'development'
       RAILS_ENV: 'development'
+    ports:
+      - "3000"
     networks:
       - traefik
     labels:
