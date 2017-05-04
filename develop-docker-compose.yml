@@ -3,10 +3,8 @@ services:
   develop-db:
     image: postgres:alpine
     volumes:
-      - ./pg_data:/var/lib/postgresql/data
+      - ./pg:/var/lib/postgresql/data
     restart: always
-    ports:
-      - "5432"
     networks:
       - traefik
     labels:
