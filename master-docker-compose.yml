@@ -1,5 +1,11 @@
 version: '2'
 services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
   db:
     image: postgres:alpine
     volumes:
@@ -12,7 +18,7 @@ services:
     depends_on:
       - db
     ports:
-      - "2375:3000"
+      - "3000"
     restart: always
     environment:
       DB_USERNAME: 'postgres'
@@ -20,3 +26,4 @@ services:
       DB_HOST: 'db'
       RACK_ENV: 'production'
       RAILS_ENV: 'production'
+      VIRTUAL_HOST: 'dev.integra17-1.ing.puc.cl'
