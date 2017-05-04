@@ -16,6 +16,6 @@ services:
     env_file: env_file
     restart: always
     environment:
-      - DB_USERNAME: postgres
-      - DB_PASSWORD: ''
-      - DB_HOST: db
+      DB_USERNAME: 'postgres'
+      DB_PASSWORD: ''
+      DB_HOST: 'db'
