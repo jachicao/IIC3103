@@ -9,7 +9,6 @@ services:
       - web
     labels:
       - "traefik.backend=db"
-      - "traefik.port=5432"
       - "traefik.frontend.rule=Host:db.localhost"
   web:
     build: .
@@ -30,7 +29,6 @@ services:
       - web
     labels:
       - "traefik.backend=web"
-      - "traefik.port=3000"
       - "traefik.frontend.rule=Host: dev.integra17-1.ing.puc.cl"
 
 networks:
