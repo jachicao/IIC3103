@@ -31,7 +31,7 @@ services:
     labels:
       - "traefik.backend=web"
       - "traefik.port=3000"
-      - "traefik.frontend.rule=Host: integra17-1.ing.puc.cl"
+      - "traefik.frontend.rule=Host: dev.integra17-1.ing.puc.cl"
 
 networks:
   web:
