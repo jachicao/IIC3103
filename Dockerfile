@@ -21,4 +21,6 @@ ADD . /myapp
 
 RUN bundle exec rake RAILS_ENV=production assets:precompile
 
+EXPOSE 3000
+
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
