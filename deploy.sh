@@ -10,8 +10,8 @@ docker-compose down
 
 docker-compose up -d
 
-docker-compose exec web rake db:create
+docker-compose exec -d web rake db:create
 
-docker-compose exec web rake db:migrate db:seed
+docker-compose exec -d web rake db:migrate db:seed
 
 exit 0
