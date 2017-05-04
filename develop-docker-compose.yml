@@ -1,6 +1,6 @@
 version: '2'
 services:
-  db:
+  develop-db:
     image: postgres:alpine
     volumes:
       - ./pg_data:/var/lib/postgresql/data
@@ -10,19 +10,19 @@ services:
     networks:
       - traefik
     labels:
-      - "traefik.backend=db"
-      - "traefik.frontend.rule=Host:db.localhost"
+      - "traefik.backend=develop-db"
+      - "traefik.frontend.rule=Host:develop-db.localhost"
   web:
     build: .
     volumes:
       - .:/myapp
     depends_on:
-      - db
+      - develop-db
     restart: always
     environment:
       DB_USERNAME: 'postgres'
       DB_PASSWORD: ''
-      DB_HOST: 'db'
+      DB_HOST: 'develop-db'
       RACK_ENV: 'development'
       RAILS_ENV: 'development'
     ports:
