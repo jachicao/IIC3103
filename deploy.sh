@@ -1,0 +1,18 @@
+#!/bin/bash
+cd "$(dirname "$0")"
+
+git pull
+
+docker-compose build
+
+docker-compose down
+
+docker-compose up -d
+
+docker-compose run web rake db:create
+
+docker-compose run web rake db:migrate db:seed
+
+echo "Deploy successful"
+
+exit 0
