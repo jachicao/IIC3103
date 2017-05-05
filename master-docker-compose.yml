@@ -17,6 +17,7 @@ services:
     depends_on:
       - db
     restart: always
+    env_file: .env
     environment:
       DB_USERNAME: 'postgres'
       DB_PASSWORD: ''
