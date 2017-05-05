@@ -1,0 +1,87 @@
+<%= form_with(model: purchase_order, local: true) do |form| %>
+  <% if purchase_order.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(purchase_order.errors.count, "error") %> prohibited this purchase_order from being saved:</h2>
+
+      <ul>
+      <% purchase_order.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :orderId %>
+    <%= form.text_field :orderId, id: :purchase_order_orderId %>
+  </div>
+
+  <div class="field">
+    <%= form.label :channel %>
+    <%= form.text_field :channel, id: :purchase_order_channel %>
+  </div>
+
+  <div class="field">
+    <%= form.label :supplier %>
+    <%= form.text_field :supplier, id: :purchase_order_supplier %>
+  </div>
+
+  <div class="field">
+    <%= form.label :client %>
+    <%= form.text_field :client, id: :purchase_order_client %>
+  </div>
+
+  <div class="field">
+    <%= form.label :sku %>
+    <%= form.text_field :sku, id: :purchase_order_sku %>
+  </div>
+
+  <div class="field">
+    <%= form.label :quantity %>
+    <%= form.number_field :quantity, id: :purchase_order_quantity %>
+  </div>
+
+  <div class="field">
+    <%= form.label :dispatchedQuantity %>
+    <%= form.number_field :dispatchedQuantity, id: :purchase_order_dispatchedQuantity %>
+  </div>
+
+  <div class="field">
+    <%= form.label :unitPrice %>
+    <%= form.number_field :unitPrice, id: :purchase_order_unitPrice %>
+  </div>
+
+  <div class="field">
+    <%= form.label :deadline %>
+    <%= form.datetime_select :deadline, id: :purchase_order_deadline %>
+  </div>
+
+  <div class="field">
+    <%= form.label :state %>
+    <%= form.text_field :state, id: :purchase_order_state %>
+  </div>
+
+  <div class="field">
+    <%= form.label :rejectionCause %>
+    <%= form.text_field :rejectionCause, id: :purchase_order_rejectionCause %>
+  </div>
+
+  <div class="field">
+    <%= form.label :cancellationCause %>
+    <%= form.text_field :cancellationCause, id: :purchase_order_cancellationCause %>
+  </div>
+
+  <div class="field">
+    <%= form.label :notes %>
+    <%= form.text_field :notes, id: :purchase_order_notes %>
+  </div>
+
+  <div class="field">
+    <%= form.label :billId %>
+    <%= form.text_field :billId, id: :purchase_order_billId %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

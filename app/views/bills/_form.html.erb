@@ -1,0 +1,67 @@
+<%= form_with(model: bill, local: true) do |form| %>
+  <% if bill.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(bill.errors.count, "error") %> prohibited this bill from being saved:</h2>
+
+      <ul>
+      <% bill.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :supplier %>
+    <%= form.text_field :supplier, id: :bill_supplier %>
+  </div>
+
+  <div class="field">
+    <%= form.label :client %>
+    <%= form.text_field :client, id: :bill_client %>
+  </div>
+
+  <div class="field">
+    <%= form.label :grossValue %>
+    <%= form.number_field :grossValue, id: :bill_grossValue %>
+  </div>
+
+  <div class="field">
+    <%= form.label :iva %>
+    <%= form.number_field :iva, id: :bill_iva %>
+  </div>
+
+  <div class="field">
+    <%= form.label :totalValue %>
+    <%= form.number_field :totalValue, id: :bill_totalValue %>
+  </div>
+
+  <div class="field">
+    <%= form.label :paymentStatus %>
+    <%= form.text_field :paymentStatus, id: :bill_paymentStatus %>
+  </div>
+
+  <div class="field">
+    <%= form.label :pushaseOrderId %>
+    <%= form.text_field :pushaseOrderId, id: :bill_pushaseOrderId %>
+  </div>
+
+  <div class="field">
+    <%= form.label :paymentDeadline %>
+    <%= form.datetime_select :paymentDeadline, id: :bill_paymentDeadline %>
+  </div>
+
+  <div class="field">
+    <%= form.label :rejectionCause %>
+    <%= form.text_field :rejectionCause, id: :bill_rejectionCause %>
+  </div>
+
+  <div class="field">
+    <%= form.label :cancellationCause %>
+    <%= form.text_field :cancellationCause, id: :bill_cancellationCause %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

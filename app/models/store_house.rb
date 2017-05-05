@@ -1,0 +1,2 @@
+class StoreHouse < ApplicationRecord
+end

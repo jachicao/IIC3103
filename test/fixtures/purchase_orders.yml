@@ -1,0 +1,33 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  orderId: MyString
+  channel: MyString
+  supplier: MyString
+  client: MyString
+  sku: MyString
+  quantity: 1
+  dispatchedQuantity: 1
+  unitPrice: 1
+  deadline: 2017-05-04 21:59:00
+  state: MyString
+  rejectionCause: MyString
+  cancellationCause: MyString
+  notes: MyString
+  billId: MyString
+
+two:
+  orderId: MyString
+  channel: MyString
+  supplier: MyString
+  client: MyString
+  sku: MyString
+  quantity: 1
+  dispatchedQuantity: 1
+  unitPrice: 1
+  deadline: 2017-05-04 21:59:00
+  state: MyString
+  rejectionCause: MyString
+  cancellationCause: MyString
+  notes: MyString
+  billId: MyString

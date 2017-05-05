@@ -1,0 +1,54 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Supplier:</strong>
+  <%= @bill.supplier %>
+</p>
+
+<p>
+  <strong>Client:</strong>
+  <%= @bill.client %>
+</p>
+
+<p>
+  <strong>Grossvalue:</strong>
+  <%= @bill.grossValue %>
+</p>
+
+<p>
+  <strong>Iva:</strong>
+  <%= @bill.iva %>
+</p>
+
+<p>
+  <strong>Totalvalue:</strong>
+  <%= @bill.totalValue %>
+</p>
+
+<p>
+  <strong>Paymentstatus:</strong>
+  <%= @bill.paymentStatus %>
+</p>
+
+<p>
+  <strong>Pushaseorderid:</strong>
+  <%= @bill.pushaseOrderId %>
+</p>
+
+<p>
+  <strong>Paymentdeadline:</strong>
+  <%= @bill.paymentDeadline %>
+</p>
+
+<p>
+  <strong>Rejectioncause:</strong>
+  <%= @bill.rejectionCause %>
+</p>
+
+<p>
+  <strong>Cancellationcause:</strong>
+  <%= @bill.cancellationCause %>
+</p>
+
+<%= link_to 'Edit', edit_bill_path(@bill) %> |
+<%= link_to 'Back', bills_path %>

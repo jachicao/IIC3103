@@ -10,14 +10,75 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170504030910) do
+ActiveRecord::Schema.define(version: 20170505010920) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "high_scores", force: :cascade do |t|
-    t.string "game"
-    t.integer "score"
+  create_table "balances", force: :cascade do |t|
+    t.string "account"
+    t.decimal "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "bills", force: :cascade do |t|
+    t.string "supplier"
+    t.string "client"
+    t.integer "grossValue"
+    t.integer "iva"
+    t.integer "totalValue"
+    t.string "paymentStatus"
+    t.string "pushaseOrderId"
+    t.datetime "paymentDeadline"
+    t.string "rejectionCause"
+    t.string "cancellationCause"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.string "sku"
+    t.string "storeHouseId"
+    t.decimal "cost"
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "purchase_orders", force: :cascade do |t|
+    t.string "orderId"
+    t.string "channel"
+    t.string "supplier"
+    t.string "client"
+    t.string "sku"
+    t.integer "quantity"
+    t.integer "dispatchedQuantity"
+    t.integer "unitPrice"
+    t.datetime "deadline"
+    t.string "state"
+    t.string "rejectionCause"
+    t.string "cancellationCause"
+    t.string "notes"
+    t.string "billId"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "store_houses", force: :cascade do |t|
+    t.integer "usedSpace"
+    t.integer "totalSpace"
+    t.boolean "reception"
+    t.boolean "dispatch"
+    t.boolean "external"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.string "originAccount"
+    t.string "destinationAccount"
+    t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
