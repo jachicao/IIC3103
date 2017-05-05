@@ -2,8 +2,6 @@ version: '2'
 services:
   develop-db:
     image: postgres:alpine
-    volumes:
-      - ./develop-pg:/var/lib/postgresql/data
     restart: always
     networks:
       - traefik
