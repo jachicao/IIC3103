@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  supplier: MyString
+  client: MyString
+  grossValue: 1
+  iva: 1
+  totalValue: 1
+  paymentStatus: MyString
+  pushaseOrderId: MyString
+  paymentDeadline: 2017-05-04 22:02:18
+  rejectionCause: MyString
+  cancellationCause: MyString
+
+two:
+  supplier: MyString
+  client: MyString
+  grossValue: 1
+  iva: 1
+  totalValue: 1
+  paymentStatus: MyString
+  pushaseOrderId: MyString
+  paymentDeadline: 2017-05-04 22:02:18
+  rejectionCause: MyString
+  cancellationCause: MyString

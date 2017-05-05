@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sku: MyString
+  storeHouseId: MyString
+  cost: 9.99
+  name: MyString
+
+two:
+  sku: MyString
+  storeHouseId: MyString
+  cost: 9.99
+  name: MyString

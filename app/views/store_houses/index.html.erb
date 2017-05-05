@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Store Houses</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Usedspace</th>
+      <th>Totalspace</th>
+      <th>Reception</th>
+      <th>Dispatch</th>
+      <th>External</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @store_houses.each do |store_house| %>
+      <tr>
+        <td><%= store_house.usedSpace %></td>
+        <td><%= store_house.totalSpace %></td>
+        <td><%= store_house.reception %></td>
+        <td><%= store_house.dispatch %></td>
+        <td><%= store_house.external %></td>
+        <td><%= link_to 'Show', store_house %></td>
+        <td><%= link_to 'Edit', edit_store_house_path(store_house) %></td>
+        <td><%= link_to 'Destroy', store_house, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Store House', new_store_house_path %>
