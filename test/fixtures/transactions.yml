@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  originAcount: MyString
+  destinationAcount: MyString
+  amount: 
+
+two:
+  originAcount: MyString
+  destinationAcount: MyString
+  amount: 

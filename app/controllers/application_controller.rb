@@ -1,3 +1,6 @@
-class ApplicationController < ActionController::Base
-  protect_from_forgery with: :exception
+class ApplicationController < ActionController::API
+  #GET
+  def token
+    render json: { "token": 'abtj12312ab'}, status: 202
+  end
 end
