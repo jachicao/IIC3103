@@ -11,34 +11,18 @@
 #   stripe_publishable_key: pk_live_9lcthxpSIHbGwmdO941O1XVU
 
 
-
-
-development:
-  GROUP_ID: "590baa00d6b4ec0004902462"
-production:
-  GROUP_ID: "5910c0910e42840004f6e680"
-
-
-
-development:
-  BANK_ID: "590baa00d6b4ec000490246a"
-production:
-  BANK_ID: "5910c0910e42840004f6e688"
-
-
-
-development:
-  STORE_HOUSE_PASSWORD: "KtXf8DcNeN$I5::"
-production:
-  STORE_HOUSE_PASSWORD: "zlSaZW5lbqAjhy8"
-
-
+GROUP_NUMBER: "1"
 
 ONLINE_USER: "grupo1"
 
-
 development:
-   ONLINE_PASSWORD: "1Y74E9AQ"
+  GROUP_ID: "590baa00d6b4ec0004902462"
+  BANK_ID: "590baa00d6b4ec000490246a"
+  STORE_HOUSE_PASSWORD: "KtXf8DcNeN$I5::"
+  ONLINE_PASSWORD: "1Y74E9AQ"
+  
 production:
+  GROUP_ID: "5910c0910e42840004f6e680"
+  BANK_ID: "5910c0910e42840004f6e688"
+  STORE_HOUSE_PASSWORD: "zlSaZW5lbqAjhy8"
   ONLINE_PASSWORD: "KC5;Pt2l"
-
