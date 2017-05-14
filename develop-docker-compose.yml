@@ -4,7 +4,7 @@ services:
     image: postgres:alpine
     restart: always
     volumes:
-      - ./develop-pg:/var/lib/postgresql/data
+      - ./pg:/var/lib/postgresql/data
     networks:
       - traefik
     labels:
