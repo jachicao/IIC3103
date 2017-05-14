@@ -13,7 +13,7 @@ rails g scaffold Ingredient product:references recipe:references quantity:intege
 
 rails g scaffold ProductInSale producer:references product:references price:integer average_time:decimal
 
-rails g scaffold PurchaseOrder po_id:string payment_method:string store_reception_id:string status:string
+rails g scaffold PurchaseOrder po_id:string:index payment_method:string store_reception_id:string status:string
 
 class Product < ApplicationRecord
   has_one :recipe
