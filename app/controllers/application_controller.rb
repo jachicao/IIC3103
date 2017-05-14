@@ -16,8 +16,13 @@ class ApplicationController < ActionController::Base
   end
 
   def before
-    req_params = { :almacenId => "590baa76d6b4ec000490247c" };
-  	res = HTTParty.get(ENV['CENTRAL_SERVER_URL'] + '/bodega/skusWithStock', :query => req_params, :headers => { content_type: 'application/json', accept: 'application/json', authorization: get_auth_header("GET", req_params) } );
-  	puts res.body;
+      req_params = {
+        }
+      res = HTTParty.get(
+        ENV['CENTRAL_SERVER_URL'] + '/bodega/fabrica/getCuenta', 
+        :query => req_params,
+        :headers => { content_type: 'application/json', accept: 'application/json', authorization: get_auth_header("GET", req_params) }
+        )
+      puts res.body;
   end
 end

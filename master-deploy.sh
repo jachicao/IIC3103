@@ -12,8 +12,8 @@ docker-compose -f master-docker-compose.yml down
 
 docker-compose -f master-docker-compose.yml up -d --remove-orphans
 
-docker-compose -f master-docker-compose.yml exec -d web rake db:create
+docker-compose -f master-docker-compose.yml exec web rake db:create
 
-docker-compose -f master-docker-compose.yml exec -d web rake db:migrate db:seed
+docker-compose -f master-docker-compose.yml exec web rake db:migrate db:seed
 
 exit 0
