@@ -1,2 +1,0 @@
-class Balance < ApplicationRecord
-end

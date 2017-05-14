@@ -1,73 +1,23 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <strong>Orderid:</strong>
-  <%= @purchase_order.orderId %>
+  <strong>Po:</strong>
+  <%= @purchase_order.po_id %>
 </p>
 
 <p>
-  <strong>Channel:</strong>
-  <%= @purchase_order.channel %>
+  <strong>Payment method:</strong>
+  <%= @purchase_order.payment_method %>
 </p>
 
 <p>
-  <strong>Supplier:</strong>
-  <%= @purchase_order.supplier %>
+  <strong>Store reception:</strong>
+  <%= @purchase_order.store_reception_id %>
 </p>
 
 <p>
-  <strong>Client:</strong>
-  <%= @purchase_order.client %>
-</p>
-
-<p>
-  <strong>Sku:</strong>
-  <%= @purchase_order.sku %>
-</p>
-
-<p>
-  <strong>Quantity:</strong>
-  <%= @purchase_order.quantity %>
-</p>
-
-<p>
-  <strong>Dispatchedquantity:</strong>
-  <%= @purchase_order.dispatchedQuantity %>
-</p>
-
-<p>
-  <strong>Unitprice:</strong>
-  <%= @purchase_order.unitPrice %>
-</p>
-
-<p>
-  <strong>Deadline:</strong>
-  <%= @purchase_order.deadline %>
-</p>
-
-<p>
-  <strong>State:</strong>
-  <%= @purchase_order.state %>
-</p>
-
-<p>
-  <strong>Rejectioncause:</strong>
-  <%= @purchase_order.rejectionCause %>
-</p>
-
-<p>
-  <strong>Cancellationcause:</strong>
-  <%= @purchase_order.cancellationCause %>
-</p>
-
-<p>
-  <strong>Notes:</strong>
-  <%= @purchase_order.notes %>
-</p>
-
-<p>
-  <strong>Billid:</strong>
-  <%= @purchase_order.billId %>
+  <strong>Status:</strong>
+  <%= @purchase_order.status %>
 </p>
 
 <%= link_to 'Edit', edit_purchase_order_path(@purchase_order) %> |

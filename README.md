@@ -1,38 +1,61 @@
-# README
-
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-rails generate scaffold PurchaseOrder orderId:string channel:string supplier:string client:string sku:string quantity:integer dispatchedQuantity:integer unitPrice:integer deadline:timestamp state:string rejectionCause:string cancellationCause:string notes:string billId:string
+psql
+CREATE USER postgres;
+ALTER USER postgres WITH SUPERUSER;
 
 
-rails generate scaffold Bill supplier:string client:string grossValue:integer iva:integer totalValue:integer paymentStatus:string pushaseOrderId:string paymentDeadline:datetime rejectionCause:string cancellationCause:string
+rails g scaffold Producer producer_id:string:index group_number:integer account:string
 
+rails g scaffold Product sku:string name:string product_type:string unit:string unit_cost:integer lote:integer
 
-rails generate scaffold Product sku:string storeHouseId:string cost:decimal name:string
+rails g scaffold Recipe product:references
 
-rails generate scaffold StoreHouse usedSpace:integer totalSpace:integer reception:boolean dispatch:boolean external:boolean
+rails g scaffold Ingredient product:references recipe:references quantity:integer
 
-rails generate scaffold Transaction originAccount:string destinationAccount:string amount:decimal
+rails g scaffold ProductInSale producer:references product:references price:integer average_time:decimal
 
-rails generate scaffold Balance account:string amount:decimal
+rails g scaffold PurchaseOrder po_id:string:index payment_method:string store_reception_id:string status:string
+
+class Product < ApplicationRecord
+  has_one :recipe
+  has_many :product_in_sales
+end
+
+class Recipe < ApplicationRecord
+  belongs_to :product
+  has_many :ingredients
+  accepts_nested_attributes_for :ingredients
+end
+
+class Ingredient < ApplicationRecord
+  belongs_to :product
+  belongs_to :recipe
+end
+
+class Producer < ApplicationRecord
+  has_many :product_in_sales
+end
+
+#config/routes.rb
+Rails.application.routes.draw do
+  resources :purchase_orders
+  resources :product_in_sales
+  resources :ingredients
+  resources :recipes
+  resources :products
+  resources :producers
+
+  namespace :api, defaults: {format: 'json'} do
+    get '/products', to: 'products#index'
+
+    put '/invoices/:invoice_id', to: 'invoices#create'
+    patch '/invoices/:invoice_id/accepted', to: 'invoices#update_accepted'
+    patch '/invoices/:invoice_id/rejected', to: 'invoices#update_rejected'
+    patch '/invoices/:invoice_id/paid', to: 'invoices#update_paid'
+    patch '/invoices/:invoice_id/delivered', to: 'invoices#update_delivered'
+
+    put '/purchase_orders/:po_id', to: 'purchase_orders#create'
+    patch '/purchase_orders/:po_id/accepted', to: 'purchase_orders#update_accepted'
+    patch '/purchase_orders/:po_id/rejected', to: 'purchase_orders#update_rejected'
+  end
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+end

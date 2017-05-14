@@ -17,18 +17,28 @@
   </div>
 
   <div class="field">
-    <%= form.label :storeHouseId %>
-    <%= form.text_field :storeHouseId, id: :product_storeHouseId %>
-  </div>
-
-  <div class="field">
-    <%= form.label :cost %>
-    <%= form.text_field :cost, id: :product_cost %>
-  </div>
-
-  <div class="field">
     <%= form.label :name %>
     <%= form.text_field :name, id: :product_name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :product_type %>
+    <%= form.text_field :product_type, id: :product_product_type %>
+  </div>
+
+  <div class="field">
+    <%= form.label :unit %>
+    <%= form.text_field :unit, id: :product_unit %>
+  </div>
+
+  <div class="field">
+    <%= form.label :unit_cost %>
+    <%= form.number_field :unit_cost, id: :product_unit_cost %>
+  </div>
+
+  <div class="field">
+    <%= form.label :lote %>
+    <%= form.number_field :lote, id: :product_lote %>
   </div>
 
   <div class="actions">

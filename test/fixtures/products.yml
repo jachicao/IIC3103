@@ -2,12 +2,16 @@
 
 one:
   sku: MyString
-  storeHouseId: MyString
-  cost: 9.99
   name: MyString
+  product_type: MyString
+  unit: MyString
+  unit_cost: 1
+  lote: 1
 
 two:
   sku: MyString
-  storeHouseId: MyString
-  cost: 9.99
   name: MyString
+  product_type: MyString
+  unit: MyString
+  unit_cost: 1
+  lote: 1
