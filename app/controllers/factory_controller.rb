@@ -1,9 +1,9 @@
 class FactoryController < ApplicationController
 
-    def producir_stock_sin_pagar(sku, cantidad)
+    def producir_stock_sin_pagar
       req_params = {
-          :sku => sku,
-          :cantidad => cantidad,
+          :sku => params[:sku],
+          :cantidad => params[:cantidad],
         }
       res = HTTParty.put(
         ENV['CENTRAL_SERVER_URL'] + '/bodega/fabrica/fabricarSinPago', 
@@ -13,11 +13,11 @@ class FactoryController < ApplicationController
       return res
     end
 
-    def producir_stock(trxId, sku, cantidad)
+    def producir_stock
       req_params = {
-          :trxId => trxId,
-          :sku => sku,
-          :cantidad => cantidad,
+          :trxId => params[:trxId],
+          :sku => params[:sku],
+          :cantidad => params[:cantidad],
         }
       res = HTTParty.put(
         ENV['CENTRAL_SERVER_URL'] + '/bodega/fabrica/fabricar', 
@@ -27,7 +27,7 @@ class FactoryController < ApplicationController
       return res
     end
 
-    def get_cuenta()
+    def get_cuenta
       req_params = {
         }
       res = HTTParty.get(
