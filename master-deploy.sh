@@ -2,13 +2,15 @@
 
 cd "$(dirname "$0")"
 
-git checkout master
+docker-compose -f master-docker-compose.yml down
 
-git pull
+cd ..
+
+rm -rf master
+
+git clone --branch master https://github.com/jachicao/IIC3103.git master
 
 docker-compose -f master-docker-compose.yml build
-
-docker-compose -f master-docker-compose.yml down
 
 docker-compose -f master-docker-compose.yml up -d --remove-orphans
 
