@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  producer: one
+  product: one
+  price: 1
+  average_time: 9.99
+
+two:
+  producer: two
+  product: two
+  price: 1
+  average_time: 9.99
