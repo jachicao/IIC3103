@@ -18,6 +18,6 @@ docker-compose -f develop-docker-compose.yml up -d --remove-orphans
 
 docker-compose -f develop-docker-compose.yml exec -d develop-web rake db:create
 
-docker-compose -f develop-docker-compose.yml exec -d develop-web rake db:migrate db:reset
+docker-compose -f develop-docker-compose.yml exec -d develop-web rake db:migrate db:seed
 
 exit 0
