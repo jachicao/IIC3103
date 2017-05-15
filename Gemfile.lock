@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/elsurudo/simple_form.git
+  revision: a1faca93ed39c0f54055890578307bdbade3de0b
+  branch: rails-5.1.0
+  specs:
+    simple_form (3.4.0)
+      actionpack (> 4, < 5.2)
+      activemodel (> 4, < 5.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -96,7 +105,7 @@ GEM
     pg (0.20.0)
     public_suffix (2.0.5)
     puma (3.8.2)
-    rack (2.0.2)
+    rack (2.0.3)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (5.1.1)
@@ -189,6 +198,7 @@ DEPENDENCIES
   rails (~> 5.1.1)
   sass-rails (~> 5.0)
   selenium-webdriver
+  simple_form!
   spring
   spring-watcher-listen (~> 2.0.0)
   turbolinks (~> 5)

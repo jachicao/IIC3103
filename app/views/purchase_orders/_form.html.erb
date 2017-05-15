@@ -1,4 +1,4 @@
-<%= form_with(model: purchase_order, local: true) do |form| %>
+<%= simple_form_for (@purchase_order), html: { class: 'form-horizontal' } do |form| %>
   <% if purchase_order.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(purchase_order.errors.count, "error") %> prohibited this purchase_order from being saved:</h2>
@@ -26,10 +26,11 @@
     <%= form.text_field :store_reception_id, id: :purchase_order_store_reception_id %>
   </div>
 
+  <%= simple_fields_for :no_model_fields do |n| %>
   <div class="field">
-    <%= form.label :status %>
-    <%= form.text_field :status, id: :purchase_order_status %>
+    <%= f.input :id_proveedor, collection: Producers.all, label_method: :group_number, value_method: :producer_id,label: "Producer", include_blank: false %>
   </div>
+  <% end %>
 
   <div class="actions">
     <%= form.submit %>
