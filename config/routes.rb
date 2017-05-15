@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   resources :products
   resources :producers
   
+  root 'purchase_orders#new'
+
   namespace :api, defaults: {format: 'json'} do
     get '/products', to: 'products#index'
 
