@@ -8,7 +8,6 @@
 
 #Producer
 #rails g scaffold Producer producer_id:string:index group_number:integer account:string
-
 #class Producer < ApplicationRecord
 #  has_many :product_in_sales
 #end
@@ -21,7 +20,6 @@ producer_5 = Producer.create(producer_id: "5910c0910e42840004f6e684", group_numb
 producer_6 = Producer.create(producer_id: "5910c0910e42840004f6e685", group_number: 6, account:'')
 producer_7 = Producer.create(producer_id: "5910c0910e42840004f6e686", group_number: 7, account:'')
 producer_8 = Producer.create(producer_id: "5910c0910e42840004f6e687", group_number: 8, account:'')
-
 
 #Product
 #rails g scaffold Product sku:string name:string product_type:string unit:string unit_cost:integer lote:integer

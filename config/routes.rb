@@ -20,4 +20,5 @@ Rails.application.routes.draw do
     patch '/purchase_orders/:po_id/rejected', to: 'api_purchase_orders#update_rejected'
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end
