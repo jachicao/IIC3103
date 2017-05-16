@@ -4,7 +4,9 @@ Rails.application.routes.draw do
   resources :ingredients
   resources :products
   resources :producers
-  
+
+  root 'purshase_orders#index'
+
   namespace :api, defaults: {format: 'json'} do
     get '/products', to: 'products#index'
 
