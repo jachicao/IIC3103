@@ -1,0 +1,46 @@
+version: '2'
+services:
+  develop-redis:
+    image: redis:alpine
+    restart: always
+    networks:
+      - traefik
+    labels:
+      - "traefik.backend=develop-redis"
+      - "traefik.frontend.rule=Host:develop-redis.localhost"
+  develop-db:
+    image: postgres:alpine
+    restart: always
+    networks:
+      - traefik
+    labels:
+      - "traefik.backend=develop-db"
+      - "traefik.frontend.rule=Host:develop-db.localhost"
+  develop-web:
+    build: .
+    volumes:
+      - .:/myapp
+    depends_on:
+      - develop-db
+      - develop-redis
+    restart: always
+    environment:
+      RAILS_ENV: 'development'
+      RACK_ENV: 'development'
+      DB_USERNAME: 'postgres'
+      DB_PASSWORD: ''
+      DB_HOST: 'develop-db'
+      REDIS_PROVIDER: 'REDIS_HOST'
+      REDIS_HOST: 'develop-redis'
+    ports:
+      - "3000"
+    networks:
+      - traefik
+    labels:
+      - "traefik.backend=develop-web"
+      - "traefik.frontend.rule=Host: dev.integra17-1.ing.puc.cl"
+
+networks:
+  traefik:
+    external:
+      name: traefik_webgateway

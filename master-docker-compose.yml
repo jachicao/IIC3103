@@ -1,0 +1,51 @@
+version: '2'
+services:
+  redis:
+    image: redis:alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - ./redis:/data
+    restart: always
+    networks:
+      - traefik
+    labels:
+      - "traefik.backend=redis"
+      - "traefik.frontend.rule=Host:redis.localhost"
+  db:
+    image: postgres:alpine
+    volumes:
+      - ./pg:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - traefik
+    labels:
+      - "traefik.backend=db"
+      - "traefik.frontend.rule=Host:db.localhost"
+  web:
+    build: .
+    volumes:
+      - .:/myapp
+    depends_on:
+      - db
+      - redis
+    restart: always
+    env_file: .env
+    environment:
+      RAILS_ENV: 'production'
+      RACK_ENV: 'production'
+      DB_USERNAME: 'postgres'
+      DB_PASSWORD: ''
+      DB_HOST: 'db'
+      REDIS_HOST: 'redis'
+    ports:
+      - "3000"
+    networks:
+      - traefik
+    labels:
+      - "traefik.backend=web"
+      - "traefik.frontend.rule=Host: integra17-1.ing.puc.cl"
+
+networks:
+  traefik:
+    external:
+      name: traefik_webgateway

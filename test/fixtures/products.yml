@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sku: MyString
+  name: MyString
+  product_type: MyString
+  unit: MyString
+  unit_cost: 1
+  lote: 1
+
+two:
+  sku: MyString
+  name: MyString
+  product_type: MyString
+  unit: MyString
+  unit_cost: 1
+  lote: 1
