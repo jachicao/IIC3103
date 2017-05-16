@@ -5,10 +5,14 @@ Rails.application.routes.draw do
   resources :products
   resources :producers
   get '/store_house', to: 'store_house#index'
-  
+
   namespace :api, defaults: { format: 'json' } do
     get '/products', to: 'api_products#index'
 
+  root 'purshase_orders#index'
+
+  namespace :api, defaults: {format: 'json'} do
+    get '/products', to: 'products#index'
     put '/invoices/:invoice_id', to: 'api_invoices#create'
     patch '/invoices/:invoice_id/accepted', to: 'api_invoices#update_accepted'
     patch '/invoices/:invoice_id/rejected', to: 'api_invoices#update_rejected'
