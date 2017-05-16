@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :ingredients
   resources :products
   resources :producers
+  get '/dashboard', to: 'dashboard#index'
   get '/store_house', to: 'store_house#index'
 
   
