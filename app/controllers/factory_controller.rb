@@ -1,3 +1,0 @@
-class FactoryController < ApplicationController
-
-end
