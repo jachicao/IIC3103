@@ -1,0 +1,51 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Almacenes</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tipo</th>
+      <th>Capacidad</th>
+      <th>Disponible</th>
+      <th>Utilizado</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @almacenes.each do |almacen| %>
+      <tr>
+        <td><%= almacen[:tipo] %></td>
+        <td><%= almacen[:capacidad] %></td>
+        <td><%= almacen[:disponible] %></td>
+        <td><%= almacen[:utilizado] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h1>Productos</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Sku</th>
+      <th>Nombre</th>
+      <th>Stock</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @productos.each do |producto| %>
+      <tr>
+        <td><%= producto[:sku] %></td>
+        <td><%= producto[:nombre] %></td>
+        <td><%= producto[:stock] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
