@@ -1,5 +1,5 @@
 if ENV["RAILS_ENV"] != "production"
-  return;
+  #return;
 end
 
 Sidekiq.configure_server do |config|

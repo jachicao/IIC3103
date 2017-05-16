@@ -1,24 +1,10 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <strong>Po:</strong>
-  <%= @purchase_order.po_id %>
+  <strong>Order:</strong>
+  <%= @responce %>
 </p>
 
-<p>
-  <strong>Payment method:</strong>
-  <%= @purchase_order.payment_method %>
-</p>
-
-<p>
-  <strong>Store reception:</strong>
-  <%= @purchase_order.store_reception_id %>
-</p>
-
-<p>
-  <strong>Status:</strong>
-  <%= @purchase_order.status %>
-</p>
-
+<%= link_to 'Accept', { :controller => :purchase_orders, :action => :accept, :id => @purchase_order.po_id }, { :method => :patch } %>|
 <%= link_to 'Edit', edit_purchase_order_path(@purchase_order) %> |
 <%= link_to 'Back', purchase_orders_path %>

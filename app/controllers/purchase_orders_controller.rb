@@ -10,6 +10,22 @@ class PurchaseOrdersController < ApplicationController
   # GET /purchase_orders/1
   # GET /purchase_orders/1.json
   def show
+    puts @purchase_order.po_id
+    @responce = HTTParty.get(ENV['CENTRAL_SERVER_URL'] + '/oc/obtener/' + @purchase_order.po_id, :headers => { content_type: 'application/json', accept: 'application/json' } ).parsed_response;
+    puts @responce
+    respond_to do |format|
+       format.json { render :json => @responce }
+       format.html { render "show.html.erb" }
+    end
+  end
+
+  def accept
+    req_params = { :_id => params[:id]};
+    HTTParty.post(ENV['CENTRAL_SERVER_URL'] + '/oc/recepcionar/' + params[:id], :params => req_params, :headers => { content_type: 'application/json', accept: 'application/json' } );
+
+  end
+
+  def reject
   end
 
   # GET /purchase_orders/new

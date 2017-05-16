@@ -1,15 +1,16 @@
 Rails.application.routes.draw do
-  resources :purchase_orders
+  resources :purchase_orders do
+    collection do
+      patch 'accept' 
+    end
+  end
   resources :product_in_sales
   resources :ingredients
   resources :products
   resources :producers
   get '/store_house', to: 'store_house#index'
 
-  namespace :api, defaults: { format: 'json' } do
-    get '/products', to: 'api_products#index'
-
-  root 'purshase_orders#index'
+  root 'purchase_orders#index'
 
   namespace :api, defaults: {format: 'json'} do
     get '/products', to: 'products#index'
