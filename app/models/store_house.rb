@@ -12,7 +12,7 @@ class StoreHouse
       if skusWithStock == nil then
         return { :error => "No cache" }
       end
-      #puts skusWithStock
+
       almacen["inventario"] = []
       inventario = almacen["inventario"]
       skusWithStock.each do |b|
@@ -101,7 +101,6 @@ class StoreHouse
       end
     end
 
-    puts almacenamiento
     if stock >= quantity
       while quantity > 0
         almacenamiento.each do |m|
