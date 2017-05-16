@@ -16,8 +16,8 @@
   <tbody>
     <% @product_in_sales.each do |product_in_sale| %>
       <tr>
-        <td><%= product_in_sale.producer %></td>
-        <td><%= product_in_sale.product %></td>
+        <td><%= product_in_sale.producer.group_number %></td>
+        <td><%= product_in_sale.product.name %></td>
         <td><%= product_in_sale.price %></td>
         <td><%= product_in_sale.average_time %></td>
         <td><%= link_to 'Show', product_in_sale %></td>

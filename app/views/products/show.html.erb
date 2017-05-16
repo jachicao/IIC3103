@@ -30,5 +30,16 @@
   <%= @product.lote %>
 </p>
 
+<p>
+  <strong>Ingredients:</strong>
+  <ul>
+    <% @product.ingredients.each do |ingredient| %>
+      <li>
+        name: <%= ingredient.item.name %>, quantity: <%= ingredient.quantity %>
+      </li>
+    <% end %>
+  </ul>
+</p>
+
 <%= link_to 'Edit', edit_product_path(@product) %> |
 <%= link_to 'Back', products_path %>

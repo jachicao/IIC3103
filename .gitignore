@@ -20,3 +20,8 @@
 .env
 
 .idea
+
+/pg
+
+*.rdb
+/redis
