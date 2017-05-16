@@ -22,3 +22,6 @@
 .idea
 
 /pg
+
+*.rdb
+/redis

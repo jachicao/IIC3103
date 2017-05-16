@@ -1,4 +1,4 @@
-class Api::PurchaseOrdersController < ApplicationController
+class Api::ApiPurchaseOrdersController < ApplicationController
   before_action :set_purchase_order, only: [:update_accepted, :update_rejected]
 
 
