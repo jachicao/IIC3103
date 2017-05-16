@@ -1,0 +1,26 @@
+class GetPurchaseOrderJob < ApplicationJob
+  queue_as :default
+
+  def obtener_orden_de_compra(id)
+    req_params = {
+        :id => id,
+      }
+    return HTTParty.post(
+      ENV['CENTRAL_SERVER_URL'] + '/oc/obtener/' + id, 
+      :body => req_params,
+      :headers => { content_type: 'application/json', accept: 'application/json' }
+      )
+  end
+
+  def perform(id)
+    response = obtener_orden_de_compra(id)
+    body = JSON.parse(response.body)
+    #puts body
+    case response.code
+      when 429
+        GetPurchaseOrderJob.set(wait: 90.seconds).perform_later(id)
+        return nil
+    end
+    return body
+  end
+end
