@@ -41,10 +41,13 @@ class StoreHouse
       if !a["recepcion"] && !a["despacho"] && !a["pulmon"]  #se revisa que el almacen no sea pulmon, recepcion o despacho
         if capacidad < a["totalSpace"]  && a["totalSpace"] != a["usedSpace"] # se busca el de mayor capacidad disponible
           almacenId = a["_id"]
-          capacidad = a["totalSpace"]
+          capacidad = a["totalSpace"] -a["usedSpace"]
         end
       elsif a["recepcion"]
         recepcion = a
+        if a["usedSpace"] == 0
+          return { message: 'Recepcion liberada'};
+        end
       end
     end
 
@@ -62,6 +65,7 @@ class StoreHouse
             productos = GetProductStockJob.perform_now(recepcion["_id"], i[:sku]) # se buscan todos los productos de un sku
             productos.each do |p|
               MoveProductInternallyJob.perform_now(p["_id"], almacenId) #cada producto se mueve al almacen de mayor capacidad que no es despacho ni recepcion
+              capacidad -= 1
             end
             count -= 1
           end
@@ -147,17 +151,15 @@ class StoreHouse
         if cantidad > 0
             MoveProductInternallyJob.perform_now(p["_id"], almacen2)
             cantidad -= 1
-          end
+        else
+          break
+        end
       end
       if error == 1
         break
       end
     end
-    if error == 1
-      return  {message: 'error'};
-    else
       return {message: 'ok'};
-    end
   end
 
 
@@ -168,6 +170,8 @@ class StoreHouse
       return { :error => "No cache" }
     end
 
+    capacidad = 0
+    recepcionId = 0
     almacenes.each do |a|
       if a["recepcion"]
         recepcionId = a["_id"]
@@ -175,18 +179,21 @@ class StoreHouse
       end
     end
 
+    puts recepcionId
+    puts capacidad
     almacenes.each do |a|
       if a["pulmon"]
         if a["usedSpace"] > 0
           inventario = a["inventario"]
+          puts inventario
           inventario.each do |i|
-            if capacidad >= i["total"]
-              response = movebetweenStoreHouses(a["_id"], recepcionId, i["sku"], i["total"])
+            if capacidad >= i[:total]
+              response = movebetweenStoreHouses(a["_id"], recepcionId, i[:sku], i[:total])
               if response["message"] == "ok"
-                capacidad -= i["total"]
+                capacidad -= i[:total]
               end
-            elsif capacidad < i["total"]
-              response = movebetweenStoreHouses(a["_id"], recepcionId, i["sku"], capacidad)
+            elsif capacidad < i[:total]
+              response = movebetweenStoreHouses(a["_id"], recepcionId, i[:sku], capacidad)
               if response["message"] == "ok"
                 capacidad = 0
               end
@@ -195,6 +202,7 @@ class StoreHouse
         end
       end
     end
+    return
   end
 
 
