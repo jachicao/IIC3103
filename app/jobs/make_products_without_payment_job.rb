@@ -29,9 +29,9 @@ class MakeProductsWithoutPaymentJob < ApplicationJob
       group: body[:grupo],
       dispatched: body[:despachado],
       quantity: body[:cantidad],
-      created_at: Time.at(body[:created_at] / 1000.0).to_date
-      updated_at: Time.at(body[:updated_at] / 1000.0).to_date
-      available: Time.at(body[:disponible] / 1000.0).to_date
+      created_at: Time.at(body[:created_at] / 1000.0).to_date,
+      updated_at: Time.at(body[:updated_at] / 1000.0).to_date,
+      available: Time.at(body[:disponible] / 1000.0).to_date,
       )
     case response.code
       when 429
