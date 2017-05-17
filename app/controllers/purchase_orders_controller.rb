@@ -22,7 +22,7 @@ class PurchaseOrdersController < ApplicationController
     req_params = { :_id => params[:id]};
     responce_server = HTTParty.post(ENV['CENTRAL_SERVER_URL'] + '/oc/recepcionar/' + params[:id], :params => req_params, :headers => { content_type: 'application/json', accept: 'application/json' } );
     groupNumber = Producer.where(producer_id: params[:cliente_id]).first.group_number.to_s
-    if ENV["RAILS_ENV"] == "DEVELOP"
+    if ENV["RAILS_ENV"] == "development"
       responce_cliente = HTTParty.patch('http://dev.integra17-'+ groupNumber + '.ing.puc.cl/api/purchase_orders/' + params[:id] + '/accepted', :headers => { content_type: 'application/json', accept: 'application/json' } );
     else
       responce_cliente = HTTParty.patch('http://integra17-'+ groupNumber + '.ing.puc.cl/api/purchase_orders/' + params[:id] + '/accepted', :headers => { content_type: 'application/json', accept: 'application/json' } );
@@ -38,7 +38,7 @@ class PurchaseOrdersController < ApplicationController
   def reject
     HTTParty.post(ENV['CENTRAL_SERVER_URL'] + '/oc/rechazar/' + params[:id], :body => {_id: params[:id], rechazo: "algo"}, :headers => { content_type: 'application/json', accept: 'application/json' } );
     groupNumber = Producer.where(producer_id: params[:cliente_id]).first.group_number.to_s
-    if ENV["RAILS_ENV"] == "DEVELOP"
+    if ENV["RAILS_ENV"] == "development"
       responce_cliente = HTTParty.patch('http://dev.integra17-'+ groupNumber + '.ing.puc.cl/api/purchase_orders/' + params[:id] + '/reject', :headers => { content_type: 'application/json', accept: 'application/json' } );
     else
       responce_cliente = HTTParty.patch('http://integra17-'+ groupNumber + '.ing.puc.cl/api/purchase_orders/' + params[:id] + '/reject', :headers => { content_type: 'application/json', accept: 'application/json' } );
@@ -51,7 +51,7 @@ class PurchaseOrdersController < ApplicationController
 
   # GET /purchase_orders/new
   def new
-    @products = Product.where(id: ProductInSale.where(producer: Producer.first).select('product_id'))
+    @products = Product.all
     @purchase_order = PurchaseOrder.new
   end
 
@@ -90,22 +90,23 @@ class PurchaseOrdersController < ApplicationController
     #end
     #almacen_recepcion = JSON.load(recepcion_cache);
     client_body = {
-    "payment_method": params[:payment_method],
-    "id_store_reception": almacen_recepcion["_id"]
+    payment_method: params[:payment_method],
+    id_store_reception: almacen_recepcion["_id"],
     }
     server_response = HTTParty.put(ENV['CENTRAL_SERVER_URL'] + '/oc/crear/', :body => server_body, :headers => { content_type: 'application/json', accept: 'application/json'} );
-    puts client_body
+    puts client_body.to_json
     server_response_body = server_response.parsed_response
     groupNumber = Producer.where(producer_id: params[:cliente][:id]).first.group_number.to_s
     puts 'http://dev.integra17-'+ groupNumber +'.ing.puc.cl/purchase_orders/' + server_response_body["_id"]
     puts client_body
-    if ENV["RAILS_ENV"] == "DEVELOP"
-      client_responce = HTTParty.put('http://dev.integra17-'+ groupNumber +'.ing.puc.cl/purchase_orders/' + server_response_body["_id"], :body => client_body , :headers => { content_type: 'application/json'} );
+    if ENV["RAILS_ENV"] == "development"
+      puts "development"
+      client_responce = HTTParty.put('http://dev.integra17-'+ groupNumber +'.ing.puc.cl/purchase_orders/' + server_response_body["_id"], :body => client_body.to_json , :headers => { content_type: 'application/json', "Authorization" => ENV["GROUP_ID"] } );
     else
-      client_responce = HTTParty.put('http://dev.integra17-'+ groupNumber +'.ing.puc.cl/purchase_orders/' + server_response_body["_id"], :body => client_body, :headers => { content_type: 'application/json'} );
+      client_responce = HTTParty.put('http://integra17-'+ groupNumber +'.ing.puc.cl/purchase_orders/' + server_response_body["_id"], :body => client_body.to_json, :headers => { content_type: 'application/json', "Authorization" => ENV["GROUP_ID"]} );
     end
-
     puts client_responce.code
+    puts client_responce.body
     @purchase_order = PurchaseOrder.new(po_id: server_response_body["_id"],
                                         payment_method: params[:payment_method],
                                         store_reception_id: almacen_recepcion[:_id],
