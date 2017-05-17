@@ -5,7 +5,7 @@ class GetProductStockJob < ApplicationJob
     req_params = {
         :almacenId => almacenId,
         :sku => sku,
-        :limit => 200,
+        :limit => 100,
       }
     auth_params = {
         :almacenId => almacenId,
