@@ -10,10 +10,10 @@ class PurchaseOrdersController < ApplicationController
   # GET /purchase_orders/1
   # GET /purchase_orders/1.json
   def show
-    @response = GetPurchaseOrderJob.perform_now(@purchase_order.po_id)
+    @response = GetPurchaseOrderJob.perform_now(@purchase_order.po_id).first
     respond_to do |format|
        format.json { render :json => @response }
-       format.html { render "show.html.erb" }
+       format.html { render 'show.html.erb' }
     end
   end
 
