@@ -152,6 +152,7 @@ class StoreHouse
             MoveProductInternallyJob.perform_now(p["_id"], almacen2)
             cantidad -= 1
         else
+          error = 1
           break
         end
       end
@@ -163,8 +164,7 @@ class StoreHouse
   end
 
 
-  def movements
-    clearReception()
+  def moveFromLung
     almacenes = getStock()
     if almacenes == nil then
       return { :error => "No cache" }
@@ -187,6 +187,9 @@ class StoreHouse
           inventario = a["inventario"]
           puts inventario
           inventario.each do |i|
+            if capacidad == 0
+              break
+            end
             if capacidad >= i[:total]
               response = movebetweenStoreHouses(a["_id"], recepcionId, i[:sku], i[:total])
               if response["message"] == "ok"

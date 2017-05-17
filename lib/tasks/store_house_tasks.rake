@@ -4,5 +4,7 @@ namespace :store_house_tasks do
     puts 'Clear reception and moving from lung'
     store_house = StoreHouse.new
     store_house.clearReception
+    store_house.moveFromLung
+    store_house.clearReception
    end
 end
