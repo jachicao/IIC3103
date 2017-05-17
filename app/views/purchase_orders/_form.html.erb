@@ -1,4 +1,4 @@
-<%= form_with(model: purchase_order, local: true) do |form| %>
+<%= form_tag(created_purchase_orders_path, :html => {:'data-type' => 'json', :multipart => true}) do %>
   <% if purchase_order.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(purchase_order.errors.count, "error") %> prohibited this purchase_order from being saved:</h2>
@@ -12,26 +12,44 @@
   <% end %>
 
   <div class="field">
-    <%= form.label :po_id %>
-    <%= form.text_field :po_id, id: :purchase_order_po_id %>
+    <%= label_tag :Cliente %>
+    <%= collection_select :cliente, :id, Producer.where.not(group_number: ENV['GROUP_NUMBER']), :producer_id, :group_number, {:class => "cliente_selection"} %>
   </div>
 
   <div class="field">
-    <%= form.label :payment_method %>
-    <%= form.text_field :payment_method, id: :purchase_order_payment_method %>
+    <%= label_tag :Product %>
+  </div>
+  <%= collection_select :products, :ids, @products, :sku, :name, {:class=>"product_selection"} %>
+
+  <div class="field">
+    <%= label_tag :cantidad %>
+    <%= number_field_tag :cantidad %>
   </div>
 
   <div class="field">
-    <%= form.label :store_reception_id %>
-    <%= form.text_field :store_reception_id, id: :purchase_order_store_reception_id %>
+    <%= label_tag :precio_unitario %>
+    <%= number_field_tag :precio_unitario %>
   </div>
 
   <div class="field">
-    <%= form.label :status %>
-    <%= form.text_field :status, id: :purchase_order_status %>
+    <%= label_tag :payment_method  %>
+    <%= text_field_tag :payment_method  %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :fecha_entrega  %>
+    <%= date_select("birthday" , "", :start_year => 2017, :end_year => 2020, :order => [:day, :month, :year], :use_short_month => true )%>
   </div>
 
   <div class="actions">
-    <%= form.submit %>
+    <%= submit_tag%>
   </div>
 <% end %>
+
+<script type="text/javascript">
+  $('.product_selection').empty();
+  $('.product_selection').append( $('<option>Select the product</option>'));
+  <% @products.each do |product| %>
+    $('.contact_selection').append($('<option value="<%= product.sku %>"><%= product.name %></option>'));
+  <% end %>
+</script>

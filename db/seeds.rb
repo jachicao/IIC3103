@@ -12,14 +12,25 @@
 #  has_many :product_in_sales
 #end
 
-producer_1 = Producer.create(producer_id: "5910c0910e42840004f6e680", group_number: 1, account:'')
-producer_2 = Producer.create(producer_id: "5910c0910e42840004f6e681", group_number: 2, account:'')
-producer_3 = Producer.create(producer_id: "5910c0910e42840004f6e682", group_number: 3, account:'')
-producer_4 = Producer.create(producer_id: "5910c0910e42840004f6e683", group_number: 4, account:'')
-producer_5 = Producer.create(producer_id: "5910c0910e42840004f6e684", group_number: 5, account:'')
-producer_6 = Producer.create(producer_id: "5910c0910e42840004f6e685", group_number: 6, account:'')
-producer_7 = Producer.create(producer_id: "5910c0910e42840004f6e686", group_number: 7, account:'')
-producer_8 = Producer.create(producer_id: "5910c0910e42840004f6e687", group_number: 8, account:'')
+if Rails.env.production? 
+  producer_1 = Producer.create(producer_id: "5910c0910e42840004f6e680", group_number: 1, account:'')
+  producer_2 = Producer.create(producer_id: "5910c0910e42840004f6e681", group_number: 2, account:'')
+  producer_3 = Producer.create(producer_id: "5910c0910e42840004f6e682", group_number: 3, account:'')
+  producer_4 = Producer.create(producer_id: "5910c0910e42840004f6e683", group_number: 4, account:'')
+  producer_5 = Producer.create(producer_id: "5910c0910e42840004f6e684", group_number: 5, account:'')
+  producer_6 = Producer.create(producer_id: "5910c0910e42840004f6e685", group_number: 6, account:'')
+  producer_7 = Producer.create(producer_id: "5910c0910e42840004f6e686", group_number: 7, account:'')
+  producer_8 = Producer.create(producer_id: "5910c0910e42840004f6e687", group_number: 8, account:'')
+else
+  producer_1 = Producer.create(producer_id: "590baa00d6b4ec0004902462", group_number: 1, account:'')
+  producer_2 = Producer.create(producer_id: "590baa00d6b4ec0004902463", group_number: 2, account:'')
+  producer_3 = Producer.create(producer_id: "590baa00d6b4ec0004902464", group_number: 3, account:'')
+  producer_4 = Producer.create(producer_id: "590baa00d6b4ec0004902465", group_number: 4, account:'')
+  producer_5 = Producer.create(producer_id: "590baa00d6b4ec0004902466", group_number: 5, account:'')
+  producer_6 = Producer.create(producer_id: "590baa00d6b4ec0004902467", group_number: 6, account:'')
+  producer_7 = Producer.create(producer_id: "590baa00d6b4ec0004902468", group_number: 7, account:'')
+  producer_8 = Producer.create(producer_id: "590baa00d6b4ec0004902469", group_number: 8, account:'')
+end
 
 #Product
 #rails g scaffold Product sku:string name:string product_type:string unit:string unit_cost:integer lote:integer

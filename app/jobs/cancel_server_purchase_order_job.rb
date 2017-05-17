@@ -1,4 +1,4 @@
-class CancelPurchaseOrderJob < ApplicationJob
+class CancelServerPurchaseOrderJob < ApplicationJob
   queue_as :default
 
   def anular_orden_de_compra(id, anulacion)
@@ -19,7 +19,7 @@ class CancelPurchaseOrderJob < ApplicationJob
     #puts body
     case response.code
       when 429
-        CancelPurchaseOrderJob.set(wait: 90.seconds).perform_later(id, anulacion)
+        CancelServerPurchaseOrderJob.set(wait: 90.seconds).perform_later(id, anulacion)
         return nil
     end
     return body

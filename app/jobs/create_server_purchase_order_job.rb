@@ -1,4 +1,4 @@
-class CreatePurchaseOrderJob < ApplicationJob
+class CreateServerPurchaseOrderJob < ApplicationJob
   queue_as :default
 
   def crear_orden_de_compra(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
@@ -7,9 +7,10 @@ class CreatePurchaseOrderJob < ApplicationJob
         :proveedor => proveedor,
         :sku => sku,
         :fechaEntrega => fechaEntrega,
-        :cantidad => cantidad,
-        :precioUnitario => canal,
-        :notas => notas,
+        :cantidad => cantidad.to_i,
+        :precioUnitario => precioUnitario.to_i,
+        :canal => canal,
+        #:notas => notas,
       }
     return HTTParty.put(
       ENV['CENTRAL_SERVER_URL'] + '/oc/crear', 
@@ -21,10 +22,10 @@ class CreatePurchaseOrderJob < ApplicationJob
   def perform(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
     response = crear_orden_de_compra(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
     body = JSON.parse(response.body)
-    #puts body
+    puts body
     case response.code
       when 429
-        CreatePurchaseOrderJob.set(wait: 90.seconds).perform_later(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
+        CreateServerPurchaseOrderJob.set(wait: 90.seconds).perform_later(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
         return nil
     end
     return body
