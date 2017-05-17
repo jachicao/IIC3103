@@ -3,6 +3,6 @@ namespace :store_house_tasks do
   task clear_reception_and_lung: :environment do
     puts 'Clear reception and moving from lung'
     store_house = StoreHouse.new
-    store_house.clearReception
+    store_house.movements
    end
 end
