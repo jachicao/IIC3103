@@ -10,7 +10,7 @@ class CreateServerPurchaseOrderJob < ApplicationJob
         :cantidad => cantidad.to_i,
         :precioUnitario => precioUnitario.to_i,
         :canal => canal,
-        :notas => notas,
+        #:notas => notas,
       }
     return HTTParty.put(
       ENV['CENTRAL_SERVER_URL'] + '/oc/crear', 
