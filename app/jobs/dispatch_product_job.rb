@@ -22,14 +22,14 @@ class DispatchProductJob < ApplicationJob
   end
 
   def perform(productoId, direccion, precio, oc)
-  	response = despachar_stock(productoId, direccion, precio, oc)
+    response = despachar_stock(productoId, direccion, precio, oc)
+    body = JSON.parse(response.body)
+    #puts body
     case response.code
-      when 200
-        puts "All good!"
-      when 404
-        puts "O noes not found!"
-      when 500...600
-        puts "ZOMG ERROR #{response.code}"
+      when 429
+        DispatchProductJob.set(wait: 90.seconds).perform_later(productoId, direccion, precio, oc)
+        return nil
     end
+    return body
   end
 end
