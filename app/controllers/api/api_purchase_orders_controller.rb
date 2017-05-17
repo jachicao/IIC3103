@@ -10,7 +10,7 @@ class Api::PurchaseOrdersController < ApplicationController
       render json: { error: 'Orden de compra inexistente' }, status: :not_found
     end
     params[:store_reception_id] = params[:id_store_reception]
-    @purchase_order = PurchaseOrder.new({ po_id: params[:id], store_reception_id: params[:store_reception_id], payment_method: params[:payment_method], status: 'creada' })
+    @purchase_order = PurchaseOrder.new({ po_id: params[:id], store_reception_id: params[:store_reception_id], payment_method: params[:payment_method], status: 'created' })
     if @purchase_order.save
       render json: @purchase_order
     else
