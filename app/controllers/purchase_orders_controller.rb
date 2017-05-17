@@ -19,7 +19,6 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def accept
-
     id = params[:id];
     response_server = AcceptServerPurchaseOrderJob.perform_now(id)
 
@@ -28,6 +27,7 @@ class PurchaseOrdersController < ApplicationController
 
     puts response_server
     puts response_group
+
     respond_to do |format|
       format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully accepted.' }
       format.json { head :no_content }
@@ -49,7 +49,7 @@ class PurchaseOrdersController < ApplicationController
 
   # GET /purchase_orders/new
   def new
-    @products = Product.where(id: ProductInSale.where(producer: Producer.first).select('product_id'))
+    @products = Product.all
     @purchase_order = PurchaseOrder.new
   end
 
