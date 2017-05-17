@@ -12,6 +12,8 @@ rails g scaffold ProductInSale producer:references product:references price:inte
 
 rails g scaffold PurchaseOrder po_id:string:index payment_method:string store_reception_id:string status:string
 
+rails g scaffold FactoryOrder fo_id:string:index sku:string group:integer dispatched:boolean available:datetime quantity:integer
+
 
 class Producer < ApplicationRecord
   has_many :product_in_sales
@@ -34,7 +36,7 @@ Rails.application.routes.draw do
   resources :ingredients
   resources :products
   resources :producers
-  
+
   namespace :api, defaults: {format: 'json'} do
     get '/products', to: 'products#index'
 

@@ -1,0 +1,47 @@
+<%= form_with(model: factory_order, local: true) do |form| %>
+  <% if factory_order.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(factory_order.errors.count, "error") %> prohibited this factory_order from being saved:</h2>
+
+      <ul>
+      <% factory_order.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :fo_id %>
+    <%= form.text_field :fo_id, id: :factory_order_fo_id %>
+  </div>
+
+  <div class="field">
+    <%= form.label :sku %>
+    <%= form.text_field :sku, id: :factory_order_sku %>
+  </div>
+
+  <div class="field">
+    <%= form.label :group %>
+    <%= form.number_field :group, id: :factory_order_group %>
+  </div>
+
+  <div class="field">
+    <%= form.label :dispatched %>
+    <%= form.check_box :dispatched, id: :factory_order_dispatched %>
+  </div>
+
+  <div class="field">
+    <%= form.label :available %>
+    <%= form.datetime_select :available, id: :factory_order_available %>
+  </div>
+
+  <div class="field">
+    <%= form.label :quantity %>
+    <%= form.number_field :quantity, id: :factory_order_quantity %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

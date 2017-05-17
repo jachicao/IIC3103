@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  fo_id: MyString
+  sku: MyString
+  group: 1
+  dispatched: false
+  available: 2017-05-16 20:09:16
+  quantity: 1
+
+two:
+  fo_id: MyString
+  sku: MyString
+  group: 1
+  dispatched: false
+  available: 2017-05-16 20:09:16
+  quantity: 1

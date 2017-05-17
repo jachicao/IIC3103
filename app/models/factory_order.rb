@@ -1,0 +1,2 @@
+class FactoryOrder < ApplicationRecord
+end
