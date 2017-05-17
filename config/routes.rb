@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   get '/dashboard', to: 'dashboard#index'
   get '/store_house', to: 'store_house#index'
 
+  root 'dashboard#index'
   
   namespace :api, defaults: { format: 'json' } do
     get '/products', to: 'api_products#index'
