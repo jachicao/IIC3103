@@ -12,6 +12,9 @@ Rails.application.routes.draw do
 
   get '/store_house', to: 'store_house#index'
 
+  root 'dashboard#index'
+  get '/dashboard', to: 'dashboard#index'
+
   namespace :api, constraints: { format: 'json' } do
     get '/products', to: 'api_products#index'
 
@@ -25,6 +28,5 @@ Rails.application.routes.draw do
     patch '/purchase_orders/:po_id/accepted', to: 'api_purchase_orders#update_accepted'
     patch '/purchase_orders/:po_id/rejected', to: 'api_purchase_orders#update_rejected'
   end
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end
