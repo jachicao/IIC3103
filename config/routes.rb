@@ -25,7 +25,7 @@ Rails.application.routes.draw do
 
 
   namespace :api, constraints: { format: 'json' } do
-    get '/products', to: 'products#index'
+    get '/products', to: 'api_products#index'
     put '/invoices/:invoice_id', to: 'api_invoices#create'
     patch '/invoices/:invoice_id/accepted', to: 'api_invoices#update_accepted'
     patch '/invoices/:invoice_id/rejected', to: 'api_invoices#update_rejected'
