@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 
   get '/store_house', to: 'store_house#index'
 
-  namespace :api, defaults: { format: 'json' } do
+  namespace :api, constraints: { format: 'json' } do
     get '/products', to: 'api_products#index'
 
     put '/invoices/:invoice_id', to: 'api_invoices#create'
