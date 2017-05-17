@@ -10,14 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170516031049) do
+ActiveRecord::Schema.define(version: 20170517000916) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "factory_orders", force: :cascade do |t|
+    t.string "fo_id"
+    t.string "sku"
+    t.integer "group"
+    t.boolean "dispatched"
+    t.datetime "available"
+    t.integer "quantity"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fo_id"], name: "index_factory_orders_on_fo_id"
+  end
+
   create_table "ingredients", force: :cascade do |t|
     t.bigint "product_id"
-    t.integer "item_id"
+    t.bigint "item_id"
     t.integer "quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -40,6 +52,7 @@ ActiveRecord::Schema.define(version: 20170516031049) do
     t.decimal "average_time"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "mine"
     t.index ["producer_id"], name: "index_product_in_sales_on_producer_id"
     t.index ["product_id"], name: "index_product_in_sales_on_product_id"
   end

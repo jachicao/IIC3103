@@ -1,0 +1,14 @@
+<h1>Vista</h1>
+<form action="make_products" method="post">
+  <select name="producto">
+    <% @products.each do |product| %>
+      <option value="<%= product.name %>">
+        <%= product.name %>
+      </option>
+    <% end %>
+  </select>
+  <br><br>
+  Cantidad: <input type="number" name="cantidad" value=0><br>
+  Tiempo Maximo: <input type="number" name="tiempo" value=0><br>
+  <input type="submit">
+</form>

@@ -1,11 +1,17 @@
 Rails.application.routes.draw do
+  resources :factory_orders
   resources :purchase_orders
   resources :product_in_sales
   resources :ingredients
   resources :products
   resources :producers
+
+  get '/make_products', to: 'factory#new'
+  get '/make_products_details', to: 'factory#detalles'
+  post '/make_products', to: 'factory#submit_producir'
+
   get '/store_house', to: 'store_house#index'
-  
+
   namespace :api, defaults: { format: 'json' } do
     get '/products', to: 'api_products#index'
 
