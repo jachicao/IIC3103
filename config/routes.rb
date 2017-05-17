@@ -3,8 +3,8 @@ Rails.application.routes.draw do
     collection do
       patch 'accept'
       patch 'reject'
-      get 'get_products', to: "purchase_orders#get_products"
-      post '/created', to: 'purchase_orders#created'
+      get 'get_products', to: 'purchase_orders#get_products'
+      post 'created', to: 'purchase_orders#created'
     end
   end
   resources :factory_orders
