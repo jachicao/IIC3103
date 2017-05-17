@@ -103,7 +103,7 @@ class PurchaseOrdersController < ApplicationController
       puts "development"
       client_responce = HTTParty.put('http://dev.integra17-'+ groupNumber +'.ing.puc.cl/purchase_orders/' + server_response_body["_id"], :body => client_body.to_json , :headers => { content_type: 'application/json', "Authorization" => ENV["GROUP_ID"] } );
     else
-      client_responce = HTTParty.put('http://integra17-'+ groupNumber +'.ing.puc.cl/purchase_orders/' + server_response_body["_id"], :body => client_body.to_json, :headers => { content_type: 'application/json', "Authorization" => ENV["GROUP_ID"]} );
+      client_responce = HTTParty.put('http://integra17-'+ groupNumber +'.ing.puc.cl/api/purchase_orders/' + server_response_body["_id"], :body => client_body.to_json, :headers => { content_type: 'application/json', "Authorization" => ENV["GROUP_ID"]} );
     end
     puts client_responce.code
     puts client_responce.body
