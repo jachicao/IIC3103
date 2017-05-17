@@ -57,8 +57,8 @@ class StoreHouse
         total_a_mover = 0
         inventario.each do |i|
           total_a_mover += i[:total]
-          count = i[:total] / 200
-          if i[:total] % 200 > 0
+          count = i[:total] / 100
+          if i[:total] % 100 > 0
             count +=  1
           end
           while count > 0 and total_a_mover < capacidad
