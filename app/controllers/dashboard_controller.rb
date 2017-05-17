@@ -71,9 +71,24 @@ class DashboardController < ApplicationController
 
     end
 
+    def getSentFactoryOrders
+      factoryOrders = FactoryOrder.all
+      sentFactoryOrders = []
+
+      factoryOrders.each do |f|
+        sku = f.sku
+        cantidad = f.quantity
+        fechaDisponible = f.available
+        sentFactoryOrders.push({sku: sku, cantidad: cantidad, fechaDisponible: fechaDisponible})
+      end
+
+      return sentFactoryOrders
+    end
+
     def index
       @almacenes = getWarehouseWithStock
       @productos = getProductsWithStock
+      @factoryOrders = getSentFactoryOrders
     end
     
 end

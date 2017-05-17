@@ -53,4 +53,29 @@
   </tbody>
 </table>
 </div>
+
+<div class="container">
+<h2> Ordenes de Producción </h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Sku</th>
+      <th>Cantidad</th>
+      <th>Fecha Disponible</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @factoryOrders.each do |factoryOrder| %>
+      <tr>
+        <td><%= factoryOrder[:sku] %></td>
+        <td><%= factoryOrder[:cantidad] %></td>
+        <td><%= factoryOrder[:fechaDisponible] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>
+
 <br>
