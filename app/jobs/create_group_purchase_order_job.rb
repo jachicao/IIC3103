@@ -17,7 +17,7 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
   def perform(group_number, id, payment_method, id_store_reception)
     response = crear_orden_de_compra(group_number, id, payment_method, id_store_reception)
     body = JSON.parse(response.body)
-    #puts body
+    puts body
     case response.code
       when 429
         CreateGroupPurchaseOrderJob.set(wait: 90.seconds).perform_later(group_number, id, payment_method, id_store_reception)

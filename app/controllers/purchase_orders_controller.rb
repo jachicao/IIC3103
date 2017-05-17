@@ -11,7 +11,6 @@ class PurchaseOrdersController < ApplicationController
   # GET /purchase_orders/1.json
   def show
     @response = GetPurchaseOrderJob.perform_now(@purchase_order.po_id)
-    puts @response
     respond_to do |format|
        format.json { render :json => @response }
        format.html { render "show.html.erb" }
@@ -24,9 +23,6 @@ class PurchaseOrdersController < ApplicationController
 
     group_number = Producer.where(producer_id: params[:cliente_id]).first.group_number
     response_group = AcceptGroupPurchaseOrderJob.perform_now(group_number, id)
-
-    puts response_server
-    puts response_group
 
     respond_to do |format|
       format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully accepted.' }
@@ -81,9 +77,9 @@ class PurchaseOrdersController < ApplicationController
         'sin notas',
     )
 
-    groupNumber = Producer.where(producer_id: params[:cliente][:id]).first.group_number
+    group_number = Producer.where(producer_id: params[:cliente][:id]).first.group_number
     response_group = CreateGroupPurchaseOrderJob.perform_now(
-        groupNumber,
+        group_number,
         response_server['_id'],
         params[:payment_method],
         id_almacen_recepcion,

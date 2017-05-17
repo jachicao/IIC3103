@@ -22,7 +22,7 @@ class CreateServerPurchaseOrderJob < ApplicationJob
   def perform(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
     response = crear_orden_de_compra(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
     body = JSON.parse(response.body)
-    #puts body
+    puts body
     case response.code
       when 429
         CreateServerPurchaseOrderJob.set(wait: 90.seconds).perform_later(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
