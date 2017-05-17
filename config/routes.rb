@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
   resources :purchase_orders do
     collection do
-      patch 'accept' 
+      patch 'accept'
+      patch 'reject'
+      get 'get_products', to: "purchase_orders#get_products"
+      post '/created', to: 'purchase_orders#created'
     end
   end
   resources :product_in_sales
