@@ -62,7 +62,7 @@ class StoreHouse
     return result
   end
 
-  def self.get_despachos_stock
+  def self.get_despachos
     result = []
     store_houses = all
     if store_houses == nil
@@ -70,18 +70,13 @@ class StoreHouse
     end
     store_houses.each do |store_house|
       if store_house[:despacho]
-        stock = get_stock(store_house[:_id])
-        if stock == nil
-          return nil
-        end
-        store_house[:inventario] = stock
         result.push(store_house)
       end
     end
     return result
   end
 
-  def self.get_recepciones_stock
+  def self.get_recepciones
     result = []
     store_houses = all
     if store_houses == nil
@@ -89,18 +84,13 @@ class StoreHouse
     end
     store_houses.each do |store_house|
       if store_house[:recepcion]
-        stock = get_stock(store_house[:_id])
-        if stock == nil
-          return nil
-        end
-        store_house[:inventario] = stock
         result.push(store_house)
       end
     end
     return result
   end
 
-  def self.get_pulmones_stock
+  def self.get_pulmones
     result = []
     store_houses = all
     if store_houses == nil
@@ -108,18 +98,13 @@ class StoreHouse
     end
     store_houses.each do |store_house|
       if store_house[:pulmon]
-        stock = get_stock(store_house[:_id])
-        if stock == nil
-          return nil
-        end
-        store_house[:inventario] = stock
         result.push(store_house)
       end
     end
     return result
   end
 
-  def self.get_otros_stock
+  def self.get_otros
     result = []
     store_houses = all
     if store_houses == nil
@@ -127,11 +112,6 @@ class StoreHouse
     end
     store_houses.each do |store_house|
       if (!store_house[:despacho]) and (!store_house[:recepcion]) and (!store_house[:pulmon])
-        stock = get_stock(store_house[:_id])
-        if stock == nil
-          return nil
-        end
-        store_house[:inventario] = stock
         result.push(store_house)
       end
     end
@@ -154,7 +134,11 @@ class StoreHouse
       if to_store_house[:availableSpace] > 0
         from_store_houses.each do |from_store_house|
           if from_store_house[:usedSpace] > 0
-            from_store_house[:inventario].each do |p|
+            stock = get_stock(from_store_house[:_id])
+            if stock == nil
+              return used_space
+            end
+            stock.each do |p|
               if to_store_house[:availableSpace] > 0 and p[:total] > 0
                 total_to_move = [to_store_house[:availableSpace], p[:total]].min
                 MoveProductsBetweenStoreHousesJob.perform_later(to_store_house[:_id], from_store_house[:_id], p[:sku], total_to_move)
@@ -174,13 +158,13 @@ class StoreHouse
   end
 
   def self.clean_recepcion
-    recepcion = get_recepciones_stock
+    recepcion = get_recepciones
 
     if recepcion == nil
       return { :error => 'Servidor colapsado' }
     end
 
-    general = get_otros_stock
+    general = get_otros
 
     if general == nil
       return { :error => 'Servidor colapsado' }
@@ -190,13 +174,13 @@ class StoreHouse
   end
 
   def self.clean_pulmon
-    pulmon = get_pulmones_stock
+    pulmon = get_pulmones
 
     if pulmon == nil
       return { :error => 'Servidor colapsado' }
     end
 
-    general = get_otros_stock
+    general = get_otros
 
     if general == nil
       return { :error => 'Servidor colapsado' }
@@ -208,7 +192,11 @@ class StoreHouse
   def self.move_stock(from_store_houses, to_store_houses, sku, quantity)
     quantity_left = quantity
     from_store_houses.each do |from_store_house|
-      from_store_house[:inventario].each do |p|
+      stock = get_stock(from_store_house[:_id])
+      if stock == nil
+        return quantity_left
+      end
+      stock.each do |p|
         if p[:sku] == sku
           to_store_houses.each do |to_store_house|
             if to_store_house[:availableSpace] > 0
@@ -233,13 +221,13 @@ class StoreHouse
   def self.move_to_despacho(sku, quantity) #cantidad de un sku que hay que llevar a despacho
     quantity_left = quantity
 
-    despacho = get_despachos_stock
+    despacho = get_despachos
     if despacho == nil
       return nil
     end
 
     #mover stock desde general
-    general = get_otros_stock
+    general = get_otros
     if general == nil
       return nil
     end
@@ -251,7 +239,7 @@ class StoreHouse
     end
 
     #mover stock desde recepcion
-    recepcion = get_recepciones_stock
+    recepcion = get_recepciones
     if recepcion == nil
       return nil
     end
@@ -264,7 +252,7 @@ class StoreHouse
 
 
     #mover stock desde pulmon
-    pulmon = get_pulmones_stock
+    pulmon = get_pulmones
     if pulmon == nil
       return nil
     end

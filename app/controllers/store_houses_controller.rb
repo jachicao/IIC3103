@@ -26,8 +26,8 @@ class StoreHousesController < ApplicationController
   end
 
   def submit_move_internally
-    from_store_houses = StoreHouse.get_store_house(_id: params[:from_store_house_id])
-    to_store_houses = StoreHouse.get_store_house(_id: params[:to_store_house_id])
+    from_store_houses = StoreHouse.all.find(_id: params[:from_store_house_id])
+    to_store_houses = StoreHouse.all.find(_id: params[:to_store_house_id])
     result = StoreHouse.move_stock(from_store_houses, to_store_houses, params[:sku], params[:quantity].to_i)
     respond_to do |format|
       if result == 0

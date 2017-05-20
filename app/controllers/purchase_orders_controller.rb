@@ -75,7 +75,7 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def created
-    recepcion = StoreHouse.get_recepciones_stock()
+    recepcion = StoreHouse.get_recepciones()
     if recepcion == nil
       return render :json => { :error => 'Servidor colapsado' }, status: 500
     end
