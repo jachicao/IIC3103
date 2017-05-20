@@ -1,4 +1,4 @@
-class Api::ApiProductsController < ActionController::Base
+class Api::ApiProductsController < Api::ApiController
 
   # GET /products
   # GET /products.json

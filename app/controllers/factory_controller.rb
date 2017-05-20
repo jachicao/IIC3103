@@ -5,7 +5,7 @@ class FactoryController < ApplicationController
   end
 
   def stock_available(stock, item)
-    counter = 0;
+    counter = 0
     stock.each do |almacen|
       almacen[:inventario].each do |inventario|
         if item.sku == inventario[:sku]
@@ -17,28 +17,18 @@ class FactoryController < ApplicationController
   end
 
   def get_stock()
-      result = []
-      almacenes = GetStoreHousesJob.perform_now()
-      if almacenes == nil then
-        return { :error => "No cache" }
+    result = []
+    almacenes = StoreHouse.all_stock()
+    if almacenes == nil
+      return nil
+    end
+
+    almacenes.each do |almacen|
+      if !almacen[:despacho]
+        result.push(almacen)
       end
-      almacenes.each do |a|
-        almacen = a
-        almacenId = a["_id"]
-        if almacen["despacho"] == false
-          skusWithStock = GetProductsWithStockJob.perform_now(almacenId)
-          if skusWithStock == nil then
-            return { :error => "No cache" }
-          end
-          almacen[:inventario] = []
-          inventario = almacen[:inventario]
-          skusWithStock.each do |b|
-            inventario.push({ sku: b["_id"], total: b["total"] })
-          end
-          result.push(almacen)
-        end
-      end
-      return result
+    end
+    return result
   end
 
   def analizar_stock(producto, cantidad)
@@ -77,7 +67,7 @@ class FactoryController < ApplicationController
     else
       render json: { :error => "No se alcanza a producir" }
     end
-    #MakeProductsWithoutPaymentJob.perform_later(producto.sku, params[:cantidad].to_i)
+    MakeProductsWithoutPaymentJob.perform_later(producto.sku, params[:cantidad].to_i)
   end
 
   def producir_real #en la 2da ventana
@@ -90,7 +80,7 @@ class FactoryController < ApplicationController
   end
 
   def new
-    @products = [];
+    @products = []
     ProductInSale.all.each do |product_in_sale|
       if product_in_sale.mine
         @products.push(product_in_sale.product)

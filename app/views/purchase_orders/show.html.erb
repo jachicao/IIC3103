@@ -1,35 +1,41 @@
 <p id="notice"><%= notice %></p>
 
-<p>
-  <strong>Grupo Cliente:</strong>
-  <%= @response['cliente'] %>
-</p>
+<% if @response.nil? %>
 
-<p>
-  <strong>Grupo Proveedor:</strong>
-  <%= @response["cliente"] %>
-</p>
+<% else %>
+    <p>
+      <strong>Grupo Cliente:</strong>
+      <%= @cliente %>
+    </p>
 
-<p>
-  <strong>sku:</strong>
-  <%= @response["sku"]%>
-</p>
+    <p>
+      <strong>Grupo Proveedor:</strong>
+      <%= @proveedor %>
+    </p>
 
-<p>
-  <strong>Precio unitario:</strong>
-  <%= @response["precioUnitario"]%>
-</p>
+    <p>
+      <strong>Sku:</strong>
+      <%= @response[:sku]%>
+    </p>
 
-<p>
-  <strong>Cantidad:</strong>
-  <%= @response["cantidad"]%>
-</p>
+    <p>
+      <strong>Precio unitario:</strong>
+      <%= @response[:precioUnitario]%>
+    </p>
 
-<p>
-  <strong>Estado:</strong>
-  <%= @response["estado"]%>
-</p>
+    <p>
+      <strong>Cantidad:</strong>
+      <%= @response[:cantidad]%>
+    </p>
 
-<%= link_to 'Accept', { :controller => :purchase_orders, :action => :accept, :id => @purchase_order.po_id, :client_id => Producer.where(producer_id: @response["cliente"]).first().group_number}, {:method => :patch } %>|
-<%= link_to 'Reject', { :controller => :purchase_orders, :action => :reject, :id => @purchase_order.po_id, :client_id => Producer.where(producer_id: @response["cliente"]).first().group_number}, {:method => :patch } %>|
+    <p>
+      <strong>Estado:</strong>
+      <%= @response[:estado]%>
+    </p>
+    <% if true %>
+      <%= link_to 'Accept', { :controller => :purchase_orders, :action => :accept, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %>|
+      <%= link_to 'Reject', { :controller => :purchase_orders, :action => :reject, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %>|
+    <% end %>
+<% end %>
+
 <%= link_to 'Back', purchase_orders_path %>

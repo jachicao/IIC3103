@@ -10,19 +10,33 @@ class PurchaseOrdersController < ApplicationController
   # GET /purchase_orders/1
   # GET /purchase_orders/1.json
   def show
-    @response = GetPurchaseOrderJob.perform_now(@purchase_order.po_id).first
-    respond_to do |format|
-       format.json { render :json => @response }
-       format.html { render 'show.html.erb' }
+    response = GetPurchaseOrderJob.perform_now(@purchase_order.po_id)
+    case response[:code]
+      when 200
+        @response = response[:body].first
+        @cliente = Producer.all.find_by(producer_id: @response[:cliente]).group_number
+        @proveedor = Producer.all.find_by(producer_id: @response[:proveedor]).group_number
+        respond_to do |format|
+          format.html { render :show }
+          format.json { render :json => @response }
+        end
+      else
+        return render :json => { :error => 'Error' }, status: response[:code]
     end
   end
 
   def accept
-    id = params[:id];
-    response_server = AcceptServerPurchaseOrderJob.perform_now(id)
+    po_id = params[:po_id];
+    response_server = AcceptServerPurchaseOrderJob.perform_now(po_id)
+    case response_server[:code]
+      when 200
 
-    group_number = Producer.where(producer_id: params[:cliente_id]).first.group_number
-    response_group = AcceptGroupPurchaseOrderJob.perform_now(group_number, id)
+      else
+        return render :json => { :error => 'Server error' }, status: response[:code]
+    end
+
+    group_number = Producer.find_by(producer_id: params[:client_id]).group_number
+    response_group = AcceptGroupPurchaseOrderJob.perform_now(group_number, po_id)
 
     respond_to do |format|
       format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully accepted.' }
@@ -31,11 +45,17 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def reject
-    id = params[:id];
-    response_server = RejectServerPurchaseOrderJob.perform_now(id, 'causa')
+    po_id = params[:po_id];
+    response_server = RejectServerPurchaseOrderJob.perform_now(po_id, 'causa')
+    case response_server[:code]
+      when 200
+
+      else
+        return render :json => { :error => 'Server error' }, status: response[:code]
+    end
     
-    group_number = Producer.where(producer_id: params[:cliente_id]).first.group_number
-    response_group = RejectGroupPurchaseOrderJob.perform_now(group_number, id, 'causa')
+    group_number = Producer.find_by(producer_id: params[:client_id]).group_number
+    response_group = RejectGroupPurchaseOrderJob.perform_now(group_number, po_id, 'causa')
 
     respond_to do |format|
       format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully rejected.' }
@@ -51,45 +71,46 @@ class PurchaseOrdersController < ApplicationController
 
   # GET /purchase_orders/1/edit
   def edit
+    @products = Product.all
   end
 
   def created
-    almacenes = GetStoreHousesJob.perform_now
-    if almacenes == nil then
-      return { :error => '' }
+    recepcion = StoreHouse.get_recepciones_stock()
+    if recepcion == nil
+      return render :json => { :error => 'Servidor colapsado' }, status: 500
     end
-    id_almacen_recepcion = nil
-    almacenes.each do |almacen|
-      if almacen['recepcion']
-        id_almacen_recepcion = almacen['_id']
-        break
-      end
-    end
+    id_almacen_recepcion = recepcion.first[:_id]
 
     response_server = CreateServerPurchaseOrderJob.perform_now(
         ENV['GROUP_ID'],
         params[:cliente][:id],
         params[:products][:ids],
-        Date.new(params[:birthday]["(1i)"].to_i, params[:birthday]["(2i)"].to_i, params[:birthday]["(3i)"].to_i).strftime('%Q'),
+        Date.new(params[:birthday]['(1i)'].to_i, params[:birthday]['(2i)'].to_i, params[:birthday]['(3i)'].to_i).strftime('%Q'),
         params[:cantidad],
         params[:precio_unitario],
         'b2b',
         'sin notas',
     )
+    case response_server[:code]
+      when 200
+
+      else
+        return render :json => { :error => response_server[:body] }, status: response[:code]
+    end
 
     group_number = Producer.where(producer_id: params[:cliente][:id]).first.group_number
     response_group = CreateGroupPurchaseOrderJob.perform_now(
         group_number,
-        response_server['_id'],
+        response_server[:body][:_id],
         params[:payment_method],
         id_almacen_recepcion,
     )
 
 
-    @purchase_order = PurchaseOrder.new(po_id: response_server['_id'],
+    @purchase_order = PurchaseOrder.new(po_id: response_server[:body][:_id],
                                         payment_method: params[:payment_method],
                                         store_reception_id: id_almacen_recepcion,
-                                        status: response_server['estado'])
+                                        status: response_server[:body][:estado])
     respond_to do |format|
       if @purchase_order.save
         format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully rejected.' }

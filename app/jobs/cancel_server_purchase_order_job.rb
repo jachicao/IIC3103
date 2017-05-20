@@ -15,13 +15,11 @@ class CancelServerPurchaseOrderJob < ApplicationJob
 
   def perform(id, anulacion)
     response = anular_orden_de_compra(id, anulacion)
-    body = JSON.parse(response.body)
-    #puts body
-    case response.code
-      when 429
-        CancelServerPurchaseOrderJob.set(wait: 90.seconds).perform_later(id, anulacion)
-        return nil
-    end
-    return body
+    #puts response
+    return {
+        :body => JSON.parse(response.body, symbolize_names: true),
+        :code =>  response.code,
+        :header => response.header,
+    }
   end
 end

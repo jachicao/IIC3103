@@ -12,12 +12,20 @@ Rails.application.routes.draw do
   resources :ingredients
   resources :products
   resources :producers
+  resources :store_houses do
+    collection do
+      get 'move_internally'
+      post 'submit_move_internally'
+      get 'move_externally'
+      post 'submit_move_externally'
+      get 'clean_pulmon'
+      get 'clean_recepcion'
+    end
+  end
 
   get '/make_products', to: 'factory#new'
   get '/make_products_details', to: 'factory#detalles'
   post '/make_products', to: 'factory#submit_producir'
-
-  get '/store_house', to: 'store_house#index'
 
   root 'dashboard#index'
   get '/dashboard', to: 'dashboard#index'

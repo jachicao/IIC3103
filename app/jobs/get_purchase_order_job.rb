@@ -15,15 +15,11 @@ class GetPurchaseOrderJob < ApplicationJob
 
   def perform(id)
     response = obtener_orden_de_compra(id)
-    body = JSON.parse(response.body)
-    #puts body
-    case response.code
-      when 429
-        GetPurchaseOrderJob.set(wait: 90.seconds).perform_later(id)
-        return nil
-      when 404
-        return 404;
-    end
-    return body
+    puts response.body
+    return {
+        :body => JSON.parse(response.body, symbolize_names: true),
+        :code =>  response.code,
+        :header => response.header,
+    }
   end
 end

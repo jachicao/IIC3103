@@ -1,212 +1,279 @@
 class StoreHouse
-  def getStock
-    result = []
-    almacenes = GetStoreHousesJob.perform_now()
-    if almacenes == nil then
-      return { :error => "No cache" }
-    end
-    almacenes.each do |a|
-      almacen = a
-      almacenId = a["_id"]
-      skusWithStock = GetProductsWithStockJob.perform_now(almacenId)
-      if skusWithStock == nil then
-        return { :error => "No cache" }
-      end
 
-      almacen["inventario"] = []
-      inventario = almacen["inventario"]
-      skusWithStock.each do |b|
-        sku = b["_id"]
-        total = b["total"]
-        inventario.push({ sku: sku, total: total });
-      end
-      result.push(almacen);
+  def self.all
+    result = []
+    response = GetStoreHousesJob.perform_now()
+    if response == nil
+      return nil
     end
-    #puts MakeProductsWithoutPaymentJob.perform_now("49", 200) #<= Sync
-    #puts MakeProductsWithoutPaymentJob.perform_late("49", 200) #<= Async
+    store_houses = response[:body]
+    store_houses.each do |s|
+      store_house = s
+      store_house[:availableSpace] = store_house[:totalSpace] - store_house[:usedSpace]
+      if store_house[:pulmon]
+        store_house[:type] = 'Pulmón'
+      elsif store_house[:despacho]
+        store_house[:type] = 'Despacho'
+      elsif store_house[:recepcion]
+        store_house[:type] = 'Recepción'
+      else
+        store_house[:type] = 'General'
+      end
+      result.push(store_house)
+    end
     return result
   end
 
-  def clearReception
-    almacenes = getStock()
-    if almacenes == nil then
-      return { :error => "No cache" }
+  def self.all_stock
+    store_houses = all
+    if store_houses == nil
+      return nil
     end
-
-    # Aquí se obtiene el id del almacen al que se moverán los productos de recepcion (el de mayor capacidad)
-    capacidad = 0
-    almacenId = 0
-    recepcion = nil
-    almacenes.each do |a|
-      if !a["recepcion"] && !a["despacho"] && !a["pulmon"]  #se revisa que el almacen no sea pulmon, recepcion o despacho
-        if capacidad < a["totalSpace"]  && a["totalSpace"] != a["usedSpace"] # se busca el de mayor capacidad disponible
-          almacenId = a["_id"]
-          capacidad = a["totalSpace"] -a["usedSpace"]
-        end
-      elsif a["recepcion"]
-        recepcion = a
-        if a["usedSpace"] == 0
-          return { message: 'Recepcion liberada'};
-        end
+    result = []
+    store_houses.each do |s|
+      store_house = s
+      stock = get_stock(store_house[:_id])
+      if stock == nil
+        return nil
       end
-    end
 
-    if recepcion
-      if recepcion["inventario"]
-        inventario = recepcion["inventario"]  # se obtiene el inventario
-        total_a_mover = 0
-        inventario.each do |i|
-          total_a_mover += i[:total]
-          count = i[:total] / 100
-          if i[:total] % 100 > 0
-            count +=  1
-          end
-          while count > 0 and total_a_mover < capacidad
-            productos = GetProductStockJob.perform_now(recepcion["_id"], i[:sku]) # se buscan todos los productos de un sku
-            productos.each do |p|
-              MoveProductInternallyJob.perform_now(p["_id"], almacenId) #cada producto se mueve al almacen de mayor capacidad que no es despacho ni recepcion
-              capacidad -= 1
-            end
-            count -= 1
-          end
-        end
+      store_house[:inventario] = []
+      stock.each do |b|
+        store_house[:inventario].push({ sku: b[:_id], total: b[:total] })
       end
+      result.push(store_house)
     end
-    return { message: 'Recepcion liberada'};
+    return result
   end
 
+  def self.get_store_house(id)
+    return all.find(_id: id).first
+  end
 
-
-
-  def movetoDespatch(sku, quantity) #cantidad de un sku que hay que llevar a despacho
-    almacenes = getStock()
-    if almacenes == nil then
-      return { :error => "No cache" }
+  def self.get_stock(id)
+    response = GetProductsWithStockJob.perform_now(id)
+    if response == nil
+      return nil
     end
-    almacenamiento = []
-    stock = 0
-    despachoId = 0
-    almacenes.each do |a|
-      if !a["despacho"] && !a["pulmon"]
-        id = a["_id"]
-        inventario = a["inventario"]
-        inv = 0
-        inventario.each do |i|
-          if i[:sku] == sku
-            inv = i[:total]
-          end
+    result = []
+    response[:body].each do |b|
+      result.push({ sku: b[:_id], total: b[:total] })
+    end
+    return result
+  end
+
+  def self.get_despachos_stock
+    result = []
+    store_houses = all
+    if store_houses == nil
+      return nil
+    end
+    store_houses.each do |store_house|
+      if store_house[:despacho]
+        stock = get_stock(store_house[:_id])
+        if stock == nil
+          return nil
         end
-        if inv > 0
-          stock += inv
-          almacenamiento.push({ _id: id, inventario: inv})
-        end
-      elsif a["despacho"]
-        despachoId = a["_id"]
+        store_house[:inventario] = stock
+        result.push(store_house)
       end
     end
+    return result
+  end
 
-    if stock >= quantity
-      while quantity > 0
-        almacenamiento.each do |m|
-          cantidad =  m[:inventario]
-          while cantidad > 0
-            productos = GetProductStockJob.perform_now(m[:_id], sku) # se buscan todos los productos de un sku
-            productos.each do |p|
-              MoveProductInternallyJob.perform_now(p["_id"], despachoId)
-              cantidad -= 1
-              quantity -= 1
+  def self.get_recepciones_stock
+    result = []
+    store_houses = all
+    if store_houses == nil
+      return nil
+    end
+    store_houses.each do |store_house|
+      if store_house[:recepcion]
+        stock = get_stock(store_house[:_id])
+        if stock == nil
+          return nil
+        end
+        store_house[:inventario] = stock
+        result.push(store_house)
+      end
+    end
+    return result
+  end
+
+  def self.get_pulmones_stock
+    result = []
+    store_houses = all
+    if store_houses == nil
+      return nil
+    end
+    store_houses.each do |store_house|
+      if store_house[:pulmon]
+        stock = get_stock(store_house[:_id])
+        if stock == nil
+          return nil
+        end
+        store_house[:inventario] = stock
+        result.push(store_house)
+      end
+    end
+    return result
+  end
+
+  def self.get_otros_stock
+    result = []
+    store_houses = all
+    if store_houses == nil
+      return nil
+    end
+    store_houses.each do |store_house|
+      if (!store_house[:despacho]) and (!store_house[:recepcion]) and (!store_house[:pulmon])
+        stock = get_stock(store_house[:_id])
+        if stock == nil
+          return nil
+        end
+        store_house[:inventario] = stock
+        result.push(store_house)
+      end
+    end
+    return result
+  end
+
+  def self.clean_store_house(from_store_houses, to_store_houses)
+    used_space = 0
+    from_store_houses.each do |store_house|
+      used_space += store_house[:usedSpace]
+    end
+    if used_space == 0
+      return used_space
+    end
+
+    to_store_houses.sort! { |x, y| y[:availableSpace] <=> x[:availableSpace] }
+
+    #mover stock desde un almacen a otro
+    to_store_houses.each do |to_store_house|
+      if to_store_house[:availableSpace] > 0
+        from_store_houses.each do |from_store_house|
+          if from_store_house[:usedSpace] > 0
+            from_store_house[:inventario].each do |p|
+              if to_store_house[:availableSpace] > 0 and p[:total] > 0
+                total_to_move = [to_store_house[:availableSpace], p[:total]].min
+                MoveProductsBetweenStoreHousesJob.perform_later(to_store_house[:_id], from_store_house[:_id], p[:sku], total_to_move)
+                p[:total] -= total_to_move
+                to_store_house[:availableSpace] -= total_to_move
+                to_store_house[:usedSpace] += total_to_move
+                from_store_house[:availableSpace] += total_to_move
+                from_store_house[:usedSpace] -= total_to_move
+                used_space -= total_to_move
+              end
             end
           end
         end
       end
-      return { message: 'Movido a despacho', status: 'ok'};
+    end
+    return used_space
+  end
+
+  def self.clean_recepcion
+    recepcion = get_recepciones_stock
+
+    if recepcion == nil
+      return { :error => 'Servidor colapsado' }
+    end
+
+    general = get_otros_stock
+
+    if general == nil
+      return { :error => 'Servidor colapsado' }
+    end
+
+    return clean_store_house(recepcion, general)
+  end
+
+  def self.clean_pulmon
+    pulmon = get_pulmones_stock
+
+    if pulmon == nil
+      return { :error => 'Servidor colapsado' }
+    end
+
+    general = get_otros_stock
+
+    if general == nil
+      return { :error => 'Servidor colapsado' }
+    end
+
+    return clean_store_house(pulmon, general)
+  end
+
+  def self.move_stock(from_store_houses, to_store_houses, sku, quantity)
+    quantity_left = quantity
+    from_store_houses.each do |from_store_house|
+      from_store_house[:inventario].each do |p|
+        if p[:sku] == sku
+          to_store_houses.each do |to_store_house|
+            if to_store_house[:availableSpace] > 0
+              if quantity_left > 0 and p[:total] > 0
+                total_to_move = [to_store_house[:availableSpace], p[:total], quantity_left].min
+                MoveProductsBetweenStoreHousesJob.perform_later(to_store_house[:_id], from_store_house[:_id], sku, total_to_move)
+                p[:total] -= total_to_move
+                to_store_house[:availableSpace] -= total_to_move
+                to_store_house[:usedSpace] += total_to_move
+                from_store_house[:availableSpace] += total_to_move
+                from_store_house[:usedSpace] -= total_to_move
+                quantity_left -= total_to_move
+              end
+            end
+          end
+        end
+      end
+    end
+    return quantity_left
+  end
+
+  def self.move_to_despacho(sku, quantity) #cantidad de un sku que hay que llevar a despacho
+    quantity_left = quantity
+
+    despacho = get_despachos_stock
+    if despacho == nil
+      return nil
+    end
+
+    #mover stock desde general
+    general = get_otros_stock
+    if general == nil
+      return nil
+    end
+
+    quantity_left = move_stock(general, despacho, sku, quantity_left)
+
+    if quantity_left == 0
+      return { :message => 'Movido a despacho' };
+    end
+
+    #mover stock desde recepcion
+    recepcion = get_recepciones_stock
+    if recepcion == nil
+      return nil
+    end
+
+    quantity_left = move_stock(recepcion, despacho, sku, quantity_left)
+
+    if quantity_left == 0
+      return { :message => 'Movido a despacho' };
+    end
+
+
+    #mover stock desde pulmon
+    pulmon = get_pulmones_stock
+    if pulmon == nil
+      return nil
+    end
+    quantity_left = move_stock(pulmon, despacho, sku, quantity_left)
+
+    if quantity_left == 0
+      return { :message => 'Movido a despacho' };
     else
-      aux = quantity- stock
-      # while stock > 0
-      #   almacenamiento.each do |m|
-      #     cantidad =  m[:inventario]
-      #     while cantidad > 0
-      #       productos = GetProductStockJob.perform_later(m[:_id], sku) # se buscan todos los productos de un sku
-      #       productos.each do |p|
-      #         MoveProductInternallyJob.perform_later(p["_id"], despachoId)
-      #         cantidad -= 1
-      #         stock -= 1
-      #       end
-      #     end
-      #   end
-      # end
-      return { message: 'Falta stock', status: 'not ok', missing: aux};
+      return { :error => 'Falta stock por mover: ' + quantity_left }
     end
   end
-
-
-  def movebetweenStoreHouses(almacen1, almacen2, sku, cantidad)
-    error = 0
-    while cantidad > 0
-      productos = GetProductStockJob.perform_now(almacen1, sku) # se buscan todos los productos de un sku
-      if productos.empty?
-        error= 1
-      end
-      productos.each do |p|
-        if cantidad > 0
-            MoveProductInternallyJob.perform_now(p["_id"], almacen2)
-            cantidad -= 1
-        else
-          error = 1
-          break
-        end
-      end
-      if error == 1
-        break
-      end
-    end
-      return {message: 'ok'};
-  end
-
-
-  def moveFromLung
-    almacenes = getStock()
-    if almacenes == nil then
-      return { :error => "No cache" }
-    end
-
-    capacidad = 0
-    recepcionId = 0
-    almacenes.each do |a|
-      if a["recepcion"]
-        recepcionId = a["_id"]
-        capacidad = a["totalSpace"] - a["usedSpace"]
-      end
-    end
-
-    puts recepcionId
-    puts capacidad
-    almacenes.each do |a|
-      if a["pulmon"]
-        if a["usedSpace"] > 0
-          inventario = a["inventario"]
-          puts inventario
-          inventario.each do |i|
-            if capacidad == 0
-              break
-            end
-            if capacidad >= i[:total]
-              response = movebetweenStoreHouses(a["_id"], recepcionId, i[:sku], i[:total])
-              if response["message"] == "ok"
-                capacidad -= i[:total]
-              end
-            elsif capacidad < i[:total]
-              response = movebetweenStoreHouses(a["_id"], recepcionId, i[:sku], capacidad)
-              if response["message"] == "ok"
-                capacidad = 0
-              end
-            end
-          end
-        end
-      end
-    end
-    return
-  end
-
-
 end

@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Store Houses</h1>
+<% if @store_houses != nil %>
+  <table>
+    <thead>
+    <tr>
+      <th>Id</th>
+      <th>Capacidad</th>
+      <th>Disponible</th>
+      <th>Utilizado</th>
+      <th>Tipo</th>
+      <th colspan="1"></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% @store_houses.each do |store_house| %>
+        <tr>
+          <td><%= store_house[:_id] %></td>
+          <td><%= store_house[:totalSpace] %></td>
+          <td><%= store_house[:availableSpace] %></td>
+          <td><%= store_house[:usedSpace] %></td>
+          <td><%= store_house[:type] %></td>
+          <td><%= link_to 'Show', store_house_path(store_house[:_id]) %></td>
+        </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% else %>
+    <h2>Servidor colapsado</h2>
+<% end %>
+
+<br>
+<%= link_to 'Mover productos internamente', move_internally_store_houses_path %>
+<br>
+<%= link_to 'Limpiar pulmon', clean_pulmon_store_houses_path %>
+<br>
+<%= link_to 'Limpiar recepcion', clean_recepcion_store_houses_path %>

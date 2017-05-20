@@ -14,13 +14,11 @@ class AcceptGroupPurchaseOrderJob < ApplicationJob
 
   def perform(group_number, id)
     response = aceptar_orden_de_compra(group_number, id)
-    body = JSON.parse(response.body)
-    #puts body
-    case response.code
-      when 429
-        AcceptGroupPurchaseOrderJob.set(wait: 90.seconds).perform_later(group_number, id)
-        return nil
-    end
-    return body
+    #puts response
+    return {
+        :body => JSON.parse(response.body, symbolize_names: true),
+        :code =>  response.code,
+        :header => response.header,
+    }
   end
 end

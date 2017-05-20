@@ -65,3 +65,5 @@ gem 'redis'
 gem 'redis-rails'
 
 gem 'sidekiq'
+
+gem 'whenever'

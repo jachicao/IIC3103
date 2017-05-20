@@ -21,13 +21,11 @@ class CreateServerPurchaseOrderJob < ApplicationJob
 
   def perform(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
     response = crear_orden_de_compra(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
-    body = JSON.parse(response.body)
-    puts body
-    case response.code
-      when 429
-        CreateServerPurchaseOrderJob.set(wait: 90.seconds).perform_later(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
-        return nil
-    end
-    return body
+    #puts response
+    return {
+        :body => JSON.parse(response.body, symbolize_names: true),
+        :code =>  response.code,
+        :header => response.header,
+    }
   end
 end

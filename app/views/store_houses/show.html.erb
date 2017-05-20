@@ -1,0 +1,46 @@
+<p id="notice"><%= notice %></p>
+
+<% if @store_house != nil and @stock != nil %>
+  <p>
+    <strong>Id:</strong>
+    <%= @store_house[:_id] %>
+  </p>
+
+  <p>
+    <strong>Capacidad:</strong>
+    <%= @store_house[:totalSpace] %>
+  </p>
+
+  <p>
+    <strong>Utilizado:</strong>
+    <%= @store_house[:usedSpace] %>
+  </p>
+
+  <p>
+    <strong>Disponible:</strong>
+    <%= @store_house[:availableSpace] %>
+  </p>
+
+  <p>
+    <strong>Tipo:</strong>
+    <%= @store_house[:type] %>
+  </p>
+
+  <h2>Inventario</h2>
+  <% @stock.each do |p| %>
+    <p>
+      <strong>Sku</strong>
+      <%= p[:sku] %>
+    </p>
+    <p>
+      <strong>Total</strong>
+      <%= p[:total] %>
+    </p>
+  <% end %>
+<% else %>
+    <p>
+      <strong>Servidor colapsado</strong>
+    </p>
+<% end %>
+
+<%= link_to 'Back', store_houses_path %>
