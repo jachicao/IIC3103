@@ -2,7 +2,7 @@ class StoreHouse
 
   def self.all
     result = []
-    response = GetStoreHousesJob.perform_now()
+    response = GetStoreHousesJob.perform_now
     if response == nil
       return nil
     end

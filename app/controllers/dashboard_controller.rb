@@ -7,6 +7,12 @@ class DashboardController < ApplicationController
 
     def get_products_report
 
+      me = Producer.all.find_by(group_number: ENV['GROUP_NUMBER'].to_i)
+      my_products = []
+      me.product_in_sales.each do |product_in_sale|
+        my_products[product_in_sale.product.sku.to_i] = true
+      end
+
       products = []
       Product.all.each do |product|
         products[product.sku.to_i] = { sku: product.sku, name: product.name, stock: 0 }
@@ -30,7 +36,7 @@ class DashboardController < ApplicationController
       result = []
 
       products.each do |product|
-        if product != nil and product[:stock] > 0
+        if product != nil and (product[:stock] > 0 or my_products[product[:sku].to_i])
           result.push(product)
         end
       end

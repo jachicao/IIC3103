@@ -1,3 +1,7 @@
+whenever --set environment=development --update-crontab
+
+crontab -r
+
 psql
 CREATE USER postgres;
 ALTER USER postgres WITH SUPERUSER;
@@ -50,6 +54,5 @@ Rails.application.routes.draw do
     patch '/purchase_orders/:po_id/accepted', to: 'purchase_orders#update_accepted'
     patch '/purchase_orders/:po_id/rejected', to: 'purchase_orders#update_rejected'
   end
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

@@ -18,7 +18,7 @@ class FactoryController < ApplicationController
 
   def get_stock()
     result = []
-    almacenes = StoreHouse.all_stock()
+    almacenes = StoreHouse.all_stock
     if almacenes == nil
       return nil
     end

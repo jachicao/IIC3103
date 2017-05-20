@@ -7,11 +7,6 @@ Rails.application.routes.draw do
       post 'created', to: 'purchase_orders#created'
     end
   end
-  resources :factory_orders
-  resources :product_in_sales
-  resources :ingredients
-  resources :products
-  resources :producers
   resources :store_houses do
     collection do
       get 'move_internally'
@@ -22,15 +17,19 @@ Rails.application.routes.draw do
       get 'clean_recepcion'
     end
   end
-
-  get '/make_products', to: 'factory#new'
-  get '/make_products_details', to: 'factory#detalles'
-  post '/make_products', to: 'factory#submit_producir'
+  resources :factory do
+    collection do
+      get 'make_products'
+    end
+  end
+  resources :factory_orders
+  resources :product_in_sales
+  resources :ingredients
+  resources :products
+  resources :producers
 
   root 'dashboard#index'
   get '/dashboard', to: 'dashboard#index'
-  get '/products', to: 'api_products#index'
-
 
   namespace :api, constraints: { format: 'json' } do
     get '/products', to: 'api_products#index'
