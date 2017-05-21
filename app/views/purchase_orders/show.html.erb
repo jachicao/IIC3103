@@ -14,8 +14,8 @@
     </p>
 
     <p>
-      <strong>Sku:</strong>
-      <%= @response[:sku]%>
+      <strong>Producto:</strong>
+      <%= Product.all.find_by(sku: @response[:sku]).name %>
     </p>
 
     <p>

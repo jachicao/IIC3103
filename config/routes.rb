@@ -20,6 +20,8 @@ Rails.application.routes.draw do
   resources :factory_orders do
     collection do
       post 'make_products'
+      get 'purchase_items'
+      get 'submit_purchase_items'
     end
   end
   resources :product_in_sales
@@ -32,6 +34,7 @@ Rails.application.routes.draw do
 
   namespace :api, constraints: { format: 'json' } do
     get '/products', to: 'api_products#index'
+    get '/publico/precios', to: 'api_products#get_stock'
     put '/invoices/:invoice_id', to: 'api_invoices#create'
     patch '/invoices/:invoice_id/accepted', to: 'api_invoices#update_accepted'
     patch '/invoices/:invoice_id/rejected', to: 'api_invoices#update_rejected'

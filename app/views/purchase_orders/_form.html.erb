@@ -12,33 +12,33 @@
   <% end %>
 
   <div class="field">
-    <%= label_tag :Cliente %>
-    <%= collection_select :cliente, :id, Producer.where(me: false), :producer_id, :group_number, { :class => 'cliente_selection' } %>
+    <%= label_tag :productor %>
+    <%= collection_select :producers, :id, Producer.where(me: false), :producer_id, :group_number, { :class => 'cliente_selection' } %>
   </div>
 
   <div class="field">
-    <%= label_tag :Product %>
+    <%= label_tag :producto %>
   </div>
   <%= collection_select :products, :ids, @products, :sku, :name, { :class => 'product_selection'} %>
 
   <div class="field">
     <%= label_tag :cantidad %>
-    <%= number_field_tag :cantidad %>
+    <%= number_field_tag :quantity %>
   </div>
 
   <div class="field">
     <%= label_tag :precio_unitario %>
-    <%= number_field_tag :precio_unitario %>
+    <%= number_field_tag :unit_price %>
   </div>
 
   <div class="field">
-    <%= label_tag :payment_method  %>
+    <%= label_tag :metodo_de_pago  %>
     <%= text_field_tag :payment_method  %>
   </div>
 
   <div class="field">
     <%= label_tag :fecha_entrega  %>
-    <%= date_select('birthday' , '', :start_year => 2017, :end_year => 2020, :order => [:day, :month, :year], :use_short_month => true )%>
+    <%= date_select('delivery_date' , '', :start_year => 2017, :end_year => 2020, :order => [:day, :month, :year], :use_short_month => true )%>
   </div>
 
   <div class="actions">

@@ -75,46 +75,25 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def created
-    recepcion = StoreHouse.get_recepciones()
-    if recepcion == nil
-      return render :json => { :error => 'Servidor colapsado' }, status: 500
-    end
-    id_almacen_recepcion = recepcion.first[:_id]
 
-    response_server = CreateServerPurchaseOrderJob.perform_now(
-        ENV['GROUP_ID'],
-        params[:cliente][:id],
+    result = PurchaseOrder.create_new_purchase_order(
+        params[:producers][:id],
         params[:products][:ids],
-        Date.new(params[:birthday]['(1i)'].to_i, params[:birthday]['(2i)'].to_i, params[:birthday]['(3i)'].to_i).strftime('%Q'),
-        params[:cantidad],
-        params[:precio_unitario],
-        'b2b',
-        'sin notas',
-    )
-    case response_server[:code]
-      when 200
-
-      else
-        return render :json => { :error => response_server[:body] }, status: response[:code]
-    end
-
-    group_number = Producer.where(producer_id: params[:cliente][:id]).first.group_number
-    response_group = CreateGroupPurchaseOrderJob.perform_now(
-        group_number,
-        response_server[:body][:_id],
+        Date.new(params[:delivery_date]['(1i)'].to_i, params[:delivery_date]['(2i)'].to_i, params[:delivery_date]['(3i)'].to_i).strftime('%Q'),
+        params[:quantity],
+        params[:unit_price],
         params[:payment_method],
-        id_almacen_recepcion,
     )
-
-
-    @purchase_order = PurchaseOrder.new(po_id: response_server[:body][:_id],
-                                        payment_method: params[:payment_method],
-                                        store_reception_id: id_almacen_recepcion,
-                                        status: response_server[:body][:estado])
     respond_to do |format|
-      if @purchase_order.save
-        format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully rejected.' }
-        format.json { head :no_content }
+      if result == nil
+        format.html { redirect_to purchase_orders_url, notice: 'Servidor colapsado' }
+        format.json { render :json => { :error => 'Servidor colapsado' }, status: 500 }
+      elsif result == false
+        format.html { redirect_to purchase_orders_url, notice: 'Failed to save' }
+          format.json { render :json => { :error => 'Failed to' }, status: 500 }
+      else
+        format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully created.' }
+        format.json { render json: :index }
       end
     end
   end

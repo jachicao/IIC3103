@@ -1,8 +1,53 @@
 class FactoryOrdersController < ApplicationController
   before_action :set_factory_order, only: [:show, :edit, :update, :destroy]
 
-  def make_products
+  def submit_purchase_items
+    @purchase_items = []
+    if params[:purchase_items] != nil
+      params[:purchase_items].each do |item|
+        @purchase_items.push({ sku: item[:sku], quantity: item[:quantity], producer_id: item[:producer_id], produce_time: item[:produce_time] })
+      end
+    end
 
+    respond_to do |format|
+      if FactoryOrder.purchase_stock(@purchase_items)
+        format.html { redirect_to new_factory_order_path, notice: 'Productos mandados a comprar' }
+        format.json { render json: { :success => true }, status: :unprocessable_entity }
+      else
+        format.html { redirect_to new_factory_order_path, notice: 'Falló mandar a producir productos' }
+        format.json { render json: { :success => false }, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def purchase_items
+    @purchase_items = []
+    if params[:purchase_items] != nil
+      params[:purchase_items].each do |item|
+        @purchase_items.push({ sku: item[:sku], quantity: item[:quantity], producer_id: item[:producer_id], produce_time: item[:produce_time] })
+      end
+    end
+  end
+
+  def make_products
+    product = Product.all.find_by(sku: params[:sku])
+    quantity = params[:quantity].to_i
+    maximum_time = params[:maximum_time].to_i
+
+    result = FactoryOrder.analyze_stock(product, quantity)
+
+    respond_to do |format|
+      if result == nil
+        format.html { redirect_to new_factory_order_path, notice: 'Servidor colapsado' }
+        format.json { render json: { :error => 'Servidor colapsado' }, status: :unprocessable_entity }
+      elsif result[:maximum_time] <= maximum_time
+        format.html { redirect_to controller: 'factory_orders', action: 'purchase_items', purchase_items: result[:purchase_items] }
+        format.json { render json: result[:purchase_items] }
+      else
+        format.html { redirect_to new_factory_order_path, notice: 'No se alcanza a cumplir el tiempo' }
+        format.json { render json: { :error => 'No se alcanza a cumplir el tiempo' }, status: :unprocessable_entity }
+      end
+    end
   end
 
   # GET /factory_orders

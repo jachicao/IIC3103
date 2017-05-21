@@ -34,9 +34,9 @@ class MakeProductsJob < ApplicationJob
         group: body[:grupo],
         dispatched: body[:despachado],
         quantity: body[:cantidad],
-        created_at: Time.at(body[:created_at] / 1000.0).to_date,
-        updated_at: Time.at(body[:updated_at] / 1000.0).to_date,
-        available: Time.at(body[:disponible] / 1000.0).to_date,
+        created_at: DateTime.parse(Time.at(body[:created_at] / 1000.0).to_s),
+        updated_at: DateTime.parse(Time.at(body[:updated_at] / 1000.0).to_s),
+        available: DateTime.parse(Time.at(body[:disponible] / 1000.0).to_s),
     )
     return {
         :body => body,
