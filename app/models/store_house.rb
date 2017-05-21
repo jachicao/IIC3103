@@ -32,14 +32,16 @@ class StoreHouse
     result = []
     store_houses.each do |s|
       store_house = s
-      stock = get_stock(store_house[:_id])
-      if stock == nil
-        return nil
-      end
+      if store_house[:usedSpace] > 0
+        stock = get_stock(store_house[:_id])
+        if stock == nil
+          return nil
+        end
 
-      store_house[:inventario] = []
-      stock.each do |b|
-        store_house[:inventario].push({ sku: b[:_id], total: b[:total] })
+        store_house[:inventario] = []
+        stock.each do |b|
+          store_house[:inventario].push({ sku: b[:_id], total: b[:total] })
+        end
       end
       result.push(store_house)
     end

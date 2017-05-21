@@ -1,5 +1,31 @@
 <h1>New Factory Order</h1>
 
-<%= render 'form', factory_order: @factory_order %>
+<%= form_tag(make_products_factory_orders_path) do %>
+
+    <div class="field">
+      <%= label_tag :producto %>
+      <select name="sku">
+        <% @products.each do |product| %>
+            <option value="<%= product.sku %>">
+              <%= product.name + ' (sku: ' + product.sku + ')' %>
+            </option>
+        <% end %>
+      </select>
+    </div>
+
+    <div class="field">
+      <%= label_tag :cantidad %>
+      <%= number_field_tag :quantity %>
+    </div>
+
+    <div class="field">
+      <%= label_tag :tiempo_maximo %>
+      <%= number_field_tag :maximum_time %>
+    </div>
+
+    <div class="actions">
+      <%= submit_tag%>
+    </div>
+<% end %>
 
 <%= link_to 'Back', factory_orders_path %>

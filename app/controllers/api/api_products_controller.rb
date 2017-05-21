@@ -3,11 +3,10 @@ class Api::ApiProductsController < Api::ApiController
   # GET /products
   # GET /products.json
   def index
-    res = [];
-    ProductInSale.all.each do |v|
-      if v.producer.group_number == 1
-        res.push({ sku: v.product.sku, name: v.product.name, price: v.price })
-      end
+    res = []
+    me = Producer.all.find_by(me: true)
+    me.product_in_sales.each do |product_in_sale|
+      res.push({ sku: product_in_sale.product.sku, name: product_in_sale.product.name, price: product_in_sale.price })
     end
     render json: {
       :product => res

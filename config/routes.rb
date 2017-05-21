@@ -17,12 +17,11 @@ Rails.application.routes.draw do
       get 'clean_recepcion'
     end
   end
-  resources :factory do
+  resources :factory_orders do
     collection do
-      get 'make_products'
+      post 'make_products'
     end
   end
-  resources :factory_orders
   resources :product_in_sales
   resources :ingredients
   resources :products

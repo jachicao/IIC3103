@@ -1,5 +1,13 @@
 class FactoryController < ApplicationController
 
+  def index
+    @factory_orders = FactoryOrder.all
+    respond_to do |format|
+      format.html { render :index }
+      format.json { render :json => @factory_orders }
+    end
+  end
+
   def get_lote(lote, cantidad)
     return (cantidad.to_f / lote.to_f).ceil
   end

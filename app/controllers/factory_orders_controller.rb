@@ -1,6 +1,10 @@
 class FactoryOrdersController < ApplicationController
   before_action :set_factory_order, only: [:show, :edit, :update, :destroy]
 
+  def make_products
+
+  end
+
   # GET /factory_orders
   # GET /factory_orders.json
   def index
@@ -14,7 +18,11 @@ class FactoryOrdersController < ApplicationController
 
   # GET /factory_orders/new
   def new
-    @factory_order = FactoryOrder.new
+    me = Producer.all.find_by(me: true)
+    @products = []
+    me.product_in_sales.each do |product_in_sale|
+      @products.push(product_in_sale.product)
+    end
   end
 
   # GET /factory_orders/1/edit

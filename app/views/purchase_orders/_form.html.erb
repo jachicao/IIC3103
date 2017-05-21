@@ -13,7 +13,7 @@
 
   <div class="field">
     <%= label_tag :Cliente %>
-    <%= collection_select :cliente, :id, Producer.where.not(group_number: ENV['GROUP_NUMBER']), :producer_id, :group_number, { :class => 'cliente_selection' } %>
+    <%= collection_select :cliente, :id, Producer.where(me: false), :producer_id, :group_number, { :class => 'cliente_selection' } %>
   </div>
 
   <div class="field">

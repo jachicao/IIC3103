@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170517000916) do
+ActiveRecord::Schema.define(version: 20170521190543) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,7 +29,7 @@ ActiveRecord::Schema.define(version: 20170517000916) do
 
   create_table "ingredients", force: :cascade do |t|
     t.bigint "product_id"
-    t.integer "item_id"
+    t.bigint "item_id"
     t.integer "quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 20170517000916) do
     t.string "account"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "me", default: false
     t.index ["producer_id"], name: "index_producers_on_producer_id"
   end
 
