@@ -7,9 +7,8 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
         payment_method: payment_method,
         id_store_reception: id_store_reception,
     }
-    puts group_server_url + '/api/purchase_orders/' + id
     return HTTParty.put(
-        group_server_url + '/api/purchase_orders/' + id,
+        group_server_url + '/purchase_orders/' + id,
         :body => req_params,
         :headers => { content_type: 'application/json', accept: 'application/json', authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN': ENV['GROUP_ID'] }
     )

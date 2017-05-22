@@ -7,7 +7,7 @@ class RejectGroupPurchaseOrderJob < ApplicationJob
     	cause: cause,
     }
     return HTTParty.patch(
-        group_server_url + '/api/purchase_orders/' + id + '/rejected',
+        group_server_url + '/purchase_orders/' + id + '/rejected',
         :body => req_params,
         :headers => { content_type: 'application/json', accept: 'application/json', authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN': ENV['GROUP_ID'] }
     )

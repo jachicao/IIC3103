@@ -10,12 +10,12 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
         params[:store_reception_id] = params[:id_store_reception]
         @purchase_order = PurchaseOrder.new({ po_id: params[:id], store_reception_id: params[:store_reception_id], payment_method: params[:payment_method], status: 'created' })
         if @purchase_order.save
-          return render json: @purchase_order
+          return render json: { :success => true }
         else
-          return render json: @purchase_order.errors, status: :unprocessable_entity
+          return render json: { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity
         end
     end
-    return render :json => { :error => response[:body] }, status: response[:code]
+    return render :json => { :success => false, :error => response[:body] }, status: response[:code]
   end
 
   # PATCH/PUT /purchase_orders/1/accepted
@@ -23,12 +23,12 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   def update_accepted
     if @purchase_order != nil
       if @purchase_order.update(status: 'accepted')
-        render json: @purchase_order
+        return render json: { :success => true }
       else
-        render json: @purchase_order.errors, status: :unprocessable_entity
+        return render json: { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity
       end
     else
-      render :json => { :error => 'PurchaseOrder not found' }, status: :not_found
+      render :json => { :success => false,  :error => 'PurchaseOrder not found' }, status: :not_found
     end
   end
 
@@ -37,12 +37,12 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   def update_rejected
     if @purchase_order != nil
       if @purchase_order.update(status: 'rejected')
-        render json: @purchase_order
+        return render json: { :success => true }
       else
-        render json: @purchase_order.errors, status: :unprocessable_entity
+        return render json: { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity
       end
     else
-      render :json => { :error => 'PurchaseOrder not found' }, status: :not_found
+      render :json => { :success => false,  :error => 'PurchaseOrder not found' }, status: :not_found
     end
   end
 
