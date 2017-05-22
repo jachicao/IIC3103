@@ -5,13 +5,13 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   # POST /purchase_orders.json
   def create
     if params[:po_id].nil?
-      return render :json => { :error => 'Falta po_id' }, status: :bad_request
+      return render :json => { :success => false, :error => 'Falta po_id' }, status: :bad_request
     end
-    if params[:store_reception_id].nil?
-      return render :json => { :error => 'Falta store_reception_id' }, status: :bad_request
+    if params[:id_store_reception].nil?
+      return render :json => { :success => false, :error => 'Falta store_reception_id' }, status: :bad_request
     end
     if params[:payment_method].nil?
-      return render :json => { :error => 'Falta payment_method' }, status: :bad_request
+      return render :json => { :success => false, :error => 'Falta payment_method' }, status: :bad_request
     end
 
     response = GetPurchaseOrderJob.perform_now(params[:po_id])
