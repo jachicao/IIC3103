@@ -21,7 +21,7 @@ class PurchaseOrdersController < ApplicationController
           format.json { render :json => @response }
         end
       else
-        return render :json => { :error => 'Error' }, status: response[:code]
+        return render :json => { :error => response[:body] }, status: response[:code]
     end
   end
 
@@ -32,7 +32,7 @@ class PurchaseOrdersController < ApplicationController
       when 200
 
       else
-        return render :json => { :error => 'Server error' }, status: response[:code]
+        return render :json => { :error => response_server[:body] }, status: response[:code]
     end
 
     group_number = Producer.find_by(producer_id: params[:client_id]).group_number
@@ -51,7 +51,7 @@ class PurchaseOrdersController < ApplicationController
       when 200
 
       else
-        return render :json => { :error => 'Server error' }, status: response[:code]
+        return render :json => { :error => response_server[:body] }, status: response[:code]
     end
     
     group_number = Producer.find_by(producer_id: params[:client_id]).group_number

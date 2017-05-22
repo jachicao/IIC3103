@@ -32,6 +32,22 @@
       <strong>Estado:</strong>
       <%= @response[:estado]%>
     </p>
+
+    <p>
+      <strong>Canal:</strong>
+      <%= @response[:canal]%>
+    </p>
+
+    <p>
+      <strong>Cantidad Despachada:</strong>
+      <%= @response[:cantidadDespachada]%>
+    </p>
+
+    <p>
+      <strong>Fecha Entrega:</strong>
+      <%= @response[:fechaEntrega]%>
+    </p>
+
     <% if true %>
       <%= link_to 'Accept', { :controller => :purchase_orders, :action => :accept, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %> |
       <%= link_to 'Reject', { :controller => :purchase_orders, :action => :reject, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %> |

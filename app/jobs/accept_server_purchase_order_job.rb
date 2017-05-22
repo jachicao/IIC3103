@@ -14,7 +14,8 @@ class AcceptServerPurchaseOrderJob < ApplicationJob
 
   def perform(id)
   	response = recepcionar_orden_de_compra(id)
-    #puts response
+    puts response.body
+    puts response.code
     return {
         :body => JSON.parse(response.body, symbolize_names: true),
         :code =>  response.code,
