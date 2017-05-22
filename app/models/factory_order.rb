@@ -63,7 +63,7 @@ class FactoryOrder < ApplicationRecord
         (Time.now + produce_time.to_f.hours).to_i * 1000,
         quantity.to_i,
         1, #TODO: Completar esto
-        'efectivo' #TODO: Completar esto
+        'contra_despacho' #TODO: Completar esto
     )
   end
 

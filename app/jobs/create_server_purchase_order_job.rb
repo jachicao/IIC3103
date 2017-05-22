@@ -21,7 +21,8 @@ class CreateServerPurchaseOrderJob < ApplicationJob
 
   def perform(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
     response = crear_orden_de_compra(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
-    #puts response
+    puts response.body
+    puts response.code
     return {
         :body => JSON.parse(response.body, symbolize_names: true),
         :code =>  response.code,

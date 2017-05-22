@@ -5,8 +5,8 @@
 <table>
   <thead>
   <tr>
-    <th>Productor</th>
-    <th>Sku</th>
+    <th>Proveedor</th>
+    <th>Producto</th>
     <th>Cantidad</th>
     <th>Tiempo</th>
   </tr>
@@ -16,7 +16,7 @@
   <% @purchase_items.each do |item| %>
       <tr>
         <td><%= Producer.all.find_by(producer_id: item[:producer_id]).group_number %></td>
-        <td><%= item[:sku] %></td>
+        <td><%= Product.all.find_by(sku: item[:sku]).name %></td>
         <td><%= item[:quantity] %></td>
         <td><%= item[:produce_time] %></td>
       </tr>

@@ -16,8 +16,6 @@ class PurchaseOrder < ApplicationRecord
         'b2b',
         'sin notas',
     )
-    puts response_server[:body]
-    puts response_server[:code]
     case response_server[:code]
       when 200
 

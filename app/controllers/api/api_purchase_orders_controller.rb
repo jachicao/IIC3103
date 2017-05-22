@@ -4,11 +4,21 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   # POST /purchase_orders
   # POST /purchase_orders.json
   def create
+    if params[:po_id].nil?
+      return render :json => { :error => 'Falta po_id' }, status: :bad_request
+    end
+    if params[:store_reception_id].nil?
+      return render :json => { :error => 'Falta store_reception_id' }, status: :bad_request
+    end
+    if params[:payment_method].nil?
+      return render :json => { :error => 'Falta payment_method' }, status: :bad_request
+    end
+
     response = GetPurchaseOrderJob.perform_now(params[:po_id])
     case response[:code]
       when 200
         params[:store_reception_id] = params[:id_store_reception]
-        @purchase_order = PurchaseOrder.new({ po_id: params[:id], store_reception_id: params[:store_reception_id], payment_method: params[:payment_method], status: 'created' })
+        @purchase_order = PurchaseOrder.new({ po_id: params[:po_id], store_reception_id: params[:store_reception_id], payment_method: params[:payment_method], status: 'created' })
         if @purchase_order.save
           return render json: { :success => true }
         else

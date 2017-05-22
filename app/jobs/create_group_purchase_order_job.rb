@@ -7,6 +7,7 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
         payment_method: payment_method,
         id_store_reception: id_store_reception,
     }
+    puts group_server_url + '/purchase_orders/' + id
     return HTTParty.put(
         group_server_url + '/purchase_orders/' + id,
         :body => req_params,
@@ -16,7 +17,8 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
 
   def perform(group_number, id, payment_method, id_store_reception)
     response = crear_orden_de_compra(group_number, id, payment_method, id_store_reception)
-    puts response
+    puts response.code
+    puts response.body
     return {
         :body => JSON.parse(response.body, symbolize_names: true),
         :code =>  response.code,

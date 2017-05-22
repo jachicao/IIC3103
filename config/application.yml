@@ -30,7 +30,7 @@ API_URL_GROUP_4: "/api"
 API_URL_GROUP_5: ""
 API_URL_GROUP_6: ""
 API_URL_GROUP_7: "/api"
-API_URL_GROUP_8: "/api"
+API_URL_GROUP_8: ""
 
 development:
   GROUP_ID: "590baa00d6b4ec0004902462"
