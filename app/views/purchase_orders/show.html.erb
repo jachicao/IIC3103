@@ -33,8 +33,8 @@
       <%= @response[:estado]%>
     </p>
     <% if true %>
-      <%= link_to 'Accept', { :controller => :purchase_orders, :action => :accept, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %>|
-      <%= link_to 'Reject', { :controller => :purchase_orders, :action => :reject, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %>|
+      <%= link_to 'Accept', { :controller => :purchase_orders, :action => :accept, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %> |
+      <%= link_to 'Reject', { :controller => :purchase_orders, :action => :reject, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %> |
     <% end %>
 <% end %>
 

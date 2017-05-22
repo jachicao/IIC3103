@@ -1,5 +1,6 @@
 class Api::ApiPurchaseOrdersController < Api::ApiController
   before_action :set_purchase_order, only: [:update_accepted, :update_rejected]
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
 
 
   # POST /purchase_orders
@@ -41,8 +42,11 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   end
 
   private
-  # Use callbacks to share common setup or constraints between actions.
-  def set_purchase_order
-    @purchase_order = PurchaseOrder.find_by(po_id: params[:po_id])
-  end
+    # Use callbacks to share common setup or constraints between actions.
+    def set_purchase_order
+      @purchase_order = PurchaseOrder.find_by(po_id: params[:po_id])
+    end
+    def render_not_found_response(exception)
+      render :json => { :error => 'PurchaseOrder not found' }, status: :not_found
+    end
 end

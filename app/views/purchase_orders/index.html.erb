@@ -9,7 +9,7 @@
       <th>Payment method</th>
       <th>Store reception</th>
       <th>Status</th>
-      <th colspan="3"></th>
+      <th colspan="1"></th>
     </tr>
   </thead>
 
@@ -21,8 +21,6 @@
         <td><%= purchase_order.store_reception_id %></td>
         <td><%= purchase_order.status %></td>
         <td><%= link_to 'Show', purchase_order %></td>
-        <td><%= link_to 'Edit', edit_purchase_order_path(purchase_order) %></td>
-        <td><%= link_to 'Destroy', purchase_order, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>
