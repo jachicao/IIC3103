@@ -1,7 +1,5 @@
 class Api::ApiPurchaseOrdersController < Api::ApiController
   before_action :set_purchase_order, only: [:update_accepted, :update_rejected]
-  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
-
 
   # POST /purchase_orders
   # POST /purchase_orders.json
@@ -24,20 +22,28 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   # PATCH/PUT /purchase_orders/1/accepted
   # PATCH/PUT /purchase_orders/1/accepted.json
   def update_accepted
-    if @purchase_order.update(status: 'accepted')
-      render json: @purchase_order
+    if @purchase_order != nil
+      if @purchase_order.update(status: 'accepted')
+        render json: @purchase_order
+      else
+        render json: @purchase_order.errors, status: :unprocessable_entity
+      end
     else
-      render json: @purchase_order.errors, status: :unprocessable_entity
+      render :json => { :error => 'PurchaseOrder not found' }, status: :not_found
     end
   end
 
   # PATCH/PUT /purchase_orders/1/rejected
   # PATCH/PUT /purchase_orders/1/rejected.json
   def update_rejected
-    if @purchase_order.update(status: 'rejected')
-      render json: @purchase_order
+    if @purchase_order != nil
+      if @purchase_order.update(status: 'rejected')
+        render json: @purchase_order
+      else
+        render json: @purchase_order.errors, status: :unprocessable_entity
+      end
     else
-      render json: @purchase_order.errors, status: :unprocessable_entity
+      render :json => { :error => 'PurchaseOrder not found' }, status: :not_found
     end
   end
 
@@ -45,8 +51,5 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
     # Use callbacks to share common setup or constraints between actions.
     def set_purchase_order
       @purchase_order = PurchaseOrder.find_by(po_id: params[:po_id])
-    end
-    def render_not_found_response(exception)
-      render :json => { :error => 'PurchaseOrder not found' }, status: :not_found
     end
 end
