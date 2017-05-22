@@ -26,7 +26,7 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def accept
-    po_id = params[:po_id];
+    po_id = params[:po_id]
     response_server = AcceptServerPurchaseOrderJob.perform_now(po_id)
     case response_server[:code]
       when 200

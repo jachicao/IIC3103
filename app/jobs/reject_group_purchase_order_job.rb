@@ -2,14 +2,14 @@ class RejectGroupPurchaseOrderJob < ApplicationJob
   queue_as :default
 
   def rechazar_orden_de_compra(group_number, id, cause)
-    group_server_url = (ENV['GROUPS_SERVER_URL'] % [group_number])
+    group_server_url = (ENV['GROUPS_SERVER_URL'] % [group_number]) + ENV['API_URL_GROUP_' + group_number.to_s]
     req_params = {
     	cause: cause,
     }
     return HTTParty.patch(
         group_server_url + '/api/purchase_orders/' + id + '/rejected',
         :body => req_params,
-        :headers => { content_type: 'application/json', accept: 'application/json', authorization: ENV['GROUP_ID'] }
+        :headers => { content_type: 'application/json', accept: 'application/json', authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN': ENV['GROUP_ID'] }
     )
   end
 

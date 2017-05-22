@@ -10,13 +10,12 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
         params[:store_reception_id] = params[:id_store_reception]
         @purchase_order = PurchaseOrder.new({ po_id: params[:id], store_reception_id: params[:store_reception_id], payment_method: params[:payment_method], status: 'created' })
         if @purchase_order.save
-          render json: @purchase_order
+          return render json: @purchase_order
         else
-          render json: @purchase_order.errors, status: :unprocessable_entity
+          return render json: @purchase_order.errors, status: :unprocessable_entity
         end
-      else
-        return render :json => { :error => 'Error' }, status: response[:code]
     end
+    return render :json => { :error => response[:body] }, status: response[:code]
   end
 
   # PATCH/PUT /purchase_orders/1/accepted
