@@ -18,7 +18,12 @@
 # end
 
 # Learn more: http://github.com/javan/whenever
+job_type :runner,  "cd :path && bin/rails runner -e :environment :task :output"
 
 every 1.minute do # 1.minute 1.day 1.week 1.month 1.year is also supported
-  rake 'store_house_tasks:clean_recepcion_and_pulmon'
+  rake "store_houses_tasks:clean_recepcion_and_pulmon"
+end
+
+every 1.minute do # 1.minute 1.day 1.week 1.month 1.year is also supported
+  runner "StoreHouse.all_stock"
 end

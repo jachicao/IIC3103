@@ -18,18 +18,14 @@ class DashboardController < ApplicationController
         products[product.sku.to_i] = { sku: product.sku, name: product.name, stock: 0 }
       end
 
-      almacenes = StoreHouse.all
+      almacenes = StoreHouse.all_stock
 
       if almacenes == nil
         return nil
       end
 
       almacenes.each do |almacen|
-        stock = StoreHouse.get_stock(almacen[:_id])
-        if stock == nil
-          return nil
-        end
-        stock.each do |p|
+        almacen[:inventario].each do |p|
           product = products[p[:sku].to_i]
           if product != nil
             product[:stock] += p[:total]

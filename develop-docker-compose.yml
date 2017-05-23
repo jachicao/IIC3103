@@ -2,6 +2,9 @@ version: '2'
 services:
   develop-redis:
     image: redis:alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - ./redis:/data
     restart: always
     networks:
       - traefik
@@ -10,6 +13,8 @@ services:
       - "traefik.frontend.rule=Host:develop-redis.localhost"
   develop-db:
     image: postgres:alpine
+    volumes:
+      - ./pg:/var/lib/postgresql/data
     restart: always
     networks:
       - traefik

@@ -193,23 +193,25 @@ class StoreHouse
   def self.move_stock(from_store_houses, to_store_houses, sku, quantity)
     quantity_left = quantity
     from_store_houses.each do |from_store_house|
-      stock = get_stock(from_store_house[:_id])
-      if stock == nil
-        return quantity_left
-      end
-      stock.each do |p|
-        if p[:sku] == sku
-          to_store_houses.each do |to_store_house|
-            if to_store_house[:availableSpace] > 0
-              if quantity_left > 0 and p[:total] > 0
-                total_to_move = [to_store_house[:availableSpace], p[:total], quantity_left].min
-                MoveProductsBetweenStoreHousesJob.perform_later(to_store_house[:_id], from_store_house[:_id], sku, total_to_move)
-                p[:total] -= total_to_move
-                to_store_house[:availableSpace] -= total_to_move
-                to_store_house[:usedSpace] += total_to_move
-                from_store_house[:availableSpace] += total_to_move
-                from_store_house[:usedSpace] -= total_to_move
-                quantity_left -= total_to_move
+      if from_store_house[:usedSpace] > 0
+        stock = get_stock(from_store_house[:_id])
+        if stock == nil
+          return quantity_left
+        end
+        stock.each do |p|
+          if p[:sku] == sku
+            to_store_houses.each do |to_store_house|
+              if to_store_house[:availableSpace] > 0
+                if quantity_left > 0 and p[:total] > 0
+                  total_to_move = [to_store_house[:availableSpace], p[:total], quantity_left].min
+                  MoveProductsBetweenStoreHousesJob.perform_later(to_store_house[:_id], from_store_house[:_id], sku, total_to_move)
+                  p[:total] -= total_to_move
+                  to_store_house[:availableSpace] -= total_to_move
+                  to_store_house[:usedSpace] += total_to_move
+                  from_store_house[:availableSpace] += total_to_move
+                  from_store_house[:usedSpace] -= total_to_move
+                  quantity_left -= total_to_move
+                end
               end
             end
           end

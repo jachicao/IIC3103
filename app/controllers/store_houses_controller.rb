@@ -78,7 +78,10 @@ class StoreHousesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_store_house
       @store_house = StoreHouse.get_store_house(params[:id])
-      @stock = StoreHouse.get_stock(params[:id])
+      @stock = []
+      if @store_house[:usedSpace] > 0
+        @stock = StoreHouse.get_stock(params[:id])
+      end
     end
 
 end
