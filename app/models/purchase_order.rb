@@ -1,4 +1,6 @@
 class PurchaseOrder < ApplicationRecord
+  has_one :invoice
+
   def self.create_new_purchase_order(producer_id, sku, delivery_date, quantity, unit_price, payment_method)
     recepcion = StoreHouse.get_recepciones
     if recepcion == nil
