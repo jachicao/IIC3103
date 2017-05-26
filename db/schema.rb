@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170521190543) do
+ActiveRecord::Schema.define(version: 20170526171505) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,18 @@ ActiveRecord::Schema.define(version: 20170521190543) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_ingredients_on_product_id"
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.string "_id"
+    t.string "supplier"
+    t.string "client"
+    t.integer "total_amount"
+    t.integer "tax"
+    t.string "status"
+    t.string "po_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "producers", force: :cascade do |t|
@@ -77,6 +89,15 @@ ActiveRecord::Schema.define(version: 20170521190543) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["po_id"], name: "index_purchase_orders_on_po_id"
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.string "_id"
+    t.integer "monto"
+    t.string "origin"
+    t.string "destination"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "ingredients", "products"

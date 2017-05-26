@@ -70,12 +70,19 @@ class FactoryController < ApplicationController
     tiempo = params[:tiempo].to_f
     producto = Product.all.find_by(name: nombre)
     analisis = analizar_stock(producto, cantidad)
+    costo_unitario = Product.all.find_by(name: nombre)[:unit_cost]
     if analisis[:tiempo_maximo] <= tiempo
       redirect_to action: "detalles", nombre: nombre, cantidad: cantidad, tiempo: tiempo
     else
       render json: { :error => "No se alcanza a producir" }
     end
-    MakeProductsWithoutPaymentJob.perform_later(producto.sku, params[:cantidad].to_i)
+    factory_account = GetFactoryAccountJob.perform_now()
+
+    transaction = MakeTransactionJob.perform_now(cantidad*costo_unitario, ENV['BANK_ID'], factory_account)
+    if transaction == nil
+      render json: { :error => "Error en transferencia" }
+    end
+    MakeProductsJob.perform_later(producto.sku, params[:cantidad].to_i, transaction[:_id])
   end
 
   def producir_real #en la 2da ventana
