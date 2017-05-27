@@ -143,6 +143,8 @@ class StoreHouse
             stock.each do |p|
               if to_store_house[:availableSpace] > 0 and p[:total] > 0 and used_space > 0
                 total_to_move = [to_store_house[:availableSpace], p[:total]].min
+                puts 'total a mover'
+                puts total_to_move
                 MoveProductsBetweenStoreHousesJob.perform_later(to_store_house[:_id], from_store_house[:_id], p[:sku], total_to_move)
                 p[:total] -= total_to_move
                 to_store_house[:availableSpace] -= total_to_move
@@ -204,6 +206,8 @@ class StoreHouse
             to_store_houses.each do |to_store_house|
               if to_store_house[:availableSpace] > 0 and quantity_left > 0 and p[:total] > 0
                 total_to_move = [to_store_house[:availableSpace], p[:total], quantity_left].min
+                puts 'total a mover'
+                puts total_to_move
                 MoveProductsBetweenStoreHousesJob.perform_later(to_store_house[:_id], from_store_house[:_id], sku, total_to_move)
                 p[:total] -= total_to_move
                 to_store_house[:availableSpace] -= total_to_move
