@@ -1,0 +1,30 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Bank Card</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Trx Id</th>
+    <th>Origen</th>
+    <th>Destino</th>
+    <th>Monto</th>
+    <th colspan="1"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @transactions.each do |transaction| %>
+      <tr>
+        <td><%= transaction[:_id] %></td>
+        <td><%= transaction[:origen] %></td>
+        <td><%= transaction[:destino] %></td>
+        <td><%= transaction[:monto] %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'Back', bank_path %>

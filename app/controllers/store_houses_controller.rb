@@ -1,5 +1,4 @@
 class StoreHousesController < ApplicationController
-
   before_action :set_store_house, only: [:show]
 
   def index

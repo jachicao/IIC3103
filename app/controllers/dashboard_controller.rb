@@ -8,41 +8,12 @@ class DashboardController < ApplicationController
     def get_products_report
 
       me = Producer.all.find_by(me: true)
-      my_products = []
-      me.product_in_sales.each do |product_in_sale|
-        my_products[product_in_sale.product.sku.to_i] = true
-      end
-
-      products = []
-      Product.all.each do |product|
-        products[product.sku.to_i] = { sku: product.sku, name: product.name, stock: 0 }
-      end
-
-      almacenes = StoreHouse.all_stock
-
-      if almacenes == nil
-        return nil
-      end
-
-      almacenes.each do |almacen|
-        almacen[:inventario].each do |p|
-          product = products[p[:sku].to_i]
-          if product != nil
-            product[:stock] += p[:total]
-          end
-        end
-      end
-
       result = []
-
-      products.each do |product|
-        if product != nil and (product[:stock] > 0 or my_products[product[:sku].to_i])
-          result.push(product)
-        end
+      me.product_in_sales.each do |product_in_sale|
+        product = product_in_sale.product
+        result.push({ sku: product.sku, name: product.name, stock: product.get_stock })
       end
-
       return result
-
     end
 
     def get_set_factory_orders

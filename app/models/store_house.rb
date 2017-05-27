@@ -33,13 +33,15 @@ class StoreHouse
     store_houses.each do |s|
       store_house = s
       store_house[:inventario] = []
+      inventario = store_house[:inventario]
       if store_house[:usedSpace] > 0
         stock = get_stock(store_house[:_id])
         if stock == nil
           return nil
         end
         stock.each do |b|
-          store_house[:inventario].push({ sku: b[:_id], total: b[:total] })
+          puts b
+          inventario.push({ sku: b[:sku], total: b[:total] })
         end
       end
       result.push(store_house)

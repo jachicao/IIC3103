@@ -7,27 +7,25 @@ Rails.application.routes.draw do
       post 'created', to: 'purchase_orders#created'
     end
   end
-  resources :store_houses do
-    collection do
-      get 'move_internally'
-      post 'submit_move_internally'
-      get 'move_externally'
-      post 'submit_move_externally'
-      get 'clean_pulmon'
-      get 'clean_recepcion'
-    end
-  end
-  resources :factory_orders do
-    collection do
-      post 'make_products'
-      get 'purchase_items'
-      get 'submit_purchase_items'
-    end
-  end
-  resources :product_in_sales
-  resources :ingredients
-  resources :products
-  resources :producers
+
+  resources :store_houses, only: [:index, :show]
+  get '/store_houses/move_internally', to: 'store_houses#move_internally'
+  post '/store_houses/submit_move_internally', to: 'store_houses#submit_move_internally'
+  get '/store_houses/move_externally', to: 'store_houses#move_externally'
+  post '/store_houses/submit_move_externally', to: 'store_houses#submit_move_externally'
+  get '/store_houses/clean_pulmon', to: 'store_houses#clean_pulmon'
+  get '/store_houses/clean_recepcion', to: 'store_houses#clean_recepcion'
+
+  resources :factory_orders, only: [:index]
+
+  get '/bank/', to: 'bank#index'
+  get '/bank/:id', to: 'bank#show', :as => :bank_transactions
+
+  resources :products, only: [:index, :show]
+  get '/products/:id/produce', to: 'products#produce', :as => :produce_product
+  post '/products/:id/produce', to: 'products#post_produce', :as => :post_produce_product
+  get '/products/:id/purchase_items', to: 'products#purchase_items', :as => :purchase_items_product
+  get '/products/:id/post_purchase_items', to: 'products#post_purchase_items', :as => :post_purchase_items_product
 
   root 'dashboard#index'
   get '/dashboard', to: 'dashboard#index'

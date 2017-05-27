@@ -11,7 +11,7 @@
       <th>Dispatched</th>
       <th>Available</th>
       <th>Quantity</th>
-      <th colspan="3"></th>
+      <th colspan="1"></th>
     </tr>
   </thead>
 
@@ -24,14 +24,7 @@
         <td><%= factory_order.dispatched %></td>
         <td><%= factory_order.available %></td>
         <td><%= factory_order.quantity %></td>
-        <td><%= link_to 'Show', factory_order %></td>
-        <td><%= link_to 'Edit', edit_factory_order_path(factory_order) %></td>
-        <td><%= link_to 'Destroy', factory_order, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
-
-<br>
-
-<%= link_to 'New Factory Order', new_factory_order_path %>

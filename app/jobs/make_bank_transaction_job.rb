@@ -1,4 +1,4 @@
-class MakeTransactionJob < ApplicationJob
+class MakeBankTransactionJob < ApplicationJob
 
   def transferir(monto, origen, destino)
     req_params = {
@@ -11,19 +11,19 @@ class MakeTransactionJob < ApplicationJob
         :body => req_params,
         :headers => { content_type: 'application/json', accept: 'application/json'}
     )
-
   end
 
 
   def perform(monto, origen, destino)
     response = transferir(monto, origen, destino)
-    #puts response
+    puts response.body
+    puts response.code
     body = JSON.parse(response.body, symbolize_names: true)
     case response.code
       when 429 # falta numero de error correcto
         Transaction.create(
             _id: 'error',
-            monto: monto,
+            amount: monto,
             origin: origen,
             destination: destino,
         )
@@ -31,7 +31,7 @@ class MakeTransactionJob < ApplicationJob
     end
     Transaction.create(
         _id: body[:_id],
-        monto: body[:monto],
+        amount: body[:monto],
         origin: body[:cuenta_origen],
         destination: body[:cuenta_destino],
         created_at: DateTime.parse(body[:created_at]),#DateTime.parse(Time.at(body[:created_at] / 1000.0).to_s),

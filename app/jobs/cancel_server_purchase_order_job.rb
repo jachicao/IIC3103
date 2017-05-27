@@ -4,6 +4,7 @@ class CancelServerPurchaseOrderJob < ApplicationJob
   def anular_orden_de_compra(id, anulacion)
     req_params = {
         :id => id,
+        :_id => id,
         :anulacion => anulacion,
       }
     return HTTParty.post(

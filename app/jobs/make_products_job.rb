@@ -1,16 +1,16 @@
 class MakeProductsJob < ApplicationJob
   queue_as :default
 
-  def producir_stock(sku, cantidad, trxId)
+  def producir_stock(sku, cantidad, trx_id)
     req_params = {
         :sku => sku,
         :cantidad => cantidad,
-        :trxId => trxId,
+        :trxId => trx_id,
       }
     auth_params = {
         :sku => sku,
         :cantidad => cantidad,
-        :trxId => trxId,
+        :trxId => trx_id,
       }
     return HTTParty.put(
       ENV['CENTRAL_SERVER_URL'] + '/bodega/fabrica/fabricar', 
@@ -19,13 +19,15 @@ class MakeProductsJob < ApplicationJob
       )
   end
 
-  def perform(sku, cantidad, trxId)
-    response = producir_stock(sku, cantidad, trxId)
+  def perform(sku, cantidad, trx_id)
+    response = producir_stock(sku, cantidad, trx_id)
     #puts response
     body = JSON.parse(response.body, symbolize_names: true)
+    puts response.body
+    puts response.code
     case response.code
       when 429
-        #MakeProductsJob.set(wait: 90.seconds).perform_later(sku, cantidad, trxId)
+        #MakeProductsJob.set(wait: 90.seconds).perform_later(sku, cantidad, trx_id)
         return nil
     end
     FactoryOrder.create(

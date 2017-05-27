@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Producir/Comprar Ingredientes</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Proveedor</th>
+    <th>Producto</th>
+    <th>Cantidad</th>
+    <th>Tiempo</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @purchase_items.each do |item| %>
+      <tr>
+        <td><%= Producer.all.find_by(producer_id: item[:producer_id]).group_number %></td>
+        <td><%= Product.all.find_by(sku: item[:sku]).name %></td>
+        <td><%= item[:quantity] %></td>
+        <td><%= item[:produce_time] %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<%= link_to 'Comprar', { :controller => 'products', :action => 'post_purchase_items', :purchase_items => @purchase_items }%>
+
+<br>
+
+<%= link_to 'Back', products_path %>
