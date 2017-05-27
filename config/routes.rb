@@ -8,13 +8,16 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :store_houses, only: [:index, :show]
-  get '/store_houses/move_internally', to: 'store_houses#move_internally'
-  post '/store_houses/submit_move_internally', to: 'store_houses#submit_move_internally'
-  get '/store_houses/move_externally', to: 'store_houses#move_externally'
-  post '/store_houses/submit_move_externally', to: 'store_houses#submit_move_externally'
-  get '/store_houses/clean_pulmon', to: 'store_houses#clean_pulmon'
-  get '/store_houses/clean_recepcion', to: 'store_houses#clean_recepcion'
+  resources :store_houses do
+    collection do
+      get 'move_internally'
+      post 'submit_move_internally'
+      get 'move_externally'
+      post 'submit_move_externally'
+      get 'clean_pulmon'
+      get 'clean_recepcion'
+    end
+  end
 
   resources :factory_orders, only: [:index]
 
