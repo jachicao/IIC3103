@@ -26,8 +26,6 @@ class GetProductsWithStockJob < ApplicationJob
     end
 
     response = get_skus_with_stock(almacenId)
-    puts response.body
-    puts response.code
     body = JSON.parse(response.body, symbolize_names: true)
     case response.code
       when 429

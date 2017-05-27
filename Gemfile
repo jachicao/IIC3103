@@ -66,4 +66,4 @@ gem 'redis-rails'
 
 gem 'sidekiq'
 
-gem 'whenever'
+gem 'sidekiq-scheduler'
