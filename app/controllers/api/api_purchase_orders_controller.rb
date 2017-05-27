@@ -18,7 +18,12 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
     case response[:code]
       when 200
         params[:store_reception_id] = params[:id_store_reception]
-        @purchase_order = PurchaseOrder.new({ po_id: params[:po_id], store_reception_id: params[:store_reception_id], payment_method: params[:payment_method], status: 'created' })
+        @purchase_order = PurchaseOrder.new({po_id: params[:po_id],
+                                              store_reception_id: params[:store_reception_id],
+                                              payment_method: params[:payment_method],
+                                              status: 'created',
+                                              own: false,,
+                                              dispatched: false })
         if @purchase_order.save
           return render json: { :success => true }
         else
