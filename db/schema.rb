@@ -16,79 +16,79 @@ ActiveRecord::Schema.define(version: 20170527152109) do
   enable_extension "plpgsql"
 
   create_table "factory_orders", force: :cascade do |t|
-    t.string "fo_id"
-    t.string "sku"
-    t.integer "group"
-    t.boolean "dispatched"
+    t.string   "fo_id"
+    t.string   "sku"
+    t.integer  "group"
+    t.boolean  "dispatched"
     t.datetime "available"
-    t.integer "quantity"
+    t.integer  "quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["fo_id"], name: "index_factory_orders_on_fo_id"
+    t.index ["fo_id"], name: "index_factory_orders_on_fo_id", using: :btree
   end
 
   create_table "ingredients", force: :cascade do |t|
-    t.bigint "product_id"
-    t.bigint "item_id"
-    t.integer "quantity"
+    t.integer  "product_id"
+    t.bigint   "item_id"
+    t.integer  "quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["product_id"], name: "index_ingredients_on_product_id"
+    t.index ["product_id"], name: "index_ingredients_on_product_id", using: :btree
   end
 
   create_table "invoices", force: :cascade do |t|
-    t.string "_id"
-    t.string "supplier"
-    t.string "client"
-    t.integer "total_amount"
-    t.integer "tax"
-    t.string "status"
-    t.string "po_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "_id"
+    t.string   "supplier"
+    t.string   "client"
+    t.integer  "total_amount"
+    t.integer  "tax"
+    t.string   "status"
+    t.string   "po_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
   end
 
   create_table "producers", force: :cascade do |t|
-    t.string "producer_id"
-    t.integer "group_number"
-    t.string "account"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.boolean "me", default: false
-    t.index ["producer_id"], name: "index_producers_on_producer_id"
+    t.string   "producer_id"
+    t.integer  "group_number"
+    t.string   "account"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.boolean  "me",           default: false
+    t.index ["producer_id"], name: "index_producers_on_producer_id", using: :btree
   end
 
   create_table "product_in_sales", force: :cascade do |t|
-    t.bigint "producer_id"
-    t.bigint "product_id"
-    t.integer "price"
-    t.decimal "average_time"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.boolean "mine"
-    t.index ["producer_id"], name: "index_product_in_sales_on_producer_id"
-    t.index ["product_id"], name: "index_product_in_sales_on_product_id"
+    t.integer  "producer_id"
+    t.integer  "product_id"
+    t.integer  "price"
+    t.decimal  "average_time"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.boolean  "mine"
+    t.index ["producer_id"], name: "index_product_in_sales_on_producer_id", using: :btree
+    t.index ["product_id"], name: "index_product_in_sales_on_product_id", using: :btree
   end
 
   create_table "products", force: :cascade do |t|
-    t.string "sku"
-    t.string "name"
-    t.string "product_type"
-    t.string "unit"
-    t.integer "unit_cost"
-    t.integer "lote"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "sku"
+    t.string   "name"
+    t.string   "product_type"
+    t.string   "unit"
+    t.integer  "unit_cost"
+    t.integer  "lote"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
   end
 
   create_table "purchase_orders", force: :cascade do |t|
-    t.string "po_id"
-    t.string "payment_method"
-    t.string "store_reception_id"
-    t.string "status"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["po_id"], name: "index_purchase_orders_on_po_id"
+    t.string   "po_id"
+    t.string   "payment_method"
+    t.string   "store_reception_id"
+    t.string   "status"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.index ["po_id"], name: "index_purchase_orders_on_po_id", using: :btree
   end
 
   add_foreign_key "ingredients", "products"

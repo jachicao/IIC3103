@@ -1,4 +1,4 @@
-class FixMontoToAmountFromTransactions < ActiveRecord::Migration[5.1]
+class FixMontoToAmountFromTransactions < ActiveRecord::Migration[5.0]
   def change
     rename_column :transactions, :monto, :amount
   end
