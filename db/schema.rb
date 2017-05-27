@@ -93,11 +93,7 @@ ActiveRecord::Schema.define(version: 20170527010520) do
 
   create_table "transactions", force: :cascade do |t|
     t.string "_id"
-<<<<<<< HEAD
     t.integer "amount"
-=======
-    t.integer "ammount"
->>>>>>> 0ccc200e2cf29e00ff2af9e1ec03f077d2eb7acd
     t.string "origin"
     t.string "destination"
     t.datetime "created_at", null: false
