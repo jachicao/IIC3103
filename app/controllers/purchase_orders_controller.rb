@@ -80,8 +80,8 @@ class PurchaseOrdersController < ApplicationController
         params[:producers][:id],
         params[:products][:ids],
         Date.new(params[:delivery_date]['(1i)'].to_i, params[:delivery_date]['(2i)'].to_i, params[:delivery_date]['(3i)'].to_i).strftime('%Q'),
-        params[:quantity],
-        params[:unit_price],
+        params[:quantity].to_i,
+        params[:unit_price].to_i,
         params[:payment_method],
     )
     respond_to do |format|

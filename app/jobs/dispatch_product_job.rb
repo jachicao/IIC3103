@@ -1,15 +1,15 @@
 class DispatchProductJob < ApplicationJob
   queue_as :default
 
-  def despachar_stock(productoId, direccion, precio, oc)
+  def despachar_stock(producto_id, direccion, precio, oc)
     req_params = {
-        :productoId => productoId,
+        :productoId => producto_id,
         :direccion => direccion,
         :precio => precio,
         :oc => oc,
       }
     auth_params = {
-        :productoId => productoId,
+        :productoId => producto_id,
         :direccion => direccion,
         :precio => precio,
         :oc => oc,
@@ -21,15 +21,14 @@ class DispatchProductJob < ApplicationJob
       );
   end
 
-  def perform(productoId, direccion, precio, oc)
-    response = despachar_stock(productoId, direccion, precio, oc)
+  def perform(producto_id, from_store_house_id, direccion, precio, oc)
+    $redis.del('get_skus_with_stock:' + from_store_house_id)
+    response = despachar_stock(producto_id, direccion, precio, oc)
+    puts 'Moviendo'
+    puts response.code
+    puts response.body
     #puts response
     body = JSON.parse(response.body, symbolize_names: true)
-    case response.code
-      when 429
-        #DispatchProductJob.set(wait: 90.seconds).perform_later(productoId, direccion, precio, oc)
-        return nil
-    end
     return {
         :body => body,
         :code =>  response.code,

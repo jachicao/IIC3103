@@ -12,8 +12,8 @@ class PurchasedProduct < ApplicationRecord
           producer.producer_id,
           product.sku,
           (Time.now + produce_time.to_f.hours).to_i * 1000,
-          quantity.to_i,
-          1, #TODO: Completar esto
+          quantity,
+          product.unit_cost, #TODO: Completar esto
           'contra_despacho' #TODO: Completar esto
       )
       if result != nil

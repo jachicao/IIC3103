@@ -1,7 +1,7 @@
 class GetProductStockJob < ApplicationJob
   queue_as :default
 
-  def get_stock(almacenId, sku, limit)
+  def get_stock(almacen_id, sku, limit)
     req_params = {
         :almacenId => almacenId,
         :sku => sku,
@@ -18,8 +18,8 @@ class GetProductStockJob < ApplicationJob
       )
   end
 
-  def perform(almacenId, sku, limit)
-    response = get_stock(almacenId, sku, limit)
+  def perform(almacen_id, sku, limit)
+    response = get_stock(almacen_id, sku, limit)
     #puts response
     body = JSON.parse(response.body, symbolize_names: true)
     case response.code

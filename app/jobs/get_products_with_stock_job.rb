@@ -1,12 +1,12 @@
 class GetProductsWithStockJob < ApplicationJob
   queue_as :default
 
-  def get_skus_with_stock(almacenId)
+  def get_skus_with_stock(almacen_id)
     req_params = {
-        :almacenId => almacenId,
+        :almacenId => almacen_id,
       }
     auth_params = {
-        :almacenId => almacenId,
+        :almacenId => almacen_id,
       }
     return HTTParty.get(
       ENV['CENTRAL_SERVER_URL'] + '/bodega/skusWithStock', 
@@ -15,9 +15,9 @@ class GetProductsWithStockJob < ApplicationJob
       )
   end
 
-  def perform(almacenId)
+  def perform(almacen_id)
 
-    key = 'get_skus_with_stock:' + almacenId
+    key = 'get_skus_with_stock:' + almacen_id
     cache_response = $redis.get(key)
     if cache_response != nil
       return {
@@ -25,7 +25,7 @@ class GetProductsWithStockJob < ApplicationJob
       }
     end
 
-    response = get_skus_with_stock(almacenId)
+    response = get_skus_with_stock(almacen_id)
     body = JSON.parse(response.body, symbolize_names: true)
     case response.code
       when 429

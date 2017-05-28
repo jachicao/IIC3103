@@ -2,7 +2,7 @@ class BuyFactoryProductsJob < ApplicationJob
   queue_as :default
 
   def perform(sku, cantidad, costo_unitario)
-    response = GetFactoryAccountJob.perform_now()
+    response = GetFactoryAccountJob.perform_now
     if response.nil?
       return { :error => 'Error en transferencia' }
     end

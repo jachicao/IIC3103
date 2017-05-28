@@ -30,14 +30,14 @@
     <table>
       <thead>
       <tr>
-        <th>Sku</th>
+        <th>Producto</th>
         <th>Total</th>
       </tr>
       </thead>
       <tbody>
         <% @stock.each do |p| %>
           <tr>
-            <td><%= p[:sku] %></td>
+            <td><%= Product.all.find_by(sku: p[:sku]).name %></td>
             <td><%= p[:total] %></td>
           </tr>
         <% end %>
