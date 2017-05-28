@@ -88,9 +88,6 @@ class PurchaseOrdersController < ApplicationController
       if result == nil
         format.html { redirect_to purchase_orders_url, notice: 'Servidor colapsado' }
         format.json { render :json => { :error => 'Servidor colapsado' }, status: 500 }
-      elsif result == false
-        format.html { redirect_to purchase_orders_url, notice: 'Failed to save' }
-          format.json { render :json => { :error => 'Failed to' }, status: 500 }
       else
         format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully created.' }
         format.json { render json: :index }

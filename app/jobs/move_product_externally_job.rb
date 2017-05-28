@@ -25,7 +25,7 @@ class MoveProductExternallyJob < ApplicationJob
     body = JSON.parse(response.body, symbolize_names: true)
     case response.code
       when 429
-        MoveProductExternallyJob.set(wait: 10.seconds).perform_later(producto_id, almacen_id, oc, precio)
+        #MoveProductExternallyJob.set(wait: 90.seconds).perform_later(producto_id, almacen_id, oc, precio)
         return nil
     end
     return {

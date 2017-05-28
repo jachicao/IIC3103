@@ -15,6 +15,7 @@ class MakeBankTransactionJob < ApplicationJob
 
 
   def perform(monto, origen, destino)
+    $redis.del('obtener_cartola')
     response = transferir(monto, origen, destino)
     puts response.body
     puts response.code

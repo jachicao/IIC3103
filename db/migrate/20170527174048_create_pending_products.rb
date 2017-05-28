@@ -1,9 +1,9 @@
-class CreateIngredients < ActiveRecord::Migration[5.0]
+class CreatePendingProducts < ActiveRecord::Migration[5.0]
   def change
-    create_table :ingredients do |t|
+    create_table :pending_products do |t|
       t.references :product, foreign_key: true
-      t.integer :item_id
       t.integer :quantity
+      t.integer :lote
 
       t.timestamps
     end

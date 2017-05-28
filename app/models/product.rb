@@ -20,10 +20,6 @@ class Product < ApplicationRecord
     return stock
   end
 
-  def get_purchase_lote(quantity)
-    return lote * (quantity.to_f / lote.to_f).ceil
-  end
-
   def stock_available(stock)
     counter = 0
     stock.each do |store_house|
@@ -37,7 +33,7 @@ class Product < ApplicationRecord
   end
 
   def analyze_stock(quantity)
-    me = Producer.all.find_by(me: true)
+    me = Producer.get_me
     all_stock = StoreHouse.all_stock
     if all_stock == nil
       return nil
@@ -51,7 +47,8 @@ class Product < ApplicationRecord
     maximum_time_to_produce = 0.0
     purchase_items = []
     product_stock_available = stock_available(stock)
-    if product_stock_available >= quantity
+    unit_lote = (quantity.to_f / lote.to_f).ceil
+    if false#product_stock_available >= quantity #TODO
 
     else
       if ingredients.size == 0
@@ -62,55 +59,33 @@ class Product < ApplicationRecord
             break
           end
         end
-        purchase_items.push({ producer_id: me.producer_id, sku: sku, quantity: quantity, produce_time: produce_time })
+        purchase_items.push({ producer_id: me.producer_id, sku: sku, quantity: unit_lote, lote: lote, produce_time: produce_time })
       else
         ingredients.each do |ingredient|
+          puts ingredient.item.sku
+          puts ingredient.item.product_in_sales.size
           product_in_sale = ingredient.item.product_in_sales.order('average_time ASC').first
           produce_time = product_in_sale.average_time
           maximum_time_to_produce = [maximum_time_to_produce, produce_time].max
-          purchase_items.push({ producer_id: product_in_sale.producer.producer_id, sku: ingredient.item.sku, quantity: ingredient.quantity, produce_time: produce_time })
+          purchase_items.push({ producer_id: product_in_sale.producer.producer_id, sku: ingredient.item.sku, quantity: unit_lote, lote: ingredient.quantity, produce_time: produce_time })
         end
       end
     end
     return {
         :maximum_time => maximum_time_to_produce,
         :purchase_items => purchase_items,
+        :quantity => unit_lote,
+        :lote => lote,
     }
   end
 
-  def self.purchase_stock(purchase_items)
-    failed = false
-    me = Producer.all.find_by(me: true)
-
+  def purchase_stock(lote, quantity, purchase_items)
+    pending_product = PendingProduct.create(product: self, quantity: quantity, lote: lote)
     purchase_items.each do |item|
-      if me.producer_id == item[:producer_id]
-        buy_to_factory(item[:sku],item[:quantity])
-      else
-        if buy_to_producer(item[:sku], item[:quantity], item[:producer_id], item[:produce_time], 1)
-        else
-          failed = true
-        end
-      end
+      product_item = Product.all.find_by(sku: item[:sku])
+      producer = Producer.all.find_by(producer_id: item[:producer_id])
+      pending_product.purchased_products.create(product: product_item, producer: producer, quantity: item[:quantity], lote: item[:lote], produce_time: item[:produce_time])
     end
-    return !failed
-  end
-
-  def self.buy_to_producer(sku, quantity, producer_id, produce_time, unit_price)
-    return PurchaseOrder.create_new_purchase_order(
-        producer_id,
-        sku,
-        (Time.now + produce_time.to_f.hours).to_i * 1000,
-        quantity.to_i,
-        unit_price, #TODO: Completar esto
-        'contra_despacho' #TODO: Completar esto
-    )
-  end
-
-  def self.buy_to_factory(sku, quantity)
-    product = Product.all.find_by(sku: sku)
-    lote = product.get_purchase_lote(quantity)
-    unit_price = product.unit_cost
-    BuyFactoryProductsJob.perform_later(sku, lote, unit_price)
   end
 
 end

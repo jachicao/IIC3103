@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170527152109) do
+ActiveRecord::Schema.define(version: 20170527180058) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,7 +29,7 @@ ActiveRecord::Schema.define(version: 20170527152109) do
 
   create_table "ingredients", force: :cascade do |t|
     t.integer  "product_id"
-    t.bigint   "item_id"
+    t.integer  "item_id"
     t.integer  "quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -48,13 +48,21 @@ ActiveRecord::Schema.define(version: 20170527152109) do
     t.datetime "updated_at",   null: false
   end
 
+  create_table "pending_products", force: :cascade do |t|
+    t.integer  "product_id"
+    t.integer  "quantity"
+    t.integer  "lote"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_pending_products_on_product_id", using: :btree
+  end
+
   create_table "producers", force: :cascade do |t|
     t.string   "producer_id"
     t.integer  "group_number"
     t.string   "account"
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.boolean  "me",           default: false
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
     t.index ["producer_id"], name: "index_producers_on_producer_id", using: :btree
   end
 
@@ -65,7 +73,6 @@ ActiveRecord::Schema.define(version: 20170527152109) do
     t.decimal  "average_time"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
-    t.boolean  "mine"
     t.index ["producer_id"], name: "index_product_in_sales_on_producer_id", using: :btree
     t.index ["product_id"], name: "index_product_in_sales_on_product_id", using: :btree
   end
@@ -91,7 +98,27 @@ ActiveRecord::Schema.define(version: 20170527152109) do
     t.index ["po_id"], name: "index_purchase_orders_on_po_id", using: :btree
   end
 
+  create_table "purchased_products", force: :cascade do |t|
+    t.integer  "product_id"
+    t.integer  "producer_id"
+    t.integer  "pending_product_id"
+    t.integer  "lote"
+    t.integer  "quantity"
+    t.decimal  "produce_time"
+    t.boolean  "order_sent",         default: false
+    t.string   "po_id"
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.index ["pending_product_id"], name: "index_purchased_products_on_pending_product_id", using: :btree
+    t.index ["producer_id"], name: "index_purchased_products_on_producer_id", using: :btree
+    t.index ["product_id"], name: "index_purchased_products_on_product_id", using: :btree
+  end
+
   add_foreign_key "ingredients", "products"
+  add_foreign_key "pending_products", "products"
   add_foreign_key "product_in_sales", "producers"
   add_foreign_key "product_in_sales", "products"
+  add_foreign_key "purchased_products", "pending_products"
+  add_foreign_key "purchased_products", "producers"
+  add_foreign_key "purchased_products", "products"
 end

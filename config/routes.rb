@@ -19,6 +19,10 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :product_in_sales, only: [:index]
+  resources :producers, only: [:index]
+  resources :pending_products, only: [:index, :show]
+
   resources :factory_orders, only: [:index]
 
   get '/bank/', to: 'bank#index'

@@ -25,6 +25,10 @@
     #every: '10m'
     cron: '0 */10 * * * *'   # Runs when second = 0, every 10 minutes
     class: StoreHousesWorker
+  pending_products:
+    #every: '10m'
+    cron: '0 */10 * * * *'   # Runs when second = 0, every 10 minutes
+    class: ProduceProductWorker
 
 # you can override concurrency based on environment
 production:

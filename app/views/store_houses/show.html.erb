@@ -27,16 +27,22 @@
   </p>
 
   <h2>Inventario</h2>
-  <% @stock.each do |p| %>
-    <p>
-      <strong>Sku</strong>
-      <%= p[:sku] %>
-    </p>
-    <p>
-      <strong>Total</strong>
-      <%= p[:total] %>
-    </p>
-  <% end %>
+    <table>
+      <thead>
+      <tr>
+        <th>Sku</th>
+        <th>Total</th>
+      </tr>
+      </thead>
+      <tbody>
+        <% @stock.each do |p| %>
+          <tr>
+            <td><%= p[:sku] %></td>
+            <td><%= p[:total] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
 <% else %>
     <p>
       <strong>Servidor colapsado</strong>

@@ -7,7 +7,7 @@ class DashboardController < ApplicationController
 
     def get_products_report
 
-      me = Producer.all.find_by(me: true)
+      me = Producer.get_me
       result = []
       me.product_in_sales.each do |product_in_sale|
         product = product_in_sale.product
