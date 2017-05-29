@@ -48,12 +48,10 @@
       <%= @response[:fechaEntrega]%>
     </p>
 
-    <% if @response[:estado] == "creada" %>
-      <%= link_to 'Accept', { :controller => :purchase_orders, :action => :accept, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %> |
-      <%= link_to 'Reject', { :controller => :purchase_orders, :action => :reject, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %> |
-    <% end %>
-    <% if @response[:estado] == "aceptada" %>
-      <%= link_to 'Dispatch', { :controller => :purchase_orders, :action => :dispatch, :producto_id => @response[:sku], :direccion => @purchase_order.store_reception_id, :cantidad => @response[:cantidad], :precio_unitario => @response[:precioUnitario], :oc_id => @purchase_order.po_id }, {:method => :patch } %> |
+    <% if @proveedor == ENV['GROUP_NUMBER'].to_i %>
+        <%= link_to 'Accept', { :controller => :purchase_orders, :action => :accept, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %> |
+        <%= link_to 'Reject', { :controller => :purchase_orders, :action => :reject, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %> |
+        <%= link_to 'Dispatch', dispatch_purchase_order_path(id: @purchase_order.id) %> |
     <% end %>
 
 <% end %>
