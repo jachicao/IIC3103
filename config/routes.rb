@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       post 'created', to: 'purchase_orders#created'
     end
   end
+  get '/purchase_orders/:id/dispatch_product', to: 'purchase_orders#dispatch_product', :as => :dispatch_purchase_order
 
   resources :store_houses do
     collection do

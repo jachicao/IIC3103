@@ -1,5 +1,5 @@
 class PurchaseOrdersController < ApplicationController
-  before_action :set_purchase_order, only: [:show, :edit, :update, :destroy]
+  before_action :set_purchase_order, only: [:show, :edit, :update, :destroy, :dispatch_product]
 
   # GET /purchase_orders
   # GET /purchase_orders.json
@@ -45,8 +45,29 @@ class PurchaseOrdersController < ApplicationController
     end
   end
 
+  def dispatch_product
+    response = GetPurchaseOrderJob.perform_now(@purchase_order.po_id)
+    case response[:code]
+      when 200
+        body = response[:body].first
+        product = Product.all.find_by(sku: body[:sku])
+        result = StoreHouse.dispatch_stock_to_group_store_house(@purchase_order.store_reception_id, body[:sku], body[:cantidad], body[:_id], body[:precioUnitario])
+        respond_to do |format|
+          if result == -1
+            format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Servidor colapsado' }
+          elsif result > 0
+            format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Falta ' + result.to_s + ' de ' + product.name }
+          else
+            format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Purchase order was successfully dispatched.' }
+          end
+        end
+      else
+        return render :json => { :error => response[:body] }, status: response[:code]
+    end
+  end
+
   def reject
-    po_id = params[:po_id];
+    po_id = params[:po_id]
     response_server = RejectServerPurchaseOrderJob.perform_now(po_id, 'causa')
     case response_server[:code]
       when 200
