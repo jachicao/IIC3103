@@ -6,7 +6,10 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
     req_params = {
         payment_method: payment_method,
         id_store_reception: id_store_reception,
+        store_reception_id: id_store_reception,
+        payment_option: 1,
     }
+    puts req_params
     puts group_server_url + '/purchase_orders/' + id
     return HTTParty.put(
         group_server_url + '/purchase_orders/' + id,

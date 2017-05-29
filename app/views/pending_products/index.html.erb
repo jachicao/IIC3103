@@ -6,7 +6,6 @@
   <thead>
   <tr>
     <th>Producto</th>
-    <th>Lote</th>
     <th>Cantidad</th>
     <th>Purchased Products</th>
     <th colspan="1"></th>
@@ -17,7 +16,6 @@
   <% @pending_products.each do |pending_product| %>
       <tr>
         <td><%= pending_product.product.name %></td>
-        <td><%= pending_product.lote %></td>
         <td><%= pending_product.quantity %></td>
         <td><%= pending_product.purchased_products.size %></td>
         <td><%= link_to 'Show', pending_product_path(pending_product.id) %></td>

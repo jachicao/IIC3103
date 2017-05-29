@@ -27,18 +27,14 @@ class MakeProductsJob < ApplicationJob
     puts response.code
     case response.code
       when 429
-        #MakeProductsJob.set(wait: 90.seconds).perform_later(sku, cantidad, trx_id)
+        MakeProductsJob.set(wait: 90.seconds).perform_later(sku, cantidad, trx_id)
         return nil
     end
     FactoryOrder.create(
         fo_id: body[:_id],
         sku: body[:sku],
-        group: body[:grupo],
-        dispatched: body[:despachado],
         quantity: body[:cantidad],
-        created_at: DateTime.parse(body[:created_at]),#DateTime.parse(Time.at(body[:created_at] / 1000.0).to_s),
-        updated_at: DateTime.parse(body[:updated_at]), #DateTime.parse(Time.at(body[:updated_at] / 1000.0).to_s),
-        available: DateTime.parse(body[:disponible]), #DateTime.parse(Time.at(body[:disponible] / 1000.0).to_s),
+        available: DateTime.parse(body[:disponible]),
     )
     return {
         :body => body,

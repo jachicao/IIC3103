@@ -49,7 +49,11 @@ class StoreHouse
   end
 
   def self.get_store_house(id)
-    return all.find(_id: id).first
+    result = all
+    if result.nil?
+      return nil
+    end
+    return result.find(_id: id).first
   end
 
   def self.get_stock(id)
@@ -120,6 +124,29 @@ class StoreHouse
     return result
   end
 
+  def self.get_stock_total_not_despacho(sku)
+    store_houses = all
+    if store_houses.nil?
+      return nil
+    end
+    total_not_despacho = 0
+    store_houses.each do |store_house|
+      if store_house[:despacho]
+      else
+        stock = get_stock(store_house[:_id])
+        if stock.nil?
+          return nil
+        end
+        stock.each do |p|
+          if p[:sku] == sku
+            total_not_despacho += p[:total]
+          end
+        end
+      end
+    end
+    return total_not_despacho
+  end
+
   def self.clean_store_house(from_store_houses, to_store_houses)
     used_space = 0
     from_store_houses.each do |store_house|
@@ -145,7 +172,7 @@ class StoreHouse
                 total_to_move = [to_store_house[:availableSpace], p[:total]].min
                 puts 'total a mover'
                 puts total_to_move.to_s
-                MoveProductsBetweenStoreHousesJob.perform_later(to_store_house[:_id], from_store_house[:_id], p[:sku], total_to_move)
+                MoveProductsBetweenStoreHousesJob.perform_later(from_store_house[:_id], to_store_house[:_id], p[:sku], total_to_move)
                 p[:total] -= total_to_move
                 to_store_house[:availableSpace] -= total_to_move
                 to_store_house[:usedSpace] += total_to_move

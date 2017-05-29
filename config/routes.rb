@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   resources :product_in_sales, only: [:index]
   resources :producers, only: [:index]
   resources :pending_products, only: [:index, :show]
+  resources :invoices, only: [:index, :show]
 
   resources :factory_orders, only: [:index]
 
@@ -29,10 +30,21 @@ Rails.application.routes.draw do
   get '/bank/:id', to: 'bank#show', :as => :bank_transactions
 
   resources :products, only: [:index, :show]
+  get '/products/:id/buy_to_factory', to: 'products#buy_to_factory', :as => :buy_to_factory_product
+  post '/products/:id/buy_to_factory', to: 'products#post_buy_to_factory', :as => :post_buy_to_factory_product
+  get '/products/:id/confirm_buy_to_factory', to: 'products#confirm_buy_to_factory', :as => :confirm_buy_to_factory_product
+  post '/products/:id/post_confirm_buy_to_factory', to: 'products#post_confirm_buy_to_factory', :as => :post_confirm_buy_to_factory_product
+
+  get '/products/:id/buy_to_producer', to: 'products#buy_to_producer', :as => :buy_to_producer_product
+  post '/products/:id/buy_to_producer', to: 'products#post_buy_to_producer', :as => :post_buy_to_producer_product
+  get '/products/:id/confirm_buy_to_producer', to: 'products#confirm_buy_to_producer', :as => :confirm_buy_to_producer_product
+  post '/products/:id/confirm_buy_to_producer', to: 'products#post_confirm_buy_to_producer', :as => :post_confirm_buy_to_producer_product
+
+
   get '/products/:id/produce', to: 'products#produce', :as => :produce_product
   post '/products/:id/produce', to: 'products#post_produce', :as => :post_produce_product
-  get '/products/:id/purchase_items', to: 'products#purchase_items', :as => :purchase_items_product
-  get '/products/:id/post_purchase_items', to: 'products#post_purchase_items', :as => :post_purchase_items_product
+  get '/products/:id/confirm_produce', to: 'products#confirm_produce', :as => :confirm_produce_product
+  post '/products/:id/confirm_produce', to: 'products#post_confirm_produce', :as => :post_confirm_produce_product
 
   root 'dashboard#index'
   get '/dashboard', to: 'dashboard#index'

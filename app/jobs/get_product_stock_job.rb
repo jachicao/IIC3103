@@ -3,12 +3,12 @@ class GetProductStockJob < ApplicationJob
 
   def get_stock(almacen_id, sku, limit)
     req_params = {
-        :almacenId => almacenId,
+        :almacenId => almacen_id,
         :sku => sku,
         :limit => limit,
       }
     auth_params = {
-        :almacenId => almacenId,
+        :almacenId => almacen_id,
         :sku => sku,
       }
     return HTTParty.get(
@@ -20,7 +20,6 @@ class GetProductStockJob < ApplicationJob
 
   def perform(almacen_id, sku, limit)
     response = get_stock(almacen_id, sku, limit)
-    #puts response
     body = JSON.parse(response.body, symbolize_names: true)
     case response.code
       when 429

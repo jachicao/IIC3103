@@ -9,6 +9,7 @@
       <th>Product</th>
       <th>Price</th>
       <th>Average time</th>
+      <th>Mine</th>
     </tr>
   </thead>
 
@@ -19,6 +20,7 @@
         <td><%= product_in_sale.product.name %></td>
         <td><%= product_in_sale.price %></td>
         <td><%= product_in_sale.average_time %></td>
+        <td><%= product_in_sale.is_mine %></td>
       </tr>
     <% end %>
   </tbody>

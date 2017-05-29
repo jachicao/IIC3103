@@ -14,6 +14,7 @@ class PurchaseOrdersController < ApplicationController
     case response[:code]
       when 200
         @response = response[:body].first
+        @product = Product.all.find_by(sku: @response[:sku])
         @cliente = Producer.all.find_by(producer_id: @response[:cliente]).group_number
         @proveedor = Producer.all.find_by(producer_id: @response[:proveedor]).group_number
         respond_to do |format|

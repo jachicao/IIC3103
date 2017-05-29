@@ -1,4 +1,4 @@
-class MakeBillJob < ApplicationJob
+class CreateBillJob < ApplicationJob
   queue_as :default
 
   def crear_boleta(proveedor, cliente, total)
@@ -17,7 +17,16 @@ class MakeBillJob < ApplicationJob
   def perform(proveedor, cliente, total)
     response = crear_boleta(proveedor, cliente, total)
     puts response.body
+    puts response.code
     body = JSON.parse(response.body, symbolize_names: true)
+    Invoice.create(
+        _id: body[:_id],
+        supplier: body[:proveedor],
+        client: body[:cliente],
+        total_amount: body[:total],
+        po_id: body[:oc],
+        is_bill: true,
+    )
     return {
         :body => body,
         :code =>  response.code,

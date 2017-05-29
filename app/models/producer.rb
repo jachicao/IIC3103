@@ -4,4 +4,8 @@ class Producer < ApplicationRecord
   def self.get_me
     return Producer.all.find_by(group_number: ENV['GROUP_NUMBER'].to_i)
   end
+
+  def is_me
+    return self.group_number == ENV['GROUP_NUMBER'].to_i
+  end
 end

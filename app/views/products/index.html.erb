@@ -12,7 +12,6 @@
       <th>Unit cost</th>
       <th>Lote</th>
       <th>Ingredients</th>
-      <th>Stock</th>
       <th colspan="2"></th>
     </tr>
   </thead>
@@ -27,10 +26,16 @@
         <td><%= product.unit_cost %></td>
         <td><%= product.lote %></td>
         <td><%= product.ingredients.size %></td>
-        <td><%= product.get_stock %></td>
         <td><%= link_to 'Show', product %></td>
         <% if @my_products[product.sku.to_i] != nil %>
-            <td><%= link_to 'Producir', produce_product_path(id: product.id) %></td>
+            <% if product.ingredients.size == 0 %>
+                <td><%= link_to 'Comprar a Fabrica', buy_to_factory_product_path(id: product.id) %></td>
+            <% else %>
+                <td><%= link_to 'Mandar a Producir', produce_product_path(id: product.id) %></td>
+            <% end %>
+        <% end %>
+        <% if @my_ingredients[product.sku.to_i] %>
+            <td><%= link_to 'Comprar a Proveedor ', buy_to_producer_product_path(id: product.id) %></td>
         <% end%>
       </tr>
     <% end %>

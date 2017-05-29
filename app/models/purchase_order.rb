@@ -26,12 +26,12 @@ class PurchaseOrder < ApplicationRecord
     end
 
     group_number = Producer.where(producer_id: producer_id).first.group_number
-    #response_group = CreateGroupPurchaseOrderJob.perform_now(
-    #    group_number,
-    #    response_server[:body][:_id],
-    #    payment_method,
-    #    id_almacen_recepcion,
-    #)
+    response_group = CreateGroupPurchaseOrderJob.perform_now(
+        group_number,
+        response_server[:body][:_id],
+        payment_method,
+        id_almacen_recepcion,
+    )
 
     @purchase_order = PurchaseOrder.new(po_id: response_server[:body][:_id],
                                         payment_method: payment_method,

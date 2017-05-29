@@ -12,7 +12,7 @@ class Bank < ApplicationRecord
   end
 
   def self.transfer_money(amount, source, target)
-    return MakeBankTransactionJob.perform_now(amount, source, target)
+    return MakeBankTransactionJob.perform_now(amount, source, target)[:body]
   end
 
   def self.get_balance

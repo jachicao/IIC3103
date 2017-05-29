@@ -14,11 +14,7 @@
   <thead>
   <tr>
     <th>Producto</th>
-    <th>Proveedor</th>
-    <th>Lote</th>
-    <th>Cantidad</th>
-    <th>Tiempo</th>
-    <th>Orden Enviada</th>
+    <th>OC</th>
   </tr>
   </thead>
 
@@ -26,11 +22,7 @@
   <% @pending_product.purchased_products.each do |purchased_product| %>
       <tr>
         <td><%= purchased_product.product.name %></td>
-        <td><%= purchased_product.producer.group_number %></td>
-        <td><%= purchased_product.lote %></td>
-        <td><%= purchased_product.quantity %></td>
-        <td><%= purchased_product.produce_time %></td>
-        <td><%= purchased_product.order_sent %></td>
+        <td><%= purchased_product.po_id %></td>
       </tr>
   <% end %>
   </tbody>

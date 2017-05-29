@@ -1,44 +1,134 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: [:show, :edit, :update, :destroy, :produce, :post_produce, :purchase_items, :post_purchase_items]
-  before_action :set_purchase_items, only: [:purchase_items, :post_purchase_items]
+  before_action :set_product, only: [:show, :edit, :update, :destroy, :buy_to_factory, :post_buy_to_factory, :confirm_buy_to_factory, :post_confirm_buy_to_factory, :buy_to_producer, :post_buy_to_producer, :confirm_buy_to_producer, :post_confirm_buy_to_producer, :produce, :post_produce, :confirm_produce, :post_confirm_produce]
+  before_action :set_ingredients, only: [:confirm_produce, :post_confirm_produce]
 
-  def post_purchase_items
-    @product.purchase_stock(@lote, @quantity, @purchase_items)
-    respond_to do |format|
-      format.html { redirect_to products_path, notice: 'Productos mandados a comprar' }
-      format.json { render json: { :success => true } }
-    end
-  end
-
-  def purchase_items
+  def buy_to_factory
 
   end
 
-  def post_produce
-    maximum_time = params[:maximum_time].to_i
+  def post_buy_to_factory
+    maximum_time = params[:maximum_time].to_f
     quantity = params[:quantity].to_i
-
-    result = @product.analyze_stock(quantity)
-
+    analysis = @product.get_factory_analysis(quantity)
     respond_to do |format|
-      if result == nil
-        format.html { redirect_to products_path, notice: 'Servidor colapsado' }
-        format.json { render json: { :error => 'Servidor colapsado' }, status: :unprocessable_entity }
-      elsif result[:maximum_time] <= maximum_time
-        format.html { redirect_to controller: 'products', action: 'purchase_items', lote: result[:lote], quantity: result[:quantity], purchase_items: result[:purchase_items] }
-        format.json { render json: result[:purchase_items] }
+      if analysis == nil
+        format.html { redirect_to buy_to_factory_product_path, notice: 'Servidor colapsado' }
+      elsif analysis[:produce_time] <= maximum_time
+        if analysis[:quantity] == 0
+          format.html { redirect_to buy_to_factory_product_path, notice: 'Ya hay suficiente stock' }
+        else
+          format.html { redirect_to controller: 'products', action: 'confirm_buy_to_factory', quantity: analysis[:quantity] }
+        end
       else
-        format.html { redirect_to products_path, notice: 'No se alcanza a cumplir el tiempo' }
-        format.json { render json: { :error => 'No se alcanza a cumplir el tiempo' }, status: :unprocessable_entity }
+        format.html { redirect_to buy_to_factory_product_path, notice: 'No se alcanza a cumplir el tiempo'}
       end
     end
   end
 
+  def confirm_buy_to_factory
+    @quantity = params[:quantity].to_i
+  end
+
+
+  def post_confirm_buy_to_factory
+    quantity = params[:quantity].to_i
+    @product.buy_to_factory(quantity)
+    respond_to do |format|
+      format.html { redirect_to buy_to_factory_product_path, notice: 'Productos enviados a fabricar' }
+    end
+  end
+
+  def buy_to_producer
+    @product_in_sales = []
+    @product.product_in_sales.each do |product_in_sale|
+      if product_in_sale.is_mine
+      else
+        @product_in_sales.push(product_in_sale)
+      end
+    end
+  end
+
+  def post_buy_to_producer
+    maximum_time = params[:maximum_time].to_f
+    quantity = params[:quantity].to_i
+    producer = Producer.all.find_by(producer_id: params[:producer_id])
+    analysis = @product.get_producer_analysis(producer, quantity)
+
+    respond_to do |format|
+      if analysis.nil?
+        format.html { redirect_to buy_to_producer_product_path, notice: 'Servidor colapsado' }
+      elsif analysis[:produce_time] <= maximum_time
+        if analysis[:quantity] == 0
+          format.html { redirect_to buy_to_producer_product_path, notice: 'Ya hay suficiente stock' }
+        else
+          format.html { redirect_to controller: 'products', action: 'confirm_buy_to_producer', producer_id: producer.producer_id, quantity: analysis[:quantity] }
+        end
+      else
+        format.html { redirect_to buy_to_producer_product_path, notice: 'No se alcanza a cumplir el tiempo'}
+      end
+    end
+  end
+
+  def confirm_buy_to_producer
+    @quantity = params[:quantity].to_i
+    @producer = Producer.all.find_by(producer_id: params[:producer_id])
+    @produce_time = 0
+    @producer.product_in_sales.each do |product_in_sale|
+      if product_in_sale.product.sku == @product.sku
+        @produce_time = product_in_sale.average_time
+      end
+    end
+  end
+
+  def post_confirm_buy_to_producer
+    quantity = params[:quantity].to_i
+    producer = Producer.all.find_by(producer_id: params[:producer_id])
+    @produce_time = 0
+    producer.product_in_sales.each do |product_in_sale|
+      if product_in_sale.product.sku == @product.sku
+        @produce_time = product_in_sale.average_time
+      end
+    end
+    @product.buy_to_producer(producer, quantity, @product.unit_cost, @produce_time)
+    respond_to do |format|
+      format.html { redirect_to buy_to_producer_product_path, notice: 'Productos enviados a comprar' }
+    end
+  end
+
   def produce
-    me = Producer.get_me
-    @products = []
-    me.product_in_sales.each do |product_in_sale|
-      @products.push(product_in_sale.product)
+
+  end
+
+  def post_produce
+    maximum_time = params[:maximum_time].to_f
+    quantity = params[:quantity].to_i
+    analysis = @product.get_ingredients_analysis(quantity)
+
+    respond_to do |format|
+      if analysis.nil?
+        format.html { redirect_to produce_product_path, notice: 'Servidor colapsado' }
+      elsif analysis[:produce_time] <= maximum_time
+        if analysis[:purchase_ingredients].size == 0
+          @product.produce_product(analysis[:quantity])
+          format.html { redirect_to produce_product_path, notice: 'Producto enviado a producir' }
+        else
+          format.html { redirect_to controller: 'products', action: 'confirm_produce', quantity: analysis[:quantity], purchase_ingredients: analysis[:purchase_ingredients] }
+        end
+      else
+        format.html { redirect_to produce_product_path, notice: 'No se alcanza a cumplir el tiempo'}
+      end
+    end
+  end
+
+  def confirm_produce
+
+  end
+
+  def post_confirm_produce
+    @product.purchase_ingredients(@purchase_ingredients)
+    @product.produce_product(@quantity)
+    respond_to do |format|
+      format.html { redirect_to produce_product_path, notice: 'Ingredientes enviados a comprar y producto a producir' }
     end
   end
 
@@ -48,8 +138,12 @@ class ProductsController < ApplicationController
     @products = Product.all
     @me = Producer.get_me
     @my_products = []
+    @my_ingredients = []
     @me.product_in_sales.each do |product_in_sale|
       @my_products[product_in_sale.product.sku.to_i] = product_in_sale.product
+      product_in_sale.product.ingredients.each do |ingredient|
+        @my_ingredients[ingredient.item.sku.to_i] = ingredient.item
+      end
     end
   end
 
@@ -118,13 +212,12 @@ class ProductsController < ApplicationController
       params.require(:product).permit(:sku, :name, :product_type, :unit, :unit_cost, :lote)
     end
 
-    def set_purchase_items
-      @lote = params[:lote]
-      @quantity = params[:quantity]
-      @purchase_items = []
-      if params[:purchase_items] != nil
-        params[:purchase_items].each do |item|
-          @purchase_items.push({ sku: item[:sku], quantity: item[:quantity].to_i, lote: item[:lote].to_i, producer_id: item[:producer_id], produce_time: item[:produce_time].to_f })
+    def set_ingredients
+      @quantity = params[:quantity].to_i
+      @purchase_ingredients = []
+      if params[:purchase_ingredients] != nil
+        params[:purchase_ingredients].each do |item|
+          @purchase_ingredients.push({ producer_id: item[:producer_id], quantity: item[:quantity].to_i, produce_time: item[:produce_time].to_f, sku: item[:sku], price: item[:price].to_i })
         end
       end
     end

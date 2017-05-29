@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170527180058) do
+ActiveRecord::Schema.define(version: 20170529014350) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,12 +18,8 @@ ActiveRecord::Schema.define(version: 20170527180058) do
   create_table "factory_orders", force: :cascade do |t|
     t.string   "fo_id"
     t.string   "sku"
-    t.integer  "group"
-    t.boolean  "dispatched"
     t.datetime "available"
     t.integer  "quantity"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.index ["fo_id"], name: "index_factory_orders_on_fo_id", using: :btree
   end
 
@@ -41,17 +37,16 @@ ActiveRecord::Schema.define(version: 20170527180058) do
     t.string   "supplier"
     t.string   "client"
     t.integer  "total_amount"
-    t.integer  "tax"
-    t.string   "status"
     t.string   "po_id"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "payment_date"
+    t.string   "rejected_reason"
+    t.string   "cancelled_reason"
+    t.boolean  "is_bill",          default: false
   end
 
   create_table "pending_products", force: :cascade do |t|
     t.integer  "product_id"
     t.integer  "quantity"
-    t.integer  "lote"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_pending_products_on_product_id", using: :btree
@@ -102,13 +97,9 @@ ActiveRecord::Schema.define(version: 20170527180058) do
     t.integer  "product_id"
     t.integer  "producer_id"
     t.integer  "pending_product_id"
-    t.integer  "lote"
-    t.integer  "quantity"
-    t.decimal  "produce_time"
-    t.boolean  "order_sent",         default: false
     t.string   "po_id"
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
     t.index ["pending_product_id"], name: "index_purchased_products_on_pending_product_id", using: :btree
     t.index ["producer_id"], name: "index_purchased_products_on_producer_id", using: :btree
     t.index ["product_id"], name: "index_purchased_products_on_product_id", using: :btree
