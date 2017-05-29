@@ -1,27 +1,5 @@
 class PurchaseOrder < ApplicationRecord
 
-  def self.dispatch_purchase_order(producto_id, direccion, cantidad, precio_unitario,oc)
-    response_movement = store_house.move_to_despacho(producto_id,cantidad)
-    if response_movement[:message] == 'Movido a despacho'
-      response_server = DispatchProductJob.perform(
-        producto_id,
-        direccion,
-        cantidad*precio_unitario,
-        oc,
-      )
-      case response_server[:code]
-        when 200
-          return true
-
-        else
-          puts response_server[:code]
-          return nil
-      end
-    else
-      return response_movement
-    end
-  end
-
   def self.create_new_purchase_order(producer_id, sku, delivery_date, quantity, unit_price, payment_method)
     recepcion = StoreHouse.get_recepciones
     if recepcion == nil
@@ -72,6 +50,7 @@ class PurchaseOrder < ApplicationRecord
                                         status: response_server[:body][:estado],
                                         own: true,
                                         dispatched: false)
+    puts "llego"
     if @purchase_order.save
       return true
     else
