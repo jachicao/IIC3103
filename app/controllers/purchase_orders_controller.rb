@@ -4,9 +4,27 @@ class PurchaseOrdersController < ApplicationController
   # GET /purchase_orders
   # GET /purchase_orders.json
   def index
-    @purchase_orders = PurchaseOrder.all
+    @own_purchase_orders = PurchaseOrder.where(own: true)
+    @recived_purchase_orders = PurchaseOrder.where(own: false, dispatched: false)
+    @dispatched_purchase_orders = PurchaseOrder.where(own: false, dispatched: true)
   end
 
+  def dispatch
+    result = PurchaseOrder.dispatch_purchase_order(params[:producto_id], params[:direccion],params[:cantidad], params[:precio_unitario], params[:oc_id])
+    respond_to do |format|
+      if result == nil
+        format.html { redirect_to purchase_orders_url, notice: 'Servidor colapsado' }
+        format.json { render :json => { :error => 'Servidor colapsado' }, status: 500 }
+      elsif result == true
+        format.html { redirect_to purchase_orders_url, notice: 'Despacho Realizado' }
+          format.json { render json: :index  }
+      else
+        format.html { redirect_to purchase_orders_url, notice: result[:message] }
+        format.json { render json: :index }
+      end
+    end
+  end
+  
   # GET /purchase_orders/1
   # GET /purchase_orders/1.json
   def show
@@ -75,7 +93,7 @@ class PurchaseOrdersController < ApplicationController
       else
         return render :json => { :error => response_server[:body] }, status: response[:code]
     end
-    
+
     group_number = Producer.find_by(producer_id: params[:client_id]).group_number
     response_group = RejectGroupPurchaseOrderJob.perform_now(group_number, po_id, 'causa')
 
