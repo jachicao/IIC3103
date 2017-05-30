@@ -25,14 +25,14 @@ ActiveRecord::Schema.define(version: 20170529014350) do
 
   create_table "ingredients", id: :bigserial, force: :cascade do |t|
     t.bigint   "product_id"
-    t.bigint   "item_id"
+    t.integer  "item_id"
     t.integer  "quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_ingredients_on_product_id", using: :btree
   end
 
-  create_table "invoices", force: :cascade do |t|
+  create_table "invoices", id: :bigserial, force: :cascade do |t|
     t.string   "_id"
     t.string   "supplier"
     t.string   "client"
@@ -90,8 +90,6 @@ ActiveRecord::Schema.define(version: 20170529014350) do
     t.string   "status"
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
-    t.boolean  "own"
-    t.boolean  "dispatched"
     t.index ["po_id"], name: "index_purchase_orders_on_po_id", using: :btree
   end
 

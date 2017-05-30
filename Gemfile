@@ -71,3 +71,5 @@ gem 'sidekiq-scheduler'
 gem 'spree'
 gem 'spree_auth_devise'
 gem 'spree_gateway'
+
+gem 'chartkick'
