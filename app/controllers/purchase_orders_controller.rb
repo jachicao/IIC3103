@@ -5,7 +5,7 @@ class PurchaseOrdersController < ApplicationController
   # GET /purchase_orders.json
   def index
     @own_purchase_orders = PurchaseOrder.where(own: true)
-    @recived_purchase_orders = PurchaseOrder.where(own: false, dispatched: false)
+    @received_purchase_orders = PurchaseOrder.where(own: false, dispatched: false)
     @dispatched_purchase_orders = PurchaseOrder.where(own: false, dispatched: true)
   end
 
@@ -28,25 +28,6 @@ class PurchaseOrdersController < ApplicationController
     end
   end
 
-  def accept
-    po_id = params[:po_id]
-    response_server = AcceptServerPurchaseOrderJob.perform_now(po_id)
-    case response_server[:code]
-      when 200
-
-      else
-        return render :json => { :error => response_server[:body] }, status: response[:code]
-    end
-
-    group_number = Producer.find_by(producer_id: params[:client_id]).group_number
-    response_group = AcceptGroupPurchaseOrderJob.perform_now(group_number, po_id)
-
-    respond_to do |format|
-      format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully accepted.' }
-      format.json { head :no_content }
-    end
-  end
-
   def dispatch_product
     response = GetPurchaseOrderJob.perform_now(@purchase_order.po_id)
     case response[:code]
@@ -65,6 +46,25 @@ class PurchaseOrdersController < ApplicationController
         end
       else
         return render :json => { :error => response[:body] }, status: response[:code]
+    end
+  end
+
+  def accept
+    po_id = params[:po_id]
+    response_server = AcceptServerPurchaseOrderJob.perform_now(po_id)
+    case response_server[:code]
+      when 200
+
+      else
+        return render :json => { :error => response_server[:body] }, status: response[:code]
+    end
+
+    group_number = Producer.find_by(producer_id: params[:client_id]).group_number
+    response_group = AcceptGroupPurchaseOrderJob.perform_now(group_number, po_id)
+
+    respond_to do |format|
+      format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully accepted.' }
+      format.json { head :no_content }
     end
   end
 
