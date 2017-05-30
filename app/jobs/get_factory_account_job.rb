@@ -24,7 +24,6 @@ class GetFactoryAccountJob < ApplicationJob
       }
     end
     response = get_cuenta_fabrica()
-    #puts response
     body = JSON.parse(response.body, symbolize_names: true)
     case response.code
       when 429

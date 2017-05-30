@@ -9,7 +9,7 @@
       <th>Product</th>
       <th>Price</th>
       <th>Average time</th>
-      <th colspan="3"></th>
+      <th>Mine</th>
     </tr>
   </thead>
 
@@ -20,14 +20,8 @@
         <td><%= product_in_sale.product.name %></td>
         <td><%= product_in_sale.price %></td>
         <td><%= product_in_sale.average_time %></td>
-        <td><%= link_to 'Show', product_in_sale %></td>
-        <td><%= link_to 'Edit', edit_product_in_sale_path(product_in_sale) %></td>
-        <td><%= link_to 'Destroy', product_in_sale, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= product_in_sale.is_mine %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
-
-<br>
-
-<%= link_to 'New Product In Sale', new_product_in_sale_path %>

@@ -1,14 +1,14 @@
 class CreateServerPurchaseOrderJob < ApplicationJob
   queue_as :default
 
-  def crear_orden_de_compra(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
+  def crear_orden_de_compra(cliente, proveedor, sku, fecha_entrega, cantidad, precio_unitario, canal, notas)
     req_params = {
         :cliente => cliente,
         :proveedor => proveedor,
         :sku => sku,
-        :fechaEntrega => fechaEntrega,
-        :cantidad => cantidad.to_i,
-        :precioUnitario => precioUnitario.to_i,
+        :fechaEntrega => fecha_entrega,
+        :cantidad => cantidad,
+        :precioUnitario => precio_unitario,
         :canal => canal,
         #:notas => notas,
       }
@@ -19,8 +19,8 @@ class CreateServerPurchaseOrderJob < ApplicationJob
       )
   end
 
-  def perform(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
-    response = crear_orden_de_compra(cliente, proveedor, sku, fechaEntrega, cantidad, precioUnitario, canal, notas)
+  def perform(cliente, proveedor, sku, fecha_entrega, cantidad, precio_unitario, canal, notas)
+    response = crear_orden_de_compra(cliente, proveedor, sku, fecha_entrega, cantidad, precio_unitario, canal, notas)
     puts response.body
     puts response.code
     return {

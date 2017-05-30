@@ -4,6 +4,7 @@ class AcceptServerPurchaseOrderJob < ApplicationJob
   def recepcionar_orden_de_compra(id)
     req_params = {
         :_id => id,
+        :id => id,
       }
     return HTTParty.post(
       ENV['CENTRAL_SERVER_URL'] + '/oc/recepcionar/' + id, 

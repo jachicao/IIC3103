@@ -7,7 +7,7 @@ class DashboardController < ApplicationController
 
     def get_products_report
 
-      me = Producer.all.find_by(me: true)
+      me = Producer.get_me
       my_products = []
       me.product_in_sales.each do |product_in_sale|
         my_products[product_in_sale.product.sku.to_i] = true
@@ -42,7 +42,6 @@ class DashboardController < ApplicationController
       end
 
       return result
-
     end
 
     def get_set_factory_orders

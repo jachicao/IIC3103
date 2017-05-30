@@ -1,7 +1,9 @@
 <p id="notice"><%= notice %></p>
 
 <% if @response.nil? %>
-
+    <h2>
+      Servidor colapsado
+    </h2>
 <% else %>
     <p>
       <strong>Grupo Cliente:</strong>
@@ -15,7 +17,7 @@
 
     <p>
       <strong>Producto:</strong>
-      <%= Product.all.find_by(sku: @response[:sku]).name %>
+      <%= @product.name %>
     </p>
 
     <p>

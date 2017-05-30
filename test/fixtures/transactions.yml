@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  _id: MyString
+  monto: 
+  origin: MyString
+  destination: MyString
+
+two:
+  _id: MyString
+  monto: 
+  origin: MyString
+  destination: MyString

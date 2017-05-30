@@ -33,13 +33,14 @@ class StoreHouse
     store_houses.each do |s|
       store_house = s
       store_house[:inventario] = []
+      inventario = store_house[:inventario]
       if store_house[:usedSpace] > 0
         stock = get_stock(store_house[:_id])
         if stock == nil
           return nil
         end
         stock.each do |b|
-          store_house[:inventario].push({ sku: b[:_id], total: b[:total] })
+          inventario.push({ sku: b[:sku], total: b[:total] })
         end
       end
       result.push(store_house)
@@ -48,7 +49,11 @@ class StoreHouse
   end
 
   def self.get_store_house(id)
-    return all.find(_id: id).first
+    result = all
+    if result.nil?
+      return nil
+    end
+    return result.find(_id: id).first
   end
 
   def self.get_stock(id)
@@ -119,6 +124,29 @@ class StoreHouse
     return result
   end
 
+  def self.get_stock_total_not_despacho(sku)
+    store_houses = all
+    if store_houses.nil?
+      return nil
+    end
+    total_not_despacho = 0
+    store_houses.each do |store_house|
+      if store_house[:despacho]
+      else
+        stock = get_stock(store_house[:_id])
+        if stock.nil?
+          return nil
+        end
+        stock.each do |p|
+          if p[:sku] == sku
+            total_not_despacho += p[:total]
+          end
+        end
+      end
+    end
+    return total_not_despacho
+  end
+
   def self.clean_store_house(from_store_houses, to_store_houses)
     used_space = 0
     from_store_houses.each do |store_house|
@@ -140,9 +168,11 @@ class StoreHouse
               return used_space
             end
             stock.each do |p|
-              if to_store_house[:availableSpace] > 0 and p[:total] > 0
+              if to_store_house[:availableSpace] > 0 and p[:total] > 0 and used_space > 0
                 total_to_move = [to_store_house[:availableSpace], p[:total]].min
-                MoveProductsBetweenStoreHousesJob.perform_later(to_store_house[:_id], from_store_house[:_id], p[:sku], total_to_move)
+                puts 'total a mover'
+                puts total_to_move.to_s
+                MoveProductsBetweenStoreHousesJob.perform_later(from_store_house[:_id], to_store_house[:_id], p[:sku], total_to_move)
                 p[:total] -= total_to_move
                 to_store_house[:availableSpace] -= total_to_move
                 to_store_house[:usedSpace] += total_to_move
@@ -201,17 +231,17 @@ class StoreHouse
         stock.each do |p|
           if p[:sku] == sku
             to_store_houses.each do |to_store_house|
-              if to_store_house[:availableSpace] > 0
-                if quantity_left > 0 and p[:total] > 0
-                  total_to_move = [to_store_house[:availableSpace], p[:total], quantity_left].min
-                  MoveProductsBetweenStoreHousesJob.perform_later(to_store_house[:_id], from_store_house[:_id], sku, total_to_move)
-                  p[:total] -= total_to_move
-                  to_store_house[:availableSpace] -= total_to_move
-                  to_store_house[:usedSpace] += total_to_move
-                  from_store_house[:availableSpace] += total_to_move
-                  from_store_house[:usedSpace] -= total_to_move
-                  quantity_left -= total_to_move
-                end
+              if to_store_house[:availableSpace] > 0 and quantity_left > 0 and p[:total] > 0
+                total_to_move = [to_store_house[:availableSpace], p[:total], quantity_left].min
+                puts 'total a mover'
+                puts total_to_move.to_s
+                MoveProductsBetweenStoreHousesJob.perform_later(from_store_house[:_id], to_store_house[:_id], sku, total_to_move)
+                p[:total] -= total_to_move
+                to_store_house[:availableSpace] -= total_to_move
+                to_store_house[:usedSpace] += total_to_move
+                from_store_house[:availableSpace] += total_to_move
+                from_store_house[:usedSpace] -= total_to_move
+                quantity_left -= total_to_move
               end
             end
           end
@@ -221,50 +251,79 @@ class StoreHouse
     return quantity_left
   end
 
-  def self.move_to_despacho(sku, quantity) #cantidad de un sku que hay que llevar a despacho
-    quantity_left = quantity
+  def self.dispatch_stock_to_group_store_house(to_store_house_id, sku, quantity, po_id, price)
 
-    despacho = get_despachos
-    if despacho == nil
-      return nil
+    all_stock = StoreHouse.all_stock
+
+    if all_stock.nil?
+      return -1
     end
 
-    #mover stock desde general
-    general = get_otros
-    if general == nil
-      return nil
+    total = 0
+    total_despacho = 0
+    despacho_id = nil
+    despachos = []
+    not_despachos = []
+    all_stock.each do |store_house|
+      store_house[:inventario].each do |p|
+        if p[:sku] == sku
+          total += p[:total]
+          if store_house[:despacho]
+            despacho_id = store_house[:_id]
+            despachos.push(store_house)
+            total_despacho += p[:total]
+          else
+            not_despachos.push(store_house)
+          end
+        end
+      end
     end
-
-    quantity_left = move_stock(general, despacho, sku, quantity_left)
-
-    if quantity_left == 0
-      return { :message => 'Movido a despacho' };
-    end
-
-    #mover stock desde recepcion
-    recepcion = get_recepciones
-    if recepcion == nil
-      return nil
-    end
-
-    quantity_left = move_stock(recepcion, despacho, sku, quantity_left)
-
-    if quantity_left == 0
-      return { :message => 'Movido a despacho' };
-    end
-
-
-    #mover stock desde pulmon
-    pulmon = get_pulmones
-    if pulmon == nil
-      return nil
-    end
-    quantity_left = move_stock(pulmon, despacho, sku, quantity_left)
-
-    if quantity_left == 0
-      return { :message => 'Movido a despacho' };
+    if total >= quantity
+      if total_despacho < quantity
+        move_stock(not_despachos, despachos, sku, quantity - total_despacho)
+      end
+      MoveProductsBetweenGroupsJob.perform_later(despacho_id, to_store_house_id, sku, quantity, po_id, price)
+      return 0
     else
-      return { :error => 'Falta stock por mover: ' + quantity_left }
+      return quantity - total
     end
   end
+
+  def self.dispatch_stock_to_direction(direction, sku, quantity, po_id, price)
+    all_stock = StoreHouse.all_stock
+
+    if all_stock.nil?
+      return -1
+    end
+
+    total = 0
+    total_despacho = 0
+    despacho_id = nil
+    despachos = []
+    not_despachos = []
+    all_stock.each do |store_house|
+      store_house[:inventario].each do |p|
+        if p[:sku] == sku
+          total += p[:total]
+          if store_house[:despacho]
+            despacho_id = store_house[:_id]
+            despachos.push(store_house)
+            total_despacho += p[:total]
+          else
+            not_despachos.push(store_house)
+          end
+        end
+      end
+    end
+    if total >= quantity
+      if total_despacho < quantity
+        move_stock(not_despachos, despachos, sku, quantity - total_despacho)
+      end
+      MoveProductsToDirectionJob.perform_later(despacho_id, direction, sku, quantity, po_id, price)
+      return 0
+    else
+      return quantity - total
+    end
+  end
+
 end

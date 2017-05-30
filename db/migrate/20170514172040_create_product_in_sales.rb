@@ -1,4 +1,4 @@
-class CreateProductInSales < ActiveRecord::Migration[5.1]
+class CreateProductInSales < ActiveRecord::Migration[5.0]
   def change
     create_table :product_in_sales do |t|
       t.references :producer, foreign_key: true

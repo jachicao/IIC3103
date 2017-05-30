@@ -8,7 +8,7 @@
       <th>Producer</th>
       <th>Group number</th>
       <th>Account</th>
-      <th colspan="3"></th>
+      <th>Me</th>
     </tr>
   </thead>
 
@@ -18,14 +18,8 @@
         <td><%= producer.producer_id %></td>
         <td><%= producer.group_number %></td>
         <td><%= producer.account %></td>
-        <td><%= link_to 'Show', producer %></td>
-        <td><%= link_to 'Edit', edit_producer_path(producer) %></td>
-        <td><%= link_to 'Destroy', producer, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= producer.is_me %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
-
-<br>
-
-<%= link_to 'New Producer', new_producer_path %>

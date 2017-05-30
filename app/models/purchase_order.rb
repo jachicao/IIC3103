@@ -1,9 +1,10 @@
 class PurchaseOrder < ApplicationRecord
+  has_one :invoice
 
   def self.create_new_purchase_order(producer_id, sku, delivery_date, quantity, unit_price, payment_method)
     recepcion = StoreHouse.get_recepciones
     if recepcion == nil
-      return false
+      return nil
     end
     id_almacen_recepcion = recepcion.first[:_id]
 
@@ -21,7 +22,7 @@ class PurchaseOrder < ApplicationRecord
       when 200
 
       else
-        return false
+        return nil
     end
 
     group_number = Producer.where(producer_id: producer_id).first.group_number
@@ -52,9 +53,9 @@ class PurchaseOrder < ApplicationRecord
                                         dispatched: false)
     puts "llego"
     if @purchase_order.save
-      return true
+      return response_server
     else
-      return false
+      return nil
     end
   end
 end
