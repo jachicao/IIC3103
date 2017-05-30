@@ -1,10 +1,8 @@
 class ProductInSale < ApplicationRecord
   belongs_to :producer
   belongs_to :product
-  before_create :set_mine
 
-  def set_mine
-    self.mine = producer.me
+  def is_mine
+    return self.producer.is_me
   end
-
 end

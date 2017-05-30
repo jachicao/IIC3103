@@ -4,6 +4,7 @@ class RejectServerPurchaseOrderJob < ApplicationJob
   def rechazar_orden_de_compra(id, rechazo)
     req_params = {
         :id => id,
+        :_id => id,
         :rechazo => rechazo
       }
     return HTTParty.post(

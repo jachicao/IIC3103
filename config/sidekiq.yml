@@ -3,7 +3,7 @@
 # Place this file at config/sidekiq.yml and Sidekiq will
 # pick it up automatically.
 ---
-:verbose: false
+:verbose: true
 :concurrency: 10
 :pidfile: ./tmp/pids/sidekiq.pid
 :logfile: ./log/sidekiq.log
@@ -19,6 +19,14 @@
   - default
   - <%= `hostname`.strip %>
   - low
+
+:schedule:
+  pending_products:
+    cron: '0 */10 * * * *'   # Runs when second = 0, every 10 minutes
+    class: ProduceProductWorker
+  store_houses:
+    cron: '0 */10 * * * *'   # Runs when second = 0, every 10 minutes
+    class: StoreHousesWorker
 
 # you can override concurrency based on environment
 production:

@@ -1,16 +1,16 @@
 class MoveProductExternallyJob < ApplicationJob
   queue_as :default
 
-  def mover_stock_bodega(productoId, almacenId, oc, precio)
+  def mover_stock_bodega(producto_id, almacen_id, oc, precio)
     req_params = { 
-        :productoId => productoId,
-        :almacenId => almacenId,
+        :productoId => producto_id,
+        :almacenId => almacen_id,
         :oc => oc,
         :precio => precio,
       }
     auth_params = {
-        :productoId => productoId,
-        :almacenId => almacenId,
+        :productoId => producto_id,
+        :almacenId => almacen_id,
       }
     return HTTParty.post(
       ENV['CENTRAL_SERVER_URL'] + '/bodega/moveStockBodega', 
@@ -19,15 +19,14 @@ class MoveProductExternallyJob < ApplicationJob
       )
   end
 
-  def perform(productoId, almacenId, oc, precio)
-    response = mover_stock_bodega(productoId, almacenId, oc, precio)
-    #puts response
+  def perform(producto_id, from_store_house_id, to_store_house_id, oc, precio)
+    $redis.del('get_almacenes')
+    $redis.del('get_skus_with_stock:' + from_store_house_id)
+    response = mover_stock_bodega(producto_id, to_store_house_id, oc, precio)
+    puts 'Moviendo'
+    puts response.code
+    puts response.body
     body = JSON.parse(response.body, symbolize_names: true)
-    case response.code
-      when 429
-        #MoveProductExternallyJob.set(wait: 90.seconds).perform_later(productoId, almacenId, oc, precio)
-        return nil
-    end
     return {
         :body => body,
         :code =>  response.code,

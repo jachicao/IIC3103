@@ -4,7 +4,7 @@ class Api::ApiProductsController < Api::ApiController
   # GET /products.json
   def index
     res = []
-    me = Producer.all.find_by(me: true)
+    me = Producer.get_me
     me.product_in_sales.each do |product_in_sale|
       res.push({ sku: product_in_sale.product.sku, name: product_in_sale.product.name, price: product_in_sale.price })
     end
@@ -20,7 +20,7 @@ class Api::ApiProductsController < Api::ApiController
     if all_stock == nil
       return render json: result
     end
-    me = Producer.all.find_by(me: true)
+    me = Producer.get_me
     products = []
     me.product_in_sales.each do |product_in_sale|
       product = product_in_sale.product

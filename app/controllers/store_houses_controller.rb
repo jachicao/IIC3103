@@ -1,5 +1,4 @@
 class StoreHousesController < ApplicationController
-
   before_action :set_store_house, only: [:show]
 
   def index
@@ -26,8 +25,8 @@ class StoreHousesController < ApplicationController
   end
 
   def submit_move_internally
-    from_store_houses = StoreHouse.all.find(_id: params[:from_store_house_id])
-    to_store_houses = StoreHouse.all.find(_id: params[:to_store_house_id])
+    from_store_houses = StoreHouse.all.select { |v| v[:_id] == params[:from_store_house_id] }
+    to_store_houses = StoreHouse.all.select { |v| v[:_id] == params[:to_store_house_id] }
     result = StoreHouse.move_stock(from_store_houses, to_store_houses, params[:sku], params[:quantity].to_i)
     respond_to do |format|
       if result == 0
@@ -79,7 +78,7 @@ class StoreHousesController < ApplicationController
     def set_store_house
       @store_house = StoreHouse.get_store_house(params[:id])
       @stock = []
-      if @store_house[:usedSpace] > 0
+      if @store_house != nil and @store_house[:usedSpace] > 0
         @stock = StoreHouse.get_stock(params[:id])
       end
     end

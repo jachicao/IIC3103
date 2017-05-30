@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Bank Accounts</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Id</th>
+    <th>Saldo</th>
+    <th colspan="1"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @accounts.each do |account| %>
+      <tr>
+        <td><%= account[:_id] %></td>
+        <td><%= account[:saldo] %></td>
+        <td><%= link_to 'Show', bank_transactions_path(id: account[:_id]) %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<br>

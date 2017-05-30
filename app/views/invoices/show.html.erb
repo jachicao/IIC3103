@@ -1,0 +1,28 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Estado:</strong>
+  <%= @response_server[:estado] %>
+</p>
+
+<p>
+  <strong>Bruto:</strong>
+  <%= @response_server[:bruto] %>
+</p>
+
+<p>
+  <strong>Iva:</strong>
+  <%= @response_server[:iva] %>
+</p>
+
+<p>
+  <strong>Motivo rechazo:</strong>
+  <%= @response_server[:motivo_rechazo] %>
+</p>
+
+<p>
+  <strong>Motivo anulación:</strong>
+  <%= @response_server[:motivo_anulacion] %>
+</p>
+
+<%= link_to 'Back', invoices_path %>
