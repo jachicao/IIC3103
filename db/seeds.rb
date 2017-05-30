@@ -273,3 +273,7 @@ product_in_sale_82	= ProductInSale.create(product: product_53	, producer: produc
 product_in_sale_83	= ProductInSale.create(product: product_54	, producer: producer_4	, average_time: 0.860)
 product_in_sale_84	= ProductInSale.create(product: product_55	, producer: producer_4	, average_time: 3.283)
 product_in_sale_85	= ProductInSale.create(product: product_56	, producer: producer_5	, average_time: 1.533)
+
+
+Spree::Core::Engine.load_seed if defined?(Spree::Core)
+Spree::Auth::Engine.load_seed if defined?(Spree::Auth)
