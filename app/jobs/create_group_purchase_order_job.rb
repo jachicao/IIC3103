@@ -1,18 +1,21 @@
 class CreateGroupPurchaseOrderJob < ApplicationJob
+  require 'json'
   queue_as :default
 
   def crear_orden_de_compra(group_number, id, payment_method, id_store_reception)
     group_server_url = (ENV['GROUPS_SERVER_URL'] % [group_number]) + ENV['API_URL_GROUP_' + group_number.to_s]
     req_params = {
-        payment_method: payment_method,
-        id_store_reception: id_store_reception,
+        id: "#{id}",
+        :payment_method=> "#{payment_method}",
+        :id_store_reception=> "#{id_store_reception}",
+        #store_reception_id: id_store_reception,
         #payment_option: 1,
     }
-    puts req_params
+    puts (req_params).to_json
     puts group_server_url + '/purchase_orders/' + id
     return HTTParty.put(
         group_server_url + '/purchase_orders/' + id,
-        :body => req_params,
+        :body => (req_params).to_json,
         :headers => { content_type: 'application/json', accept: 'application/json', authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN': ENV['GROUP_ID'] }
     )
   end

@@ -32,15 +32,15 @@ class PurchaseOrder < ApplicationRecord
         payment_method,
         id_almacen_recepcion,
     )
-
+    puts "respuesta grupo" + response_group[:code].to_s
     case response_group[:code]
-      when 201
+      when 200 || 201
 
       else
-        CancelServerPurchaseOrderJob.perform_now(
-              response_server[:body][:_id],
-              "Rejected by group",
-          )
+        #CancelServerPurchaseOrderJob.perform_now(
+        #      response_server[:body][:_id],
+        #      "Rejected by group",
+        #  )
         return false
     end
 
