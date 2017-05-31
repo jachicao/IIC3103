@@ -12,4 +12,8 @@ class Invoice < ApplicationRecord
   def create_invoice(po_id)
     return CreateInvoiceJob.perform_now(po_id)[:body]
   end
+
+  def create_url(bill)
+    url = ENV['CENTRAL_SERVER_URL']
+  end
 end

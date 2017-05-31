@@ -29,7 +29,9 @@ Rails.application.routes.draw do
   resources :product_in_sales, only: [:index]
   resources :producers, only: [:index]
   resources :pending_products, only: [:index, :show]
-  resources :invoices, only: [:index, :show]
+  resources :invoices do
+    get 'create_bill/:id', to: 'invoices#create_bill', as: :create_bill
+  end
 
   resources :factory_orders, only: [:index]
 
