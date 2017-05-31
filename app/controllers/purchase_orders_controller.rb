@@ -32,7 +32,7 @@ class PurchaseOrdersController < ApplicationController
     response = @purchase_order.get_server_details
     case response[:code]
       when 200
-        body = server_response[:body].first
+        body = response[:body].first
         result = @purchase_order.analyze_stock_to_dispatch(body[:sku], body[:cantidad])
         respond_to do |format|
           if result == nil
