@@ -47,6 +47,7 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   # PATCH/PUT /purchase_orders/1/rejected.json
   def update_rejected
     if @purchase_order != nil
+      @purchase_order.destroy
       return render json: { :success => true }
     else
       return render :json => { :success => false,  :error => 'PurchaseOrder not found' }, status: :not_found
