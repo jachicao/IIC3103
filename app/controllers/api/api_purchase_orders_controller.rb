@@ -24,6 +24,7 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
                                               own: false,
                                               dispatched: false })
         if @purchase_order.save
+          AcceptPurchaseOrdersWorker.perform_async(params[:po_id])
           return render json: { :success => true }
         else
           return render json: { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity
@@ -46,6 +47,7 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   # PATCH/PUT /purchase_orders/1/rejected.json
   def update_rejected
     if @purchase_order != nil
+      @purchase_order.destroy
       return render json: { :success => true }
     else
       return render :json => { :success => false,  :error => 'PurchaseOrder not found' }, status: :not_found
