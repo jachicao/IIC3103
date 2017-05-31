@@ -25,7 +25,6 @@ class Product < ApplicationRecord
       return {
           :quantity => 0,
           :produce_time => 0,
-          :price => 0,
       }
     else
       me = Producer.get_me
@@ -39,7 +38,6 @@ class Product < ApplicationRecord
       return {
           :quantity => lote * (difference.to_f / lote.to_f).ceil,
           :produce_time => produce_time,
-          :price => unit_cost,
       }
     end
   end
@@ -58,7 +56,8 @@ class Product < ApplicationRecord
       return {
           :quantity => 0,
           :produce_time => 0,
-          :price => 0,
+          :producer_price => 0,
+          :producer_stock => 0,
       }
     else
       produce_time = 0
@@ -68,19 +67,22 @@ class Product < ApplicationRecord
           break
         end
       end
+      producer_details = producer.get_product_details(sku)
+
       return {
           :quantity => difference,
           :produce_time => produce_time,
-          :price => unit_cost, #TODO
+          :producer_price => producer_details[:precio],
+          :producer_stock => producer_details[:stock],
       }
       end
   end
 
-  def buy_to_producer(producer, quantity, price, produce_time)
+  def buy_to_producer(producer, quantity, price, time_to_produce)
     return PurchaseOrder.create_new_purchase_order(
         producer.producer_id,
         sku,
-        (Time.now + produce_time.to_f.hours).to_i * 1000,
+        (Time.now + (time_to_produce * 3 * 24).to_f.hours).to_i * 1000, #TODO: QUITAR ESTO
         quantity,
         price,
         'contado'
@@ -95,7 +97,6 @@ class Product < ApplicationRecord
       producer_id = nil
       ingredient_quantity = 0
       ingredient_produce_time = 0
-      ingredient_price = 0
       me = false
       buy = false
       ingredient.item.product_in_sales.each do |product_in_sale|
@@ -110,7 +111,6 @@ class Product < ApplicationRecord
             buy = true
             producer_id = product_in_sale.producer.producer_id
             ingredient_produce_time = analysis[:produce_time]
-            ingredient_price = analysis[:price]
             produce_time = [produce_time, ingredient_produce_time].max
             ingredient_quantity = analysis[:quantity]
           end
@@ -131,7 +131,6 @@ class Product < ApplicationRecord
               if producer_id == nil or (ingredient_produce_time < analysis[:produce_time])
                 buy = true
                 producer_id = product_in_sale.producer.producer_id
-                ingredient_price = analysis[:price]
                 ingredient_produce_time = analysis[:produce_time]
                 produce_time = [produce_time, ingredient_produce_time].max
                 ingredient_quantity = analysis[:quantity]
@@ -141,7 +140,7 @@ class Product < ApplicationRecord
         end
       end
       if buy
-        purchase_ingredients.push(producer_id: producer_id, quantity: ingredient_quantity, produce_time: ingredient_produce_time, sku: ingredient.item.sku, price: ingredient_price)
+        purchase_ingredients.push(producer_id: producer_id, quantity: ingredient_quantity, produce_time: ingredient_produce_time, sku: ingredient.item.sku)
       end
     end
     return {
@@ -166,7 +165,7 @@ class Product < ApplicationRecord
       if me.producer_id == producer.producer_id
         item.buy_to_factory(ingredient[:quantity])
       else
-        item.buy_to_producer(producer, ingredient[:quantity], ingredient[:price], ingredient[:produce_time])
+        item.buy_to_producer(producer, ingredient[:quantity], item.unit_cost, ingredient[:produce_time]) #TODO
       end
     end
   end

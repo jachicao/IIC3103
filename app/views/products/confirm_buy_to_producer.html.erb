@@ -9,6 +9,8 @@
     <th>Proveedor</th>
     <th>Cantidad</th>
     <th>Tiempo</th>
+    <th>Precio</th>
+    <th>Stock Disponible</th>
   </tr>
   </thead>
 
@@ -18,13 +20,15 @@
     <td><%= @producer.group_number %></td>
     <td><%= @quantity %></td>
     <td><%= @produce_time %></td>
+    <td><%= @producer_price %></td>
+    <td><%= @producer_stock %></td>
   </tr>
   </tbody>
 </table>
 
 
 
-<%= link_to 'Comprar', { :controller => :products, :action => :post_confirm_buy_to_producer, :producer_id => @producer.producer_id, :quantity => @quantity }, { :method => :post } %>
+<%= link_to 'Comprar', { :controller => :products, :action => :post_confirm_buy_to_producer, :producer_id => @producer.producer_id, :quantity => @quantity, :producer_price => @producer_price, :producer_stock => @producer_stock }, { :method => :post } %>
 
 <br>
 

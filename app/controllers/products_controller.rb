@@ -61,7 +61,7 @@ class ProductsController < ApplicationController
         if analysis[:quantity] == 0
           format.html { redirect_to products_path, notice: 'Ya hay suficiente stock' }
         else
-          format.html { redirect_to controller: 'products', action: 'confirm_buy_to_producer', producer_id: producer.producer_id, quantity: analysis[:quantity] }
+          format.html { redirect_to controller: 'products', action: 'confirm_buy_to_producer', producer_id: producer.producer_id, quantity: analysis[:quantity], producer_price: analysis[:producer_price], producer_stock: analysis[:producer_stock] }
         end
       else
         format.html { redirect_to buy_to_producer_product_path, notice: 'No se alcanza a cumplir el tiempo' }
@@ -71,6 +71,8 @@ class ProductsController < ApplicationController
 
   def confirm_buy_to_producer
     @quantity = params[:quantity].to_i
+    @producer_price = params[:producer_price].to_i
+    @producer_stock = params[:producer_stock].to_i
     @producer = Producer.all.find_by(producer_id: params[:producer_id])
     @produce_time = 0
     @producer.product_in_sales.each do |product_in_sale|
@@ -82,6 +84,7 @@ class ProductsController < ApplicationController
 
   def post_confirm_buy_to_producer
     quantity = params[:quantity].to_i
+    producer_price = params[:producer_price].to_i
     producer = Producer.all.find_by(producer_id: params[:producer_id])
     @produce_time = 0
     producer.product_in_sales.each do |product_in_sale|
@@ -89,7 +92,7 @@ class ProductsController < ApplicationController
         @produce_time = product_in_sale.average_time
       end
     end
-    result = @product.buy_to_producer(producer, quantity, @product.unit_cost, @produce_time)
+    result = @product.buy_to_producer(producer, quantity, producer_price, @produce_time)
     respond_to do |format|
       if result == nil
         format.html { redirect_to products_path, notice: 'Servidor colapsado' }
@@ -174,7 +177,7 @@ class ProductsController < ApplicationController
       @purchase_ingredients = []
       if params[:purchase_ingredients] != nil
         params[:purchase_ingredients].each do |item|
-          @purchase_ingredients.push({ producer_id: item[:producer_id], quantity: item[:quantity].to_i, produce_time: item[:produce_time].to_f, sku: item[:sku], price: item[:price].to_i })
+          @purchase_ingredients.push({ producer_id: item[:producer_id], quantity: item[:quantity].to_i, produce_time: item[:produce_time].to_f, sku: item[:sku] })
         end
       end
     end

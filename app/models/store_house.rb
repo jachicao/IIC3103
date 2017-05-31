@@ -26,7 +26,7 @@ class StoreHouse
 
   def self.all_stock
     store_houses = all
-    if store_houses == nil
+    if store_houses.nil?
       return nil
     end
     result = []
@@ -36,7 +36,7 @@ class StoreHouse
       inventario = store_house[:inventario]
       if store_house[:usedSpace] > 0
         stock = get_stock(store_house[:_id])
-        if stock == nil
+        if stock.nil?
           return nil
         end
         stock.each do |b|
@@ -71,6 +71,18 @@ class StoreHouse
       result.push({ sku: b[:_id], total: b[:total] })
     end
     return result
+  end
+
+  def self.get_used_space(id)
+    stock = get_stock(id)
+    if stock.nil?
+      return nil
+    end
+    total = 0
+    stock.each do |p|
+      total += p[:total]
+    end
+    return total
   end
 
   def self.get_despachos

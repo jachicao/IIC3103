@@ -9,11 +9,17 @@ class ProduceProductWorker
       if all_stock.nil?
         return nil
       end
+      despacho_used_space = 0
+      despacho_total_space = 0
       despachos = []
       not_despachos = []
       all_stock.each do |store_house|
         if store_house[:despacho]
+          despacho_total_space = store_house[:totalSpace]
           despachos.push(store_house)
+          store_house[:inventario].each do |p|
+            despacho_used_space += p[:total]
+          end
         else
           not_despachos.push(store_house)
         end
@@ -33,6 +39,8 @@ class ProduceProductWorker
         if pending_product.product.ingredients.size > 0
           if pending_product.quantity > 0
             ready = true
+            space_required = 0
+            total_in_despacho = 0
             pending_product.purchased_products.each do |purchased_product|
               ingredient_quantity = 0
               pending_product.product.ingredients.each do |ingredient|
@@ -41,11 +49,15 @@ class ProduceProductWorker
                   break
                 end
               end
+              space_required += ingredient_quantity
               total = 0
               all_stock.each do |store_house|
                 store_house[:inventario].each do |p|
                   if p[:sku] == purchased_product.product.sku
                     total += p[:total]
+                    if store_house[:despacho]
+                      total_in_despacho += p[:total]
+                    end
                   end
                 end
               end
@@ -56,7 +68,7 @@ class ProduceProductWorker
                 puts purchased_product.product.name.to_s + ' is left: ' + (ingredient_quantity - total).to_s
               end
             end
-            if ready
+            if ready and despacho_total_space - despacho_used_space >= space_required - total_in_despacho
               all_in_despacho = true
               pending_product.purchased_products.each do |purchased_product|
                 ingredient_quantity = 0

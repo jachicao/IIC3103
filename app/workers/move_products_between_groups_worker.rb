@@ -22,5 +22,7 @@ class MoveProductsBetweenGroupsWorker
       puts 'sleeping 5 seconds'
       sleep(5)
     end
+    purchase_order = PurchaseOrder.all.find_by(po_id: po_id)
+    purchase_order.confirm_dispatched
   end
 end

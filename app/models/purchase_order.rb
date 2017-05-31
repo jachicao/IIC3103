@@ -91,6 +91,9 @@ class PurchaseOrder < ApplicationRecord
 
   def dispatch_order(sku, quantity, price)
     DispatchProductsToGroupWorker.perform_async(store_reception_id, sku, quantity, po_id, price)
+  end
+
+  def confirm_dispatched
     self.dispatched = true
     self.save
   end
