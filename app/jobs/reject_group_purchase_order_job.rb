@@ -31,7 +31,6 @@ class RejectGroupPurchaseOrderJob < ApplicationJob
     return {
         :body => JSON.parse(response.body, symbolize_names: true),
         :code =>  response.code,
-        :header => response.header,
     }
   end
 end

@@ -21,7 +21,6 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
         @purchase_order = PurchaseOrder.new({po_id: params[:po_id],
                                               store_reception_id: params[:store_reception_id],
                                               payment_method: params[:payment_method],
-                                              status: 'created',
                                               own: false,
                                               dispatched: false })
         if @purchase_order.save
@@ -37,13 +36,9 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   # PATCH/PUT /purchase_orders/1/accepted.json
   def update_accepted
     if @purchase_order != nil
-      if @purchase_order.update(status: 'accepted')
-        return render json: { :success => true }
-      else
-        return render json: { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity
-      end
+      return render json: { :success => true }
     else
-      render :json => { :success => false,  :error => 'PurchaseOrder not found' }, status: :not_found
+      return render :json => { :success => false,  :error => 'PurchaseOrder not found' }, status: :not_found
     end
   end
 
@@ -51,13 +46,9 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   # PATCH/PUT /purchase_orders/1/rejected.json
   def update_rejected
     if @purchase_order != nil
-      if @purchase_order.update(status: 'rejected')
-        return render json: { :success => true }
-      else
-        return render json: { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity
-      end
+      return render json: { :success => true }
     else
-      render :json => { :success => false,  :error => 'PurchaseOrder not found' }, status: :not_found
+      return render :json => { :success => false,  :error => 'PurchaseOrder not found' }, status: :not_found
     end
   end
 
