@@ -54,7 +54,6 @@ class PurchaseOrder < ApplicationRecord
     @purchase_order = PurchaseOrder.new(po_id: response_server[:body][:_id],
                                         payment_method: payment_type,
                                         store_reception_id: id_almacen_recepcion,
-                                        status: response_server[:body][:estado],
                                         own: true,
                                         dispatched: false)
     if @purchase_order.save
