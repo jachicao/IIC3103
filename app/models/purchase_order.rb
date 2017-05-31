@@ -1,7 +1,7 @@
 class PurchaseOrder < ApplicationRecord
   has_one :invoice
 
-  def self.create_new_purchase_order(producer_id, sku, delivery_date, quantity, unit_price, payment_method)
+  def self.create_new_purchase_order(producer_id, sku, delivery_date, quantity, unit_price, payment_type)
     recepcion = StoreHouse.get_recepciones
     if recepcion == nil
       return nil
@@ -20,42 +20,78 @@ class PurchaseOrder < ApplicationRecord
     )
     case response_server[:code]
       when 200
-
       else
-        return nil
+        return {
+            :success => false,
+            :server => response_server,
+            :group => {},
+        }
     end
 
     group_number = Producer.where(producer_id: producer_id).first.group_number
     response_group = CreateGroupPurchaseOrderJob.perform_now(
         group_number,
         response_server[:body][:_id],
-        payment_method,
+        payment_type,
         id_almacen_recepcion,
     )
-    puts "respuesta grupo" + response_group[:code].to_s
     case response_group[:code]
-      when 200 || 201
+      when 200..226
 
       else
-        #CancelServerPurchaseOrderJob.perform_now(
-        #      response_server[:body][:_id],
-        #      "Rejected by group",
-        #  )
-        return false
+        CancelServerPurchaseOrderJob.perform_now(
+              response_server[:body][:_id],
+              'Rejected by group',
+          )
+        return {
+            :success => false,
+            :server => response_server,
+            :group => response_group,
+        }
     end
+
 
 
     @purchase_order = PurchaseOrder.new(po_id: response_server[:body][:_id],
-                                        payment_method: payment_method,
+                                        payment_method: payment_type,
                                         store_reception_id: id_almacen_recepcion,
-                                        status: response_server[:body][:estado],
                                         own: true,
                                         dispatched: false)
-    puts "llego"
     if @purchase_order.save
-      return response_server
+      return {
+          :success => true,
+          :server => response_server,
+          :group => response_group,
+      }
     else
+      return {
+          :success => false,
+          :server => response_server,
+          :group => response_group,
+      }
+    end
+  end
+
+  def get_server_details
+    return GetPurchaseOrderJob.perform_now(self.po_id)
+  end
+
+
+  def analyze_stock_to_dispatch(sku, quantity)
+    total = StoreHouse.get_stock_total_not_despacho(sku)
+    if total.nil?
       return nil
     end
+    if total >= quantity
+      return 0
+    else
+      return quantity - total
+    end
+  end
+
+  def dispatch_order(sku, quantity, price)
+    DispatchProductsToGroupWorker.perform_async(store_reception_id, sku, quantity, po_id, price)
+    self.dispatched = true
+    self.save
   end
 end

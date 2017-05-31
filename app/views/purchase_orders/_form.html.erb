@@ -13,7 +13,7 @@
 
   <div class="field">
     <%= label_tag :productor %>
-    <%= collection_select :producers, :id, Producer.where(me: false), :producer_id, :group_number, { :class => 'cliente_selection' } %>
+    <%= collection_select :producers, :id, Producer.all.select{ |v| !v.is_me }, :producer_id, :group_number, { :class => 'cliente_selection' } %>
   </div>
 
   <div class="field">

@@ -87,7 +87,7 @@ class ProduceProductWorker
                 puts 'producing ' + pending_product.product.name
                 pending_product.quantity -= 1
                 pending_product.save
-                BuyFactoryProductsJob.perform_later(pending_product.product.sku, pending_product.product.lote, pending_product.product.unit_cost)
+                FactoryOrder.make_product(pending_product.product.sku, pending_product.product.lote, pending_product.product.unit_cost)
               end
               break
             end

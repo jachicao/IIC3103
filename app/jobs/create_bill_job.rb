@@ -1,9 +1,9 @@
 class CreateBillJob < ApplicationJob
   queue_as :default
 
-  def crear_boleta(proveedor, cliente, total)
+  def crear_boleta(cliente, total)
     req_params = {
-        :proveedor => proveedor,
+        :proveedor => ENV['GROUP_ID'],
         :cliente => cliente,
         :total => total,
     }
@@ -14,8 +14,8 @@ class CreateBillJob < ApplicationJob
     )
   end
 
-  def perform(proveedor, cliente, total)
-    response = crear_boleta(proveedor, cliente, total)
+  def perform(cliente, total)
+    response = crear_boleta(cliente, total)
     puts response.body
     puts response.code
     body = JSON.parse(response.body, symbolize_names: true)
@@ -30,7 +30,6 @@ class CreateBillJob < ApplicationJob
     return {
         :body => body,
         :code =>  response.code,
-        :header => response.header,
     }
   end
 end

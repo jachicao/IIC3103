@@ -9,7 +9,7 @@ class Api::ApiProductsController < Api::ApiController
       res.push({ sku: product_in_sale.product.sku, name: product_in_sale.product.name, price: product_in_sale.price })
     end
     render json: {
-      :product => res
+      :products => res
     }
   end
 

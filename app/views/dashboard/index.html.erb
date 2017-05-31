@@ -68,7 +68,7 @@
       <table class="table table-striped">
         <thead>
         <tr>
-          <th>Sku</th>
+          <th>Producto</th>
           <th>Cantidad</th>
           <th>Fecha Disponible</th>
           <th colspan="3"></th>
@@ -78,7 +78,7 @@
         <tbody>
         <% @factory_orders.each do |factoryOrder| %>
             <tr>
-              <td><%= factoryOrder[:sku] %></td>
+              <td><%= Product.all.find_by(sku: factoryOrder[:sku]).name %></td>
               <td><%= factoryOrder[:quantity] %></td>
               <td><%= factoryOrder[:available] %></td>
             </tr>
