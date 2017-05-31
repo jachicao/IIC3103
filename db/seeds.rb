@@ -12,6 +12,12 @@
 #  has_many :product_in_sales
 #end
 
+Ingredient.delete_all
+ProductInSale.delete_all
+Product.delete_all
+Producer.delete_all
+
+
 if Rails.env.production?
   producer_1 = Producer.create(producer_id: '5910c0910e42840004f6e680', group_number: 1, account:'')
   producer_2 = Producer.create(producer_id: '5910c0910e42840004f6e681', group_number: 2, account:'')
@@ -275,5 +281,8 @@ product_in_sale_84	= ProductInSale.create(product: product_55	, producer: produc
 product_in_sale_85	= ProductInSale.create(product: product_56	, producer: producer_5	, average_time: 1.533)
 
 
-Spree::Core::Engine.load_seed if defined?(Spree::Core)
-Spree::Auth::Engine.load_seed if defined?(Spree::Auth)
+
+Spree::Product.destroy_all
+
+pollo = Spree::Product.create(name: 'Pollo', description: 'desplumado', shipping_category_id: 1, sku: '1', price: 377, cost_price: 290, available_on: DateTime.now)
+
