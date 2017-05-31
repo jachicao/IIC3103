@@ -251,30 +251,6 @@ class StoreHouse
     return quantity_left
   end
 
-  def self.dispatch_stock_to_group_store_house(to_store_house_id, sku, quantity, po_id, price)
-
-    all_stock = StoreHouse.all_stock
-
-    if all_stock.nil?
-      return -1
-    end
-
-    total = 0
-    all_stock.each do |store_house|
-      store_house[:inventario].each do |p|
-        if p[:sku] == sku
-          total += p[:total]
-        end
-      end
-    end
-    if total >= quantity
-      DispatchProductsToGroupWorker.perform_async(to_store_house_id, sku, quantity, po_id, price)
-      return 0
-    else
-      return quantity - total
-    end
-  end
-
   def self.dispatch_stock_to_direction(direction, sku, quantity, po_id, price)
     all_stock = StoreHouse.all_stock
 

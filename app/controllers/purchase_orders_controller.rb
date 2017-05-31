@@ -12,7 +12,7 @@ class PurchaseOrdersController < ApplicationController
   # GET /purchase_orders/1
   # GET /purchase_orders/1.json
   def show
-    response = GetPurchaseOrderJob.perform_now(@purchase_order.po_id)
+    response = @purchase_order.get_server_details
     case response[:code]
       when 200
         @response = response[:body].first
@@ -29,18 +29,19 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def dispatch_product
-    response = GetPurchaseOrderJob.perform_now(@purchase_order.po_id)
+    response = @purchase_order.get_server_details
     case response[:code]
       when 200
-        body = response[:body].first
-        product = Product.all.find_by(sku: body[:sku])
-        result = StoreHouse.dispatch_stock_to_group_store_house(@purchase_order.store_reception_id, body[:sku], body[:cantidad], body[:_id], body[:precioUnitario])
+        body = server_response[:body].first
+        result = @purchase_order.analyze_stock_to_dispatch(body[:sku], body[:cantidad])
         respond_to do |format|
-          if result == -1
+          if result == nil
             format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Servidor colapsado' }
           elsif result > 0
+            product = Product.all.find_by(sku: body[:sku])
             format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Falta ' + result.to_s + ' de ' + product.name }
           else
+            @purchase_order.dispatch_order(body[:sku], body[:cantidad], body[:precioUnitario])
             format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Purchase order was successfully dispatched.' }
           end
         end
@@ -123,7 +124,6 @@ class PurchaseOrdersController < ApplicationController
   def create
 
     @purchase_order = PurchaseOrder.new(purchase_order_params)
-
     respond_to do |format|
       if @purchase_order.save
         format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully rejected.' }

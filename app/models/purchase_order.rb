@@ -70,4 +70,27 @@ class PurchaseOrder < ApplicationRecord
       }
     end
   end
+
+  def get_server_details
+    return GetPurchaseOrderJob.perform_now(self.po_id)
+  end
+
+
+  def analyze_stock_to_dispatch(sku, quantity)
+    total = StoreHouse.get_stock_total_not_despacho(sku)
+    if total.nil?
+      return nil
+    end
+    if total >= quantity
+      return 0
+    else
+      return quantity - total
+    end
+  end
+
+  def dispatch_order(sku, quantity, price)
+    DispatchProductsToGroupWorker.perform_async(store_reception_id, sku, quantity, po_id, price)
+    self.dispatched = true
+    self.save
+  end
 end

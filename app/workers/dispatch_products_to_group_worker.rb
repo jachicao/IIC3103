@@ -33,6 +33,6 @@ class DispatchProductsToGroupWorker
     if total_despacho < quantity
       StoreHouse.move_stock(not_despachos, despachos, sku, quantity - total_despacho)
     end
-    MoveProductsBetweenGroupsJob.perform_later(despacho_id, to_store_house_id, sku, quantity, po_id, price)
+    MoveProductsBetweenGroupsWorker.perform_async(despacho_id, to_store_house_id, sku, quantity, po_id, price)
   end
 end

@@ -32,6 +32,6 @@ class DispatchProductsToDirectionWorker
     if total_despacho < quantity
       StoreHouse.move_stock(not_despachos, despachos, sku, quantity - total_despacho)
     end
-    MoveProductsToDirectionJob.perform_later(despacho_id, direction, sku, quantity, po_id, price)
+    MoveProductsToDirectionWorker.perform_async(despacho_id, direction, sku, quantity, po_id, price)
   end
 end
