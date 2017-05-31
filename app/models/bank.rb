@@ -4,7 +4,7 @@ class Bank < ApplicationRecord
   end
 
   def self.get_transactions
-    return GetBankTransactionsJob.perform_now(ENV['BANK_ID'], DateTime.now - 90, DateTime.now)[:body][:data]
+    return GetBankTransactionsJob.perform_now(ENV['BANK_ID'], DateTime.now - 365, DateTime.now)[:body][:data]
   end
 
   def self.get_transaction(id)

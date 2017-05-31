@@ -58,6 +58,7 @@ gem 'bootstrap-sass'
 gem 'autoprefixer-rails'
 
 gem 'httparty'
+gem 'rest-client'
 
 gem 'figaro'
 

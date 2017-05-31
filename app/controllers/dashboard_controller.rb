@@ -60,8 +60,7 @@ class DashboardController < ApplicationController
     end
 
     def get_cartola
-      transactions = GetBankTransactionsJob.perform_now(ENV['BANK_ID'], 6.months.ago.to_date.to_s, Date.tomorrow.to_s)
-      return transactions[:data]
+      return Bank.get_transactions
     end
 
     def index
