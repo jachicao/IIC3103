@@ -83,7 +83,7 @@ class Product < ApplicationRecord
         (Time.now + produce_time.to_f.hours).to_i * 1000,
         quantity,
         price,
-        'contra_despacho' #TODO: Completar esto
+        'contado'
     )
   end
 

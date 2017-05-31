@@ -1,7 +1,7 @@
 class PurchaseOrder < ApplicationRecord
   has_one :invoice
 
-  def self.create_new_purchase_order(producer_id, sku, delivery_date, quantity, unit_price, payment_method)
+  def self.create_new_purchase_order(producer_id, sku, delivery_date, quantity, unit_price, payment_type)
     recepcion = StoreHouse.get_recepciones
     if recepcion == nil
       return nil
@@ -29,7 +29,7 @@ class PurchaseOrder < ApplicationRecord
     response_group = CreateGroupPurchaseOrderJob.perform_now(
         group_number,
         response_server[:body][:_id],
-        payment_method,
+        payment_type,
         id_almacen_recepcion,
     )
     puts "respuesta grupo" + response_group[:code].to_s
