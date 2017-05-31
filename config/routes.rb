@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   #
   # We ask that you don't use the :as option here, as Spree relies on it being the default of "spree"
   mount Spree::Core::Engine, at: '/spree/'
-          resources :purchase_orders do
+  resources :purchase_orders do
     collection do
       patch 'accept'
       patch 'reject'
