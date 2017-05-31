@@ -26,9 +26,8 @@ class AcceptGroupPurchaseOrderJob < ApplicationJob
   def perform(group_number, id)
     response = aceptar_orden_de_compra(group_number, id)
     puts response.body
-    puts response.code
     return {
-        :body => JSON.parse(response.body, symbolize_names: true),
+        :body => response.body,
         :code =>  response.code,
     }
   end

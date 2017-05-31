@@ -32,6 +32,7 @@ class GetFactoryAccountJob < ApplicationJob
     end
 
     $redis.set(key, body.to_json)
+    $redis.expire(key, 60.seconds.to_i)
     return {
         :body => body,
         :code =>  response.code,

@@ -53,7 +53,12 @@ class StoreHouse
     if result.nil?
       return nil
     end
-    return result.find(_id: id).first
+    result.each do |store_house|
+      if store_house[:_id] == id
+        return store_house
+      end
+    end
+    return nil
   end
 
   def self.get_stock(id)

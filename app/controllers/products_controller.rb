@@ -12,10 +12,10 @@ class ProductsController < ApplicationController
     analysis = @product.get_factory_analysis(quantity)
     respond_to do |format|
       if analysis == nil
-        format.html { redirect_to buy_to_factory_product_path, notice: 'Servidor colapsado' }
+        format.html { redirect_to products_path, notice: 'Servidor colapsado' }
       elsif analysis[:produce_time] <= maximum_time
         if analysis[:quantity] == 0
-          format.html { redirect_to buy_to_factory_product_path, notice: 'Ya hay suficiente stock' }
+          format.html { redirect_to products_path, notice: 'Ya hay suficiente stock' }
         else
           format.html { redirect_to controller: 'products', action: 'confirm_buy_to_factory', quantity: analysis[:quantity] }
         end
@@ -34,7 +34,7 @@ class ProductsController < ApplicationController
     quantity = params[:quantity].to_i
     @product.buy_to_factory(quantity)
     respond_to do |format|
-      format.html { redirect_to buy_to_factory_product_path, notice: 'Productos enviados a fabricar' }
+      format.html { redirect_to products_path, notice: 'Productos enviados a fabricar' }
     end
   end
 
@@ -56,10 +56,10 @@ class ProductsController < ApplicationController
 
     respond_to do |format|
       if analysis.nil?
-        format.html { redirect_to buy_to_producer_product_path, notice: 'Servidor colapsado' }
+        format.html { redirect_to products_path, notice: 'Servidor colapsado' }
       elsif analysis[:produce_time] <= maximum_time
         if analysis[:quantity] == 0
-          format.html { redirect_to buy_to_producer_product_path, notice: 'Ya hay suficiente stock' }
+          format.html { redirect_to products_path, notice: 'Ya hay suficiente stock' }
         else
           format.html { redirect_to controller: 'products', action: 'confirm_buy_to_producer', producer_id: producer.producer_id, quantity: analysis[:quantity] }
         end
@@ -92,9 +92,9 @@ class ProductsController < ApplicationController
     result = @product.buy_to_producer(producer, quantity, @product.unit_cost, @produce_time)
     respond_to do |format|
       if result == nil
-        format.html { redirect_to buy_to_producer_product_path, notice: 'Servidor colapsado' }
+        format.html { redirect_to products_path, notice: 'Servidor colapsado' }
       elsif result[:success]
-        format.html { redirect_to buy_to_producer_product_path, notice: 'Productos enviados a comprar' }
+        format.html { redirect_to products_path, notice: 'Productos enviados a comprar' }
       else
         format.html { redirect_to buy_to_producer_product_path, notice: result.to_json }
       end
@@ -112,11 +112,11 @@ class ProductsController < ApplicationController
 
     respond_to do |format|
       if analysis.nil?
-        format.html { redirect_to produce_product_path, notice: 'Servidor colapsado' }
+        format.html { redirect_to products_path, notice: 'Servidor colapsado' }
       elsif analysis[:produce_time] <= maximum_time
         if analysis[:purchase_ingredients].size == 0
           @product.produce_product(analysis[:quantity])
-          format.html { redirect_to produce_product_path, notice: 'Producto enviado a producir' }
+          format.html { redirect_to products_path, notice: 'Producto enviado a producir' }
         else
           format.html { redirect_to controller: 'products', action: 'confirm_produce', quantity: analysis[:quantity], purchase_ingredients: analysis[:purchase_ingredients] }
         end

@@ -50,10 +50,9 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
 
   def perform(group_number, id, payment_type, id_store_reception)
     response = crear_orden_de_compra(group_number, id, payment_type, id_store_reception)
-    puts response.code
     puts response.body
     return {
-        :body => JSON.parse(response.body, symbolize_names: true),
+        :body => response.body,
         :code =>  response.code,
     }
   end

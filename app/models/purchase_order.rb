@@ -51,6 +51,7 @@ class PurchaseOrder < ApplicationRecord
     end
 
 
+
     @purchase_order = PurchaseOrder.new(po_id: response_server[:body][:_id],
                                         payment_method: payment_type,
                                         store_reception_id: id_almacen_recepcion,
