@@ -20,9 +20,12 @@ class PurchaseOrder < ApplicationRecord
     )
     case response_server[:code]
       when 200
-
       else
-        return nil
+        return {
+            :success => false,
+            :server => response_server,
+            :group => {},
+        }
     end
 
     group_number = Producer.where(producer_id: producer_id).first.group_number
@@ -32,16 +35,19 @@ class PurchaseOrder < ApplicationRecord
         payment_type,
         id_almacen_recepcion,
     )
-    puts "respuesta grupo" + response_group[:code].to_s
     case response_group[:code]
-      when 200 || 201
+      when 200..226
 
       else
-        #CancelServerPurchaseOrderJob.perform_now(
-        #      response_server[:body][:_id],
-        #      "Rejected by group",
-        #  )
-        return false
+        CancelServerPurchaseOrderJob.perform_now(
+              response_server[:body][:_id],
+              'Rejected by group',
+          )
+        return {
+            :success => false,
+            :server => response_server,
+            :group => response_group,
+        }
     end
 
 
@@ -51,11 +57,18 @@ class PurchaseOrder < ApplicationRecord
                                         status: response_server[:body][:estado],
                                         own: true,
                                         dispatched: false)
-    puts "llego"
     if @purchase_order.save
-      return response_server
+      return {
+          :success => true,
+          :server => response_server,
+          :group => response_group,
+      }
     else
-      return nil
+      return {
+          :success => false,
+          :server => response_server,
+          :group => response_group,
+      }
     end
   end
 end

@@ -64,7 +64,7 @@ class ProductsController < ApplicationController
           format.html { redirect_to controller: 'products', action: 'confirm_buy_to_producer', producer_id: producer.producer_id, quantity: analysis[:quantity] }
         end
       else
-        format.html { redirect_to buy_to_producer_product_path, notice: 'No se alcanza a cumplir el tiempo'}
+        format.html { redirect_to buy_to_producer_product_path, notice: 'No se alcanza a cumplir el tiempo' }
       end
     end
   end
@@ -89,9 +89,15 @@ class ProductsController < ApplicationController
         @produce_time = product_in_sale.average_time
       end
     end
-    @product.buy_to_producer(producer, quantity, @product.unit_cost, @produce_time)
+    result = @product.buy_to_producer(producer, quantity, @product.unit_cost, @produce_time)
     respond_to do |format|
-      format.html { redirect_to buy_to_producer_product_path, notice: 'Productos enviados a comprar' }
+      if result == nil
+        format.html { redirect_to buy_to_producer_product_path, notice: 'Servidor colapsado' }
+      elsif result[:success]
+        format.html { redirect_to buy_to_producer_product_path, notice: 'Productos enviados a comprar' }
+      else
+        format.html { redirect_to buy_to_producer_product_path, notice: result.to_json }
+      end
     end
   end
 

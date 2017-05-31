@@ -8,7 +8,7 @@ class CancelServerPurchaseOrderJob < ApplicationJob
         :anulacion => anulacion,
       }
       puts req_params
-    return HTTParty.post(
+    return HTTParty.delete(
       ENV['CENTRAL_SERVER_URL'] + '/oc/anular/' + id,
       :body => req_params,
       :headers => { content_type: 'application/json', accept: 'application/json' }
@@ -17,7 +17,8 @@ class CancelServerPurchaseOrderJob < ApplicationJob
 
   def perform(id, anulacion)
     response = anular_orden_de_compra(id, anulacion)
-    puts :code
+    puts response.body
+    puts response.code
     return {
         :body => JSON.parse(response.body, symbolize_names: true),
         :code =>  response.code,

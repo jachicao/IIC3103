@@ -99,7 +99,6 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def created
-
     result = PurchaseOrder.create_new_purchase_order(
         params[:producers][:id],
         params[:products][:ids],
@@ -111,10 +110,10 @@ class PurchaseOrdersController < ApplicationController
     respond_to do |format|
       if result == nil
         format.html { redirect_to purchase_orders_url, notice: 'Servidor colapsado' }
-        format.json { render :json => { :error => 'Servidor colapsado' }, status: 500 }
-      else
+      elsif result[:success]
         format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully created.' }
-        format.json { render json: :index }
+      else
+        format.html { redirect_to purchase_orders_url, notice: result.to_json }
       end
     end
   end
