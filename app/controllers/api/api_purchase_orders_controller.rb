@@ -15,16 +15,19 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
     end
 
     response = GetPurchaseOrderJob.perform_now(params[:po_id])
-    body = response[:body].first
     case response[:code]
       when 200
+        body = response[:body].first
         params[:store_reception_id] = params[:id_store_reception]
         @purchase_order = PurchaseOrder.new({po_id: params[:po_id],
                                               store_reception_id: params[:store_reception_id],
                                               payment_method: params[:payment_method],
-                                              group_number:  Producer.all.find_by(producer_id: body[:cliente]).group_number,
+                                              client_id: body[:cliente],
+                                              supplier_id: body[:proveedor],
+                                              delivery_date: body[:fechaEntrega],
+                                              unit_price: body[:precioUnitario],
                                               sku: body[:sku],
-                                              cuantity: body[:cantidad],
+                                              quantity: body[:cantidad],
                                               own: false,
                                               dispatched: false })
         if @purchase_order.save

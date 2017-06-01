@@ -55,13 +55,16 @@ class PurchaseOrder < ApplicationRecord
     end
 
 
-
+    body = response_server[:body]
     @purchase_order = PurchaseOrder.new(po_id: response_server[:body][:_id],
                                         payment_method: payment_type,
                                         store_reception_id: id_almacen_recepcion,
-                                        group_number:  Producer.all.find_by(producer_id: response_server[:body][:cliente]).group_number,
-                                        sku: response_server[:body][:sku],
-                                        cuantity: response_server[:body][:cantidad],
+                                        client_id: body[:cliente],
+                                        supplier_id: body[:proveedor],
+                                        delivery_date: body[:fechaEntrega],
+                                        unit_price: body[:precioUnitario],
+                                        sku: body[:sku],
+                                        quantity: body[:cantidad],
                                         own: true,
                                         dispatched: false)
     if @purchase_order.save
@@ -97,8 +100,9 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def dispatch_order(sku, quantity, price)
-    self.sending = true
     DispatchProductsToGroupWorker.perform_async(store_reception_id, sku, quantity, po_id, price)
+    self.sending = true
+    self.save
   end
 
   def confirm_dispatched
