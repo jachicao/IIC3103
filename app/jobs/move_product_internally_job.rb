@@ -22,9 +22,9 @@ class MoveProductInternallyJob < ApplicationJob
     $redis.del('get_skus_with_stock:' + to_store_house_id)
     $redis.del('get_skus_with_stock:' + from_store_house_id)
     response = mover_stock(product_id, to_store_house_id)
-    puts 'Moviendo'
+    puts 'Moviendo internamente: '
     puts response.code
-    puts response.body
+    #puts response.body
     body = JSON.parse(response.body, symbolize_names: true)
     return {
         :body => body,
