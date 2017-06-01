@@ -62,7 +62,7 @@ class DashboardController < ApplicationController
     end
 
     def failed_transactions
-      return Failedtransaction.all
+      return FailedTransaction.all
     end
 
     def index

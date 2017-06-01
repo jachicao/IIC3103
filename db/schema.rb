@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170601204652) do
+ActiveRecord::Schema.define(version: 20170601225656) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 20170601204652) do
     t.index ["fo_id"], name: "index_factory_orders_on_fo_id", using: :btree
   end
 
-  create_table "failedtransactions", force: :cascade do |t|
+  create_table "failed_transactions", force: :cascade do |t|
     t.string   "_id"
     t.string   "origin"
     t.string   "destination"

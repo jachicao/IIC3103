@@ -29,9 +29,6 @@ class GetBankTransactionsJob < ApplicationJob
     #puts response.body
     body = JSON.parse(response.body, symbolize_names: true)
 
-
-
-
     $redis.set(key, body.to_json)
     $redis.expire(key, ENV['BANCO_CACHE_EXPIRE_TIME'].to_i.seconds.to_i)
 
