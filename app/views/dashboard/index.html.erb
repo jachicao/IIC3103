@@ -90,12 +90,24 @@
   <% end %>
 </div>
 
-<div>
-  <title> Montos</title>
-  <%= column_chart data: [
-        {name: "Boletas", data: @bills.count(:is_bill)},
-        #{name: "Transacciones", data: @transactions.group(:origen).sum(:monto)}
-    ] %>
+
+
+<div class="container">
+  <h2> Unidades</h2>
+  <%= column_chart [['Boletas', @bills.count]],
+                   title: 'Cantidad de Boletas Generadas', width: '500px'%>
+  <h2> Monto</h2>
+  <%= column_chart [['Boletas', @bills.sum(:total_amount)]],
+                   title: 'Monto total ventas con boleta', width: '500px'%>
+</div>
+
+<div class="container">
+  <h2> Unidades</h2>
+  <%= column_chart [['Transacciones Exitosas', @transactions.count]],
+                   title: 'Cantidad de transacciones', width: '500px'%>
+  <h2> Monto</h2>
+  <%= column_chart [['Transacciones Exitosas', @transactions.sum {|h| h[:monto]} ]],
+                   title: 'Monto total transferido', width: '500px'%>
 </div>
 
 <br>

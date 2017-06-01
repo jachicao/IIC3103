@@ -29,13 +29,7 @@ class GetBankTransactionsJob < ApplicationJob
     #puts response.body
     body = JSON.parse(response.body, symbolize_names: true)
 
-    puts body
 
-    body[:data].each do |transaction|
-      if transaction[:origen] == ENV['BANK_ID']
-        transaction[:monto] = -transaction[:monto]
-      end
-    end
 
 
     $redis.set(key, body.to_json)

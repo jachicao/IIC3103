@@ -67,7 +67,26 @@ class DashboardController < ApplicationController
       @productos = get_products_report
       @factory_orders = get_set_factory_orders
       @bills = get_bills
-      @transactions = get_cartola
+      puts @bills
+      @transferencias = get_cartola
+      @transactions = []
+      @transferencias.each do |t|
+        if t[:origen] == ENV['BANK_ID']
+          if @transactions == []
+            @transactions.push(t)
+          else
+            contador = 0
+            @transactions.each do |trx|
+              if trx[:_id] == t[:_id]
+                contador += 1
+              end
+            end
+            if contador == 0
+              @transactions.push(t)
+            end
+          end
+        end
+      end
     end
     
 end
