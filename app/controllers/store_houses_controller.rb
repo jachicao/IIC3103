@@ -47,32 +47,6 @@ class StoreHousesController < ApplicationController
 
   end
 
-  def clean_pulmon
-    result = StoreHouse.clean_pulmon
-    respond_to do |format|
-      if result == 0
-        format.html { redirect_to store_houses_path, notice: 'Almacen limpiado exitosamente' }
-        format.json { render json: { :message => 'Almacen limpiado exitosamente' } }
-      else
-        format.html { redirect_to store_houses_path, notice: 'Faltaron ' + result.to_s + ' productos por mover' }
-        format.json { render json: { error: 'Faltaron ' + result.to_s + ' productos por mover' } }
-      end
-    end
-  end
-
-  def clean_recepcion
-    result = StoreHouse.clean_recepcion
-    respond_to do |format|
-      if result == 0
-        format.html { redirect_to store_houses_path, notice: 'Almacen limpiado exitosamente' }
-        format.json { render json: { :message => 'Almacen limpiado exitosamente' } }
-      else
-        format.html { redirect_to store_houses_path, notice: 'Faltaron ' + result.to_s + ' productos por mover' }
-        format.json { render json: { error: 'Faltaron ' + result.to_s + ' productos por mover' } }
-      end
-    end
-  end
-
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_store_house

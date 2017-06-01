@@ -1,9 +1,12 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
   # This line mounts Spree's routes at the root of your application.
   # This means, any requests to URLs such as /products, will go to Spree::ProductsController.
   # If you would like to change where this engine is mounted, simply change the :at option to something different.
   #
   # We ask that you don't use the :as option here, as Spree relies on it being the default of "spree"
+  mount Sidekiq::Web => '/sidekiq'
   mount Spree::Core::Engine, at: '/spree/'
   resources :purchase_orders do
     collection do
@@ -21,8 +24,6 @@ Rails.application.routes.draw do
       post 'submit_move_internally'
       get 'move_externally'
       post 'submit_move_externally'
-      get 'clean_pulmon'
-      get 'clean_recepcion'
     end
   end
 
