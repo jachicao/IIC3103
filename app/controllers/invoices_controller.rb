@@ -8,20 +8,23 @@ class InvoicesController < ApplicationController
   def show
   end
 
-  def create_bill
+  def create_bill_web
     if params[:id].present?
       order = Spree::Order.find(params[:id])
-      if order.bill.present?
-        bill = order.bill
+      if order == nil
+        redirect_to 'spree/', alert: 'se produjo un error'
+      end
+      if order.invoice.present?
+        bill = order.invoice
       else
         cliente = order.email.present? ? order.email : 'unknown'
         monto = order.total.to_i
-        bill = Invoice.create_bill(cliente, monto)
+        bill = Invoice.bill_create(cliente, monto)
       end
       if bill == nil
         redirect_to 'spree/cart', alert: 'Hubo un problema generando la boleta, por favor intente de nuevo'
       else
-        url = Invoice.create_url(bill)
+        url = Invoice.url_create(bill)
         redirect_to url
       end
     end

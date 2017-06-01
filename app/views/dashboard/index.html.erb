@@ -93,7 +93,7 @@
 <div>
   <title> Montos</title>
   <%= column_chart data: [
-        {name: "Boletas", data: @bills.group(:is_bill).sum(:total_amount)},
+        {name: "Boletas", data: @bills.count(:is_bill)},
         #{name: "Transacciones", data: @transactions.group(:origen).sum(:monto)}
     ] %>
 </div>

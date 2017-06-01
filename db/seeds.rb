@@ -281,8 +281,29 @@ product_in_sale_84	= ProductInSale.create(product: product_55	, producer: produc
 product_in_sale_85	= ProductInSale.create(product: product_56	, producer: producer_5	, average_time: 1.533)
 
 
-
+Spree::Core::Engine.load_seed if defined?(Spree::Core)
+Spree::Auth::Engine.load_seed if defined?(Spree::Auth)
 Spree::Product.destroy_all
 
-pollo = Spree::Product.create(name: 'Pollo', description: 'desplumado', shipping_category_id: 1, sku: '1', price: 377, cost_price: 290, available_on: DateTime.now)
 
+
+pollo = Spree::Product.create(name:'Pollo', description:'Desplumado', shipping_category_id: 1, sku: 1, price: 377, cost_price: 290, available_on: DateTime.now)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Pollo.png'), :viewable => pollo.master)
+leche = Spree::Product.create( name: 'Leche', description:'Leche Entera', shipping_category_id: 1, sku: 7, price: 363, cost_price: 290, available_on: DateTime.now)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Leche.png'), :viewable => leche.master)
+arroz = Spree::Product.create( name: 'Arroz', description:'Rico y Natural', shipping_category_id: 1, sku: 13, price: 394, cost_price: 358, available_on: DateTime.now)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Arroz.png'), :viewable => arroz.master)
+mantequilla = Spree::Product.create( name: 'Mantequilla', description:'No es Margarina', shipping_category_id: 1, sku: 22, price: 437, cost_price: 336, available_on: DateTime.now)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Mantequilla.png'), :viewable => mantequilla.master)
+harina = Spree::Product.create( name: 'Harina', description:'Con Polvos de Hornear', shipping_category_id: 1, sku: 23, price: 400, cost_price: 364, available_on: DateTime.now)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Harina.png'), :viewable => harina.master)
+azucar = Spree::Product.create( name: 'Azúcar', description:'Dulce y no light', shipping_category_id: 1, sku: 25, price: 121, cost_price: 93, available_on: DateTime.now)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Azucar.png'), :viewable => azucar.master)
+cerveza = Spree::Product.create( name: 'Cerveza', description:'Con Polvos de Hornear', shipping_category_id: 1, sku: 34, price: 780, cost_price: 557, available_on: DateTime.now)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Cerveza.png'), :viewable => cerveza.master)
+uva = Spree::Product.create( name: 'Uva', description:'Con Polvos de Hornear', shipping_category_id: 1, sku: 39, price: 256, cost_price: 233, available_on: DateTime.now)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Uva.png'), :viewable => uva.master)
+chocolate = Spree::Product.create( name: 'Chocolate', description:'Con Polvos de Hornear', shipping_category_id: 1, sku: 46, price: 594, cost_price: 424, available_on: DateTime.now)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Chocolate.png'), :viewable =>chocolate.master)
+descremada = Spree::Product.create( name: 'Leche Descremada', description:'Con Polvos de Hornear', shipping_category_id: 1, sku: 49, price: 348, cost_price: 268, available_on: DateTime.now)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Leche_descremada.png'), :viewable => descremada.master)
