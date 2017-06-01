@@ -55,7 +55,7 @@ class DashboardController < ApplicationController
     end
 
     def get_bills
-      return Invoice.where(is_bill: true).all
+      return Invoice.where(is_bill: true)
     end
 
     def get_cartola
