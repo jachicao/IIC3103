@@ -61,13 +61,17 @@ class DashboardController < ApplicationController
       return Bank.get_transactions
     end
 
+    def failed_transactions
+      return Failedtransaction.all
+    end
+
     def index
       @almacenes = get_store_houses_report
       @productos = get_products_report
       @factory_orders = get_set_factory_orders
       @bills = get_bills
-      puts @bills
       @transferencias = get_cartola
+      @failed = failed_transactions
       @transactions = []
       @transferencias.each do |t|
         if t[:origen] == ENV['BANK_ID']

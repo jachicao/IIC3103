@@ -103,11 +103,12 @@
 
 <div class="container">
   <h2> Unidades</h2>
-  <%= column_chart [['Transacciones Exitosas', @transactions.count]],
+  <%= column_chart [['Transacciones Exitosas', @transactions.count], ['Transacciones Fallidas', @failed.count]],
                    title: 'Cantidad de transacciones', width: '500px'%>
   <h2> Monto</h2>
-  <%= column_chart [['Transacciones Exitosas', @transactions.sum {|h| h[:monto]} ]],
-                   title: 'Monto total transferido', width: '500px'%>
+  <%= column_chart [['Transacciones Exitosas', @transactions.sum {|h| h[:monto]} ],
+                    ['Transacciones Fallidas', @failed.sum {|h| h[:monto]}]],
+                   title: 'Monto total a transferir', width: '500px'%>
 </div>
 
 <br>

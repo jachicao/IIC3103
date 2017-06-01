@@ -1,7 +1,7 @@
 class GetFailedTransaction < ApplicationJob
 
 
-  def get_transactions(origen, destinto,  total)
+  def get_transactions(origen, destino,  total)
     req_params = {
         :origen => origen,
         :destino => destino,
@@ -19,14 +19,16 @@ class GetFailedTransaction < ApplicationJob
     puts response.body
     puts response.code
     body = JSON.parse(response.body, symbolize_names: true)
-    when 429
-      Failedtransactions.create(
-          _id: "error",
-          origin: body[:origen],
-          destination: body[:destino],
-          amount: body[:monto],
-          )
-        return nil
+    case
+      when 429
+        Failedtransactions.create(
+            _id: "error",
+            origin: body[:origen],
+            destination: body[:destino],
+            amount: body[:monto],
+            )
+          return nil
     end
   end
+
 end

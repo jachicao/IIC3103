@@ -22,7 +22,7 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
         begin
           return RestClient.put(url,
                                 req_params.to_json,
-                                { content_type: :json, accept: :json, authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN': ENV['GROUP_ID'] })
+                                { content_type: :json, accept: :json, authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN' => ENV['GROUP_ID'] })
         rescue RestClient::ExceptionWithResponse => e
           return e.response
         end
@@ -44,7 +44,7 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
     return HTTParty.put(
         url,
         :body => req_params,
-        :headers => { content_type: 'application/json', accept: 'application/json', authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN': ENV['GROUP_ID'] }
+        :headers => { content_type: 'application/json', accept: 'application/json', authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN' => ENV['GROUP_ID'] }
     )
   end
 

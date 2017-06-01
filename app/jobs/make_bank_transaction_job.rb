@@ -20,6 +20,15 @@ class MakeBankTransactionJob < ApplicationJob
     puts response.body
     puts response.code
     body = JSON.parse(response.body, symbolize_names: true)
+    case
+      when 429
+        Failedtransactions.create(
+            _id: "error",
+            origin: body[:origen],
+            destination: body[:destino],
+            amount: body[:monto],
+        )
+    end
     return {
         :body => body,
         :code =>  response.code,
