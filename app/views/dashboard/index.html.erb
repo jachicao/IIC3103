@@ -107,7 +107,7 @@
                    title: 'Cantidad de transacciones', width: '500px'%>
   <h2> Monto</h2>
   <%= column_chart [['Transacciones Exitosas', @transactions.sum {|h| h[:monto]} ],
-                    ['Transacciones Fallidas', @failed.sum {|h| h[:monto]}]],
+                    ['Transacciones Fallidas', @failed.sum(:amount)]],
                    title: 'Monto total a transferir', width: '500px'%>
 </div>
 
