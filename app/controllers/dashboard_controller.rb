@@ -1,12 +1,11 @@
 class DashboardController < ApplicationController
 
-    
+
     def get_store_houses_report
       return StoreHouse.all
     end
 
     def get_products_report
-
       me = Producer.get_me
       my_products = []
       me.product_in_sales.each do |product_in_sale|
@@ -88,5 +87,5 @@ class DashboardController < ApplicationController
         end
       end
     end
-    
+
 end

@@ -1,0 +1,2 @@
+class Failedtransaction < ApplicationRecord
+end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170601060425) do
+ActiveRecord::Schema.define(version: 20170601204652) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,6 +21,15 @@ ActiveRecord::Schema.define(version: 20170601060425) do
     t.datetime "available"
     t.integer  "quantity"
     t.index ["fo_id"], name: "index_factory_orders_on_fo_id", using: :btree
+  end
+
+  create_table "failedtransactions", force: :cascade do |t|
+    t.string   "_id"
+    t.string   "origin"
+    t.string   "destination"
+    t.integer  "amount"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
