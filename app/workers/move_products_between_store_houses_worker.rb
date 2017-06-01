@@ -12,12 +12,12 @@ class MoveProductsBetweenStoreHousesWorker
             result = MoveProductInternallyJob.perform_now(p[:_id], from_store_house_id, to_store_house_id)
             if result[:code] == 200
               total_moved += 1
-            elsif result[:code] == 400
-              break
             elsif result[:code] == 429
               puts 'total left: ' + (quantity - total_moved).to_s
               puts 'sleeping server-rate seconds'
               sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
+              break
+            else
               break
             end
           end
