@@ -164,79 +164,6 @@ class StoreHouse
     return total_not_despacho
   end
 
-  def self.clean_store_house(from_store_houses, to_store_houses)
-    used_space = 0
-    from_store_houses.each do |store_house|
-      used_space += store_house[:usedSpace]
-    end
-    if used_space == 0
-      return used_space
-    end
-
-    to_store_houses.sort! { |x, y| y[:availableSpace] <=> x[:availableSpace] }
-
-    #mover stock desde un almacen a otro
-    to_store_houses.each do |to_store_house|
-      if to_store_house[:availableSpace] > 0
-        from_store_houses.each do |from_store_house|
-          if from_store_house[:usedSpace] > 0
-            stock = get_stock(from_store_house[:_id])
-            if stock == nil
-              return used_space
-            end
-            stock.each do |p|
-              if to_store_house[:availableSpace] > 0 and p[:total] > 0 and used_space > 0
-                total_to_move = [to_store_house[:availableSpace], p[:total]].min
-                puts 'total a mover'
-                puts total_to_move.to_s
-                MoveProductsBetweenStoreHousesWorker.perform_async(from_store_house[:_id], to_store_house[:_id], p[:sku], total_to_move)
-                p[:total] -= total_to_move
-                to_store_house[:availableSpace] -= total_to_move
-                to_store_house[:usedSpace] += total_to_move
-                from_store_house[:availableSpace] += total_to_move
-                from_store_house[:usedSpace] -= total_to_move
-                used_space -= total_to_move
-              end
-            end
-          end
-        end
-      end
-    end
-    return used_space
-  end
-
-  def self.clean_recepcion
-    recepcion = get_recepciones
-
-    if recepcion == nil
-      return { :error => 'Servidor colapsado' }
-    end
-
-    general = get_otros
-
-    if general == nil
-      return { :error => 'Servidor colapsado' }
-    end
-
-    return clean_store_house(recepcion, general)
-  end
-
-  def self.clean_pulmon
-    pulmon = get_pulmones
-
-    if pulmon == nil
-      return { :error => 'Servidor colapsado' }
-    end
-
-    general = get_otros
-
-    if general == nil
-      return { :error => 'Servidor colapsado' }
-    end
-
-    return clean_store_house(pulmon, general)
-  end
-
   def self.move_stock(from_store_houses, to_store_houses, sku, quantity)
     quantity_left = quantity
     from_store_houses.each do |from_store_house|
@@ -267,28 +194,4 @@ class StoreHouse
     end
     return quantity_left
   end
-
-  def self.dispatch_stock_to_direction(direction, sku, quantity, po_id, price)
-    all_stock = StoreHouse.all_stock
-
-    if all_stock.nil?
-      return -1
-    end
-
-    total = 0
-    all_stock.each do |store_house|
-      store_house[:inventario].each do |p|
-        if p[:sku] == sku
-          total += p[:total]
-        end
-      end
-    end
-    if total >= quantity
-      DispatchProductsToDirectionWorker.perform_async(direction, sku, quantity, po_id, price)
-      return 0
-    else
-      return quantity - total
-    end
-  end
-
 end
