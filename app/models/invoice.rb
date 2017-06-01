@@ -15,9 +15,12 @@ class Invoice < ApplicationRecord
   end
 
   def self.url_create(bill)
+    urlok = ENV['OUR_SERVER_URL'] + '/spree'
+    urlfail = ENV['OUR_SERVER_URL'] + '/spree/cart'
     url = ENV['CENTRAL_SERVER_URL'] + '/web/pagoenlinea'
-    url += "?callbackUrl=#{URI.escape('http://www.google.com', Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
-    url += "&cancelUrl=#{URI.escape('http://www.apple.com', Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
+    url += "?callbackUrl=#{URI.escape(urlok, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
+    url += "&cancelUrl=#{URI.escape(urlfail, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
     url += "&boletaId=#{bill[:_id]}"
+    return url
   end
 end

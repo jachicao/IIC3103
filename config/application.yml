@@ -37,7 +37,7 @@ development:
   ONLINE_PASSWORD: "1Y74E9AQ"
   CENTRAL_SERVER_URL: "https://integracion-2017-dev.herokuapp.com"
   GROUPS_SERVER_URL: "http://dev.integra17-%d.ing.puc.cl"
-
+  OUR_SERVER_URL: "http://dev.integra17-1.ing.puc.cl"
 
 
 production:
@@ -47,4 +47,4 @@ production:
   ONLINE_PASSWORD: "KC5;Pt2l"
   CENTRAL_SERVER_URL: "https://integracion-2017-prod.herokuapp.com"
   GROUPS_SERVER_URL: "http://integra17-%d.ing.puc.cl"
-
+  OUR_SERVER_URL: "http://integra17-1.ing.puc.cl"
