@@ -2,12 +2,13 @@
 
 <h1>Own Purchase Orders</h1>
 
-<table>
+<table class="table table-striped">
   <thead>
     <tr>
       <th>Po</th>
-      <th>Payment method</th>
-      <th>Store reception</th>
+      <th>Sku</th>
+      <th>Quantity</th>
+      <th>Client</th>
       <th colspan="1"></th>
     </tr>
   </thead>
@@ -16,8 +17,9 @@
     <% @own_purchase_orders.each do |purchase_order| %>
       <tr>
         <td><%= purchase_order.po_id %></td>
-        <td><%= purchase_order.payment_method %></td>
-        <td><%= purchase_order.store_reception_id %></td>
+        <td><%= purchase_order.sku %></td>
+        <td><%= purchase_order.cuantity%></td>
+        <td><%= purchase_order.group_number%></td>
         <td><%= link_to 'Show', purchase_order %></td>
       </tr>
     <% end %>
@@ -26,12 +28,13 @@
 
 <h1>Received Purchase Orders</h1>
 
-<table>
+<table class="table table-striped">
   <thead>
     <tr>
       <th>Po</th>
-      <th>Payment method</th>
-      <th>Store reception</th>
+      <th>Sku</th>
+      <th>Quantity</th>
+      <th>Client</th>
       <th colspan="1"></th>
     </tr>
   </thead>
@@ -40,8 +43,9 @@
     <% @received_purchase_orders.each do |purchase_order| %>
       <tr>
         <td><%= purchase_order.po_id %></td>
-        <td><%= purchase_order.payment_method %></td>
-        <td><%= purchase_order.store_reception_id %></td>
+        <td><%= purchase_order.sku %></td>
+        <td><%= purchase_order.cuantity%></td>
+        <td><%= purchase_order.group_number%></td>
         <td><%= link_to 'Show', purchase_order %></td>
       </tr>
     <% end %>
@@ -50,12 +54,13 @@
 
 <h1>Dispatched Purchase Orders</h1>
 
-<table>
+<table class="table table-striped">
   <thead>
     <tr>
       <th>Po</th>
-      <th>Payment method</th>
-      <th>Store reception</th>
+      <th>Sku</th>
+      <th>Quantity</th>
+      <th>Client</th>
       <th colspan="1"></th>
     </tr>
   </thead>
@@ -64,8 +69,9 @@
     <% @dispatched_purchase_orders.each do |purchase_order| %>
       <tr>
         <td><%= purchase_order.po_id %></td>
-        <td><%= purchase_order.payment_method %></td>
-        <td><%= purchase_order.store_reception_id %></td>
+        <td><%= purchase_order.sku %></td>
+        <td><%= purchase_order.cuantity%></td>
+        <td><%= purchase_order.group_number%></td>
         <td><%= link_to 'Show', purchase_order %></td>
       </tr>
     <% end %>

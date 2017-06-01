@@ -59,6 +59,9 @@ class PurchaseOrder < ApplicationRecord
     @purchase_order = PurchaseOrder.new(po_id: response_server[:body][:_id],
                                         payment_method: payment_type,
                                         store_reception_id: id_almacen_recepcion,
+                                        group_number:  Producer.all.find_by(producer_id: response_server[:body][:cliente]).group_number,
+                                        sku: response_server[:body][:sku],
+                                        cuantity: response_server[:body][:cantidad],
                                         own: true,
                                         dispatched: false)
     if @purchase_order.save

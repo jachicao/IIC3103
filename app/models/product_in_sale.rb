@@ -6,7 +6,7 @@ class ProductInSale < ApplicationRecord
     return self.producer.is_me
   end
 
-  def get_price(sku)
+  def get_price()
     return self.price
   end
 

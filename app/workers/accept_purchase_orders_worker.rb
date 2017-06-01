@@ -14,7 +14,7 @@ class AcceptPurchaseOrdersWorker
 
     if product_in_sale =! nil
 
-      if product_in_sale.get_price(sku) < price
+      if product_in_sale.get_price() < price
         RejectGroupPurchaseOrderJob.perform_now(group_number, purchase_order_id, "Precio Incorrecto")
         RejectServerPurchaseOrderJob.perform_now(purchase_order_id, "Precio Incorrecto")
         purchase_order.destroy

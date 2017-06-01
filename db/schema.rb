@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170531212015) do
+ActiveRecord::Schema.define(version: 20170531233328) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,14 +39,14 @@ ActiveRecord::Schema.define(version: 20170531212015) do
 
   create_table "ingredients", id: :bigserial, force: :cascade do |t|
     t.bigint   "product_id"
-    t.integer  "item_id"
+    t.bigint   "item_id"
     t.integer  "quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_ingredients_on_product_id", using: :btree
   end
 
-  create_table "invoices", id: :bigserial, force: :cascade do |t|
+  create_table "invoices", force: :cascade do |t|
     t.string   "_id"
     t.string   "supplier"
     t.string   "client"
@@ -106,6 +106,9 @@ ActiveRecord::Schema.define(version: 20170531212015) do
     t.boolean  "own"
     t.boolean  "dispatched"
     t.boolean  "sending"
+    t.string   "sku"
+    t.integer  "group_number"
+    t.integer  "cuantity"
     t.index ["po_id"], name: "index_purchase_orders_on_po_id", using: :btree
   end
 
