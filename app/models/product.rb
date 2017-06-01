@@ -14,6 +14,34 @@ class Product < ApplicationRecord
     return counter
   end
 
+  def get_max_production(quantity)
+    total_not_despacho = StoreHouse.get_stock_total_not_despacho(sku)
+    if total_not_despacho.nil?
+      return nil
+    end
+
+    difference = 5000 - total_not_despacho
+    puts difference
+    if difference < quantity
+      return {
+          :quantity => 0,
+          :produce_time => 0,
+      }
+    else
+      me = Producer.get_me
+      produce_time = 0
+      me.product_in_sales.each do |product_in_sale|
+        if product_in_sale.product.sku == sku
+          produce_time = product_in_sale.average_time
+          break
+        end
+      end
+      return {
+          :quantity => lote * (quantity / lote.to_f).ceil,
+          :produce_time => produce_time,
+      }
+    end
+  end
 
   def get_factory_analysis(quantity)
     total_not_despacho = StoreHouse.get_stock_total_not_despacho(sku)
@@ -44,6 +72,39 @@ class Product < ApplicationRecord
 
   def buy_to_factory(quantity)
     FactoryOrder.make_product(sku, quantity, unit_cost)
+  end
+
+  def get_max_purchase_analysis(producer, quantity)
+    total_not_despacho = StoreHouse.get_stock_total_not_despacho(sku)
+    if total_not_despacho.nil?
+      return nil
+    end
+    difference = 5000 - total_not_despacho
+    puts difference
+    if difference < quantity
+      return {
+          :quantity => 0,
+          :produce_time => 0,
+          :producer_price => 0,
+          :producer_stock => 0,
+      }
+    else
+      produce_time = 0
+      producer.product_in_sales.each do |product_in_sale|
+        if product_in_sale.product.sku == sku
+          produce_time = product_in_sale.average_time
+          break
+        end
+      end
+      producer_details = producer.get_product_details(sku)
+
+      return {
+          :quantity => quantity,
+          :produce_time => produce_time,
+          :producer_price => producer_details[:precio],
+          :producer_stock => producer_details[:stock],
+      }
+      end
   end
 
   def get_producer_analysis(producer, quantity)

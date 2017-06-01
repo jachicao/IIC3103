@@ -17,13 +17,21 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
     response = GetPurchaseOrderJob.perform_now(params[:po_id])
     case response[:code]
       when 200
+        body = response[:body].first
         params[:store_reception_id] = params[:id_store_reception]
         @purchase_order = PurchaseOrder.new({po_id: params[:po_id],
                                               store_reception_id: params[:store_reception_id],
                                               payment_method: params[:payment_method],
+                                              client_id: body[:cliente],
+                                              supplier_id: body[:proveedor],
+                                              delivery_date: body[:fechaEntrega],
+                                              unit_price: body[:precioUnitario],
+                                              sku: body[:sku],
+                                              quantity: body[:cantidad],
                                               own: false,
                                               dispatched: false })
         if @purchase_order.save
+          #AcceptPurchaseOrdersWorker.perform_async(params[:po_id])
           return render json: { :success => true }
         else
           return render json: { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity
@@ -45,7 +53,9 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   # PATCH/PUT /purchase_orders/1/rejected
   # PATCH/PUT /purchase_orders/1/rejected.json
   def update_rejected
+    puts rejected
     if @purchase_order != nil
+      @purchase_order.destroy
       return render json: { :success => true }
     else
       return render :json => { :success => false,  :error => 'PurchaseOrder not found' }, status: :not_found

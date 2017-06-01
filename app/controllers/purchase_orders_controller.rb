@@ -41,7 +41,8 @@ class PurchaseOrdersController < ApplicationController
             product = Product.all.find_by(sku: body[:sku])
             format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Falta ' + result.to_s + ' de ' + product.name }
           else
-            @purchase_order.dispatch_order(body[:sku], body[:cantidad], body[:precioUnitario])
+            cantidad = body[:cantidad] - body[:cantidadDespachada]
+            @purchase_order.dispatch_order(body[:sku], cantidad, body[:precioUnitario])
             format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Purchase order was successfully dispatched.' }
           end
         end

@@ -9,13 +9,13 @@ class ProductsController < ApplicationController
   def post_buy_to_factory
     maximum_time = params[:maximum_time].to_f
     quantity = params[:quantity].to_i
-    analysis = @product.get_factory_analysis(quantity)
+    analysis = @product.get_max_production(quantity)
     respond_to do |format|
       if analysis == nil
         format.html { redirect_to products_path, notice: 'Servidor colapsado' }
       elsif analysis[:produce_time] <= maximum_time
         if analysis[:quantity] == 0
-          format.html { redirect_to products_path, notice: 'Ya hay suficiente stock' }
+          format.html { redirect_to products_path, notice: 'Supera Stock maximo' }
         else
           format.html { redirect_to controller: 'products', action: 'confirm_buy_to_factory', quantity: analysis[:quantity] }
         end
@@ -52,14 +52,14 @@ class ProductsController < ApplicationController
     maximum_time = params[:maximum_time].to_f
     quantity = params[:quantity].to_i
     producer = Producer.all.find_by(producer_id: params[:producer_id])
-    analysis = @product.get_producer_analysis(producer, quantity)
+    analysis = @product.get_max_purchase_analysis(producer, quantity)
 
     respond_to do |format|
       if analysis.nil?
         format.html { redirect_to products_path, notice: 'Servidor colapsado' }
       elsif analysis[:produce_time] <= maximum_time
         if analysis[:quantity] == 0
-          format.html { redirect_to products_path, notice: 'Ya hay suficiente stock' }
+          format.html { redirect_to products_path, notice: 'Supera Stock maximo' }
         else
           format.html { redirect_to controller: 'products', action: 'confirm_buy_to_producer', producer_id: producer.producer_id, quantity: analysis[:quantity], producer_price: analysis[:producer_price], producer_stock: analysis[:producer_stock] }
         end

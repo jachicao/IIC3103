@@ -29,8 +29,11 @@ Rails.application.routes.draw do
   resources :product_in_sales, only: [:index]
   resources :producers, only: [:index]
   resources :pending_products, only: [:index, :show]
-  resources :invoices, only: [:index, :show]
 
+
+  get 'create_bill_web/:id', to: 'invoices#create_bill_web', as: :create_bill_web
+
+  resources :invoices
   resources :factory_orders, only: [:index]
 
   get '/bank/', to: 'bank#index'
