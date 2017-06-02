@@ -283,7 +283,7 @@ ProductInSale.create(product: Product.all.find_by(sku: '56')	, producer: Produce
 
 Spree::Core::Engine.load_seed if defined?(Spree::Core)
 Spree::Auth::Engine.load_seed if defined?(Spree::Auth)
-
+Spree::Product.destroy_all
 
 
 
