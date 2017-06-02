@@ -1,4 +1,4 @@
-class CacheStoreHousesStockWorker
+class CacheWorker
   include Sidekiq::Worker
 
   def get_store_houses
@@ -6,7 +6,7 @@ class CacheStoreHousesStockWorker
     while store_houses.nil?
       store_houses = StoreHouse.all
       if store_houses.nil?
-        puts 'StoreHousesWorker: sleeping server-rate seconds'
+        puts 'CacheWorker: sleeping server-rate seconds'
         sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
       end
     end
@@ -18,5 +18,6 @@ class CacheStoreHousesStockWorker
     store_houses.each do |store_house|
       StoreHouse.get_stock(store_house[:_id])
     end
+    Bank.get_transactions
   end
 end
