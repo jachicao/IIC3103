@@ -18,7 +18,6 @@ class MoveProductInternallyJob < ApplicationJob
   end
 
   def perform(product_id, from_store_house_id, to_store_house_id)
-    $redis.del('get_almacenes')
     $redis.del('get_skus_with_stock:' + to_store_house_id)
     $redis.del('get_skus_with_stock:' + from_store_house_id)
     response = mover_stock(product_id, to_store_house_id)

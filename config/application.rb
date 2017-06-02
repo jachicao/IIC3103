@@ -2,8 +2,6 @@ require_relative 'boot'
 
 require 'rails/all'
 
-#require 'sidekiq/api'
-
 require 'rest-client'
 
 # Require the gems listed in Gemfile, including any gems

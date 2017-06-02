@@ -22,7 +22,6 @@ class DispatchProductJob < ApplicationJob
   end
 
   def perform(producto_id, from_store_house_id, direccion, precio, oc)
-    $redis.del('get_almacenes')
     $redis.del('get_skus_with_stock:' + from_store_house_id)
     response = despachar_stock(producto_id, direccion, precio, oc)
     puts 'Moviendo'

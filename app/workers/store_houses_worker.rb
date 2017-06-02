@@ -36,6 +36,7 @@ class StoreHousesWorker
     end
     return products
   end
+
   def move_stock(store_houses)
     stock_left = 0
     store_houses.each do |from_store_house|
