@@ -53,11 +53,11 @@ class DispatchProductsToGroupWorker
                             sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
                           end
                         end
-                      elsif internal_result[:code] == 400
-                        break
                       elsif internal_result[:code] == 429
                         puts 'DispatchProductsToGroupWorker: sleeping server-rate seconds'
                         sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
+                        break
+                      else
                         break
                       end
                     end
