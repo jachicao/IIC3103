@@ -40,7 +40,7 @@ class StoreHousesWorker
   def move_stock(store_houses)
     stock_left = 0
     store_houses.each do |from_store_house|
-      if from_store_house[:pulmon] or from_store_house[:recepcion] or from_store_house[:despacho]
+      if from_store_house[:pulmon] or from_store_house[:recepcion]
         from_stock = get_stock(from_store_house)
         from_used_space = 0
         from_stock.each do |from_p|
