@@ -63,7 +63,7 @@ class StoreHouse
 
   def self.get_stock(id)
     response = GetProductsWithStockJob.perform_now(id)
-    if response == nil
+    if response.nil?
       return nil
     end
     result = []
@@ -164,34 +164,32 @@ class StoreHouse
     return total_not_despacho
   end
 
-  def self.move_stock(from_store_houses, to_store_houses, sku, quantity)
-    quantity_left = quantity
+  def self.can_move_stock(from_store_houses, to_store_houses, sku, quantity)
+    quantity_moved = 0
     from_store_houses.each do |from_store_house|
-      if from_store_house[:usedSpace] > 0
-        stock = get_stock(from_store_house[:_id])
-        if stock == nil
-          return quantity_left
-        end
-        stock.each do |p|
-          if p[:sku] == sku
-            to_store_houses.each do |to_store_house|
-              if to_store_house[:availableSpace] > 0 and quantity_left > 0 and p[:total] > 0
-                total_to_move = [to_store_house[:availableSpace], p[:total], quantity_left].min
-                puts 'total a mover'
-                puts total_to_move.to_s
-                MoveProductsBetweenStoreHousesWorker.perform_async(from_store_house[:_id], to_store_house[:_id], sku, total_to_move)
-                p[:total] -= total_to_move
-                to_store_house[:availableSpace] -= total_to_move
-                to_store_house[:usedSpace] += total_to_move
-                from_store_house[:availableSpace] += total_to_move
-                from_store_house[:usedSpace] -= total_to_move
-                quantity_left -= total_to_move
-              end
+      from_stock = get_stock(from_store_house[:_id])
+      if from_stock.nil?
+        return nil
+      end
+      from_stock.each do |p|
+        if p[:sku] == sku
+          to_store_houses.each do |to_store_house|
+            to_total_space = to_store_house[:totalSpace]
+            to_used_space = get_used_space(to_store_house[:_id])
+            if to_used_space.nil?
+              return nil
+            end
+            if to_total_space - to_used_space > 0
+              quantity_moved += [to_total_space - to_used_space, p[:total]].min
             end
           end
         end
       end
     end
-    return quantity_left
+    return quantity_moved >= quantity
+  end
+
+  def self.move_stock(from_store_houses, to_store_houses, sku, quantity)
+    MoveProductsInternallyWorker.perform_async(from_store_houses, to_store_houses, sku, quantity)
   end
 end

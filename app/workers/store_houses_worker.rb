@@ -13,10 +13,10 @@ class StoreHousesWorker
     return store_houses
   end
 
-  def get_stock(store_house)
+  def get_stock(store_house_id)
     stock = nil
     while stock.nil?
-      stock = StoreHouse.get_stock(store_house[:_id])
+      stock = StoreHouse.get_stock(store_house_id)
       if stock.nil?
         puts 'StoreHousesWorker: sleeping server-rate seconds'
         sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
@@ -25,10 +25,10 @@ class StoreHousesWorker
     return stock
   end
 
-  def get_products(store_house, sku, limit)
+  def get_products(store_house_id, sku, limit)
     products = nil
     while products.nil?
-      products = GetProductStockJob.perform_now(store_house[:_id], sku, limit)
+      products = GetProductStockJob.perform_now(store_house_id, sku, limit)
       if products.nil?
         puts 'StoreHousesWorker: sleeping server-rate seconds'
         sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
@@ -36,12 +36,11 @@ class StoreHousesWorker
     end
     return products
   end
-
   def move_stock(store_houses)
     stock_left = 0
     store_houses.each do |from_store_house|
       if from_store_house[:pulmon] or from_store_house[:recepcion]
-        from_stock = get_stock(from_store_house)
+        from_stock = get_stock(from_store_house[:_id])
         from_used_space = 0
         from_stock.each do |from_p|
           from_used_space += from_p[:total]
@@ -53,17 +52,17 @@ class StoreHousesWorker
             if from_p_total > 0
               store_houses.each do |to_store_house|
                 to_total_space = to_store_house[:totalSpace]
-                if (not to_store_house[:pulmon] and not to_store_house[:recepcion] and not to_store_house[:despacho])
+                if (not to_store_house[:pulmon]) and (not to_store_house[:recepcion]) and (not to_store_house[:despacho])
                   to_used_space = 0
-                  to_stock = get_stock(to_store_house)
+                  to_stock = get_stock(to_store_house[:_id])
                   to_stock.each do |to_p|
                     to_used_space += to_p[:total]
                   end
                   if to_total_space - to_used_space > 0 and from_used_space > 0 and from_p_total > 0
+                    stock_left = [to_total_space - to_used_space, from_p_total].min
                     total_to_move = [to_total_space - to_used_space, from_p_total, 100].min
-                    stock_left = total_to_move
-                    puts 'Moviendo ' + total_to_move.to_s
-                    products = get_products(from_store_house, from_p_sku, total_to_move)
+                    puts 'StoreHousesWorker: Moviendo ' + total_to_move.to_s
+                    products = get_products(from_store_house[:_id], from_p_sku, total_to_move)
                     if products[:body].count > 0
                       products[:body].each do |product|
                         if to_total_space - to_used_space > 0 and from_used_space > 0 and from_p_total > 0 and total_to_move > 0
@@ -74,7 +73,7 @@ class StoreHousesWorker
                             from_used_space -= 1
                             to_used_space += 1
                             stock_left -= 1
-                            puts 'quantity left: ' + total_to_move.to_s
+                            puts 'StoreHousesWorker: quantity left ' + total_to_move.to_s
                           elsif result[:code] == 429
                             puts 'StoreHousesWorker: sleeping server-rate seconds'
                             sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
