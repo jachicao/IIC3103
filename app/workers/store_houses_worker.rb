@@ -59,7 +59,7 @@ class StoreHousesWorker
                     to_used_space += to_p[:total]
                   end
                   if to_total_space - to_used_space > 0 and from_used_space > 0 and from_p_total > 0
-                    stock_left = [to_total_space - to_used_space, from_p_total].min
+                    stock_left += [to_total_space - to_used_space, from_p_total].min
                     total_to_move = [to_total_space - to_used_space, from_p_total, 100].min
                     puts 'StoreHousesWorker: Moviendo ' + total_to_move.to_s
                     products = get_products(from_store_house[:_id], from_p_sku, total_to_move)

@@ -49,7 +49,6 @@ class MoveProductsInternallyWorker
               if products[:body].count > 0
                 products[:body].each do |product|
                   if to_total_space - to_used_space > 0 and from_p_total > 0 and total_to_move > 0 and quantity_left > 0
-                    puts product
                     result = MoveProductInternallyJob.perform_now(product[:_id], from_id, to_id)
                     if result[:code] == 200
                       total_to_move -= 1
