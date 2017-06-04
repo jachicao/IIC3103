@@ -117,6 +117,11 @@ class CheckMinimumStockWorker
       end
     end
 
+    my_products.each do |product|
+      product[:quantity] = [product[:quantity], 5000].min
+    end
+
+
     my_products.each do |p|
       difference = p[:quantity] - p[:stock]
       if difference > 0
