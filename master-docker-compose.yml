@@ -37,6 +37,7 @@ services:
       DB_PASSWORD: ''
       DB_HOST: 'db'
       REDIS_HOST: 'redis'
+      DOCKER_RUNNING: 'true'
     ports:
       - "3000"
     networks:

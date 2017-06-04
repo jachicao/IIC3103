@@ -37,6 +37,7 @@ services:
       DB_HOST: 'develop-db'
       REDIS_PROVIDER: 'REDIS_HOST'
       REDIS_HOST: 'develop-redis'
+      DOCKER_RUNNING: 'true'
     ports:
       - "3000"
     networks:
