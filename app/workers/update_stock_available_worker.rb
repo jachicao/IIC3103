@@ -28,8 +28,12 @@ class UpdateStockAvailableWorker
   def perform(*args)
     #puts 'starting UpdateStockAvailableWorker'
     my_products = []
-    Producer.get_me.product_in_sales.each do |product_in_sale|
-      my_products.push({ sku: product_in_sale.product.sku, stock_available: 0, stock: 0 })
+    Producer.all.each do |producer|
+      if producer.is_me
+        producer.product_in_sales.each do |product_in_sale|
+          my_products.push({ sku: product_in_sale.product.sku, stock_available: 0, stock: 0 })
+        end
+      end
     end
 
     #stock en almacenes
@@ -58,9 +62,9 @@ class UpdateStockAvailableWorker
     end
 
     #ordenes de compra recibidas
-    client_purchase_orders = PurchaseOrder.get_client_orders
-    if client_purchase_orders != nil
-      client_purchase_orders.each do |purchase_order|
+    PurchaseOrder.all.each do |purchase_order|
+      if purchase_order.is_made_by_me
+      else
         server = PurchaseOrder.get_server_details(purchase_order.po_id)
         body = server[:body].first
         if body[:estado] == 'aceptada'
