@@ -7,7 +7,6 @@ class UpdatePurchaseOrdersStatusWorker
       if server[:code] == 200
         body = server[:body]
         puts 'server body: '
-        puts body
         if body != nil
           purchase_order.update(client_id: body[:cliente],
                                 supplier_id: body[:proveedor],

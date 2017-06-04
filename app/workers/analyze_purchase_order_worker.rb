@@ -65,13 +65,16 @@ class AnalyzePurchaseOrderWorker
                     ingredient.item.product_in_sales.each do |product_in_sale|
                       if product_in_sale.is_mine
                       else
-                        producer_details = product_in_sale.producer.get_product_details(ingredient.item.sku)
-                        puts 'their stock: ' + producer_details[:stock].to_s
-                        puts 'we need: ' + difference_ingredient.to_s
-                        if producer_details[:stock] >= difference_ingredient
-                          if best_product_in_sale.nil? || best_product_in_sale.average_time > product_in_sale.average_time
-                            best_product_in_sale = product_in_sale
-                            best_product_in_sale_price = producer_details[:precio]
+                        invalid_groups = [4, 6, 8] #TODO: remove this
+                        if !(invalid_groups.include?(product_in_sale.producer.group_number))
+                          producer_details = product_in_sale.producer.get_product_details(ingredient.item.sku)
+                          puts 'their stock: ' + producer_details[:stock].to_s
+                          puts 'we need: ' + difference_ingredient.to_s
+                          if producer_details[:stock] >= difference_ingredient
+                            if best_product_in_sale.nil? || best_product_in_sale.average_time > product_in_sale.average_time
+                              best_product_in_sale = product_in_sale
+                              best_product_in_sale_price = producer_details[:precio]
+                            end
                           end
                         end
                       end
