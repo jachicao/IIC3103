@@ -17,6 +17,19 @@
 #Product.delete_all
 #Producer.delete_all
 
+=begin
+PurchaseOrder.all.each do |purchase_order|
+  server = PurchaseOrder.get_server_details(purchase_order.po_id)
+  body = server[:body].first
+  purchase_order.update(po_id: body[:_id],
+                     client_id: body[:cliente],
+                     supplier_id: body[:proveedor],
+                     delivery_date: DateTime.parse(body[:fechaEntrega]),
+                     unit_price: body[:precioUnitario],
+                     sku: body[:sku],
+                     quantity: body[:cantidad])
+end
+=end
 
 if Rails.env.production?
   Producer.create(producer_id: '5910c0910e42840004f6e680', group_number: 1, account:'')
