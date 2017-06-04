@@ -59,14 +59,16 @@ class UpdateStockAvailableWorker
 
     #ordenes de compra recibidas
     client_purchase_orders = PurchaseOrder.get_client_orders
-    client_purchase_orders.each do |purchase_order|
-      server = PurchaseOrder.get_server_details(purchase_order.po_id)
-      body = server[:body].first
-      if body[:estado] == 'aceptada'
-        sku = purchase_order.get_product.sku
-        my_products.each do |product|
-          if sku == product[:sku]
-            product[:stock_available] -= purchase_order.quantity
+    if client_purchase_orders != nil
+      client_purchase_orders.each do |purchase_order|
+        server = PurchaseOrder.get_server_details(purchase_order.po_id)
+        body = server[:body].first
+        if body[:estado] == 'aceptada'
+          sku = purchase_order.get_product.sku
+          my_products.each do |product|
+            if sku == product[:sku]
+              product[:stock_available] -= purchase_order.quantity
+            end
           end
         end
       end
