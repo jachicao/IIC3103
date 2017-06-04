@@ -43,6 +43,7 @@
           <th>Sku</th>
           <th>Nombre</th>
           <th>Stock</th>
+          <th>Stock Disponible</th>
           <th colspan="3"></th>
         </tr>
         </thead>
@@ -53,6 +54,7 @@
               <td><%= producto[:sku] %></td>
               <td><%= producto[:name] %></td>
               <td><%= producto[:stock] %></td>
+              <td><%= producto[:stock_available] %></td>
             </tr>
         <% end %>
         </tbody>

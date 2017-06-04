@@ -6,7 +6,7 @@ class CreatePurchasedProducts < ActiveRecord::Migration[5.0]
       t.references :pending_product, foreign_key: true
       t.integer :lote
       t.integer :quantity
-      t.decimal :produce_time
+      t.decimal :time
       t.boolean :order_sent, default: false
       t.string :po_id
 

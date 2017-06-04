@@ -14,13 +14,13 @@ class PurchaseOrdersController < ApplicationController
   def show
     response = PurchaseOrder.get_server_details(@purchase_order.po_id)
     case response[:code]
-      when 200
+      when 200..226
         @product = Product.find_by(sku: @server_body[:sku])
         respond_to do |format|
           format.html { render :show }
         end
       else
-        return render :json => { :error => response[:body] }, status: response[:code]
+        return render :json => { :error => response }, status: response[:code]
     end
   end
 

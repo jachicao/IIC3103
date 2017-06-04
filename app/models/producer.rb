@@ -10,7 +10,7 @@ class Producer < ApplicationRecord
   end
 
   def get_price_of_product(sku)
-    response = GetGroupPricesJob.perform_now(group_number)
+    response = GetGroupPricesJob.perform_now(self.group_number)
     case response[:code]
       when 200..226
         response[:body].each do |product|
@@ -28,7 +28,7 @@ class Producer < ApplicationRecord
   end
 
   def get_product_details(sku)
-    response = GetGroupPricesJob.perform_now(group_number)
+    response = GetGroupPricesJob.perform_now(self.group_number)
     case response[:code]
       when 200..226
         response[:body].each do |product|

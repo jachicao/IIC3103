@@ -13,7 +13,7 @@ class ProductsController < ApplicationController
     respond_to do |format|
       if analysis == nil
         format.html { redirect_to products_path, notice: 'Servidor colapsado' }
-      elsif analysis[:produce_time] <= maximum_time
+      elsif analysis[:time] <= maximum_time
         if analysis[:quantity] == 0
           format.html { redirect_to products_path, notice: 'Supera Stock maximo' }
         else
@@ -57,7 +57,7 @@ class ProductsController < ApplicationController
     respond_to do |format|
       if analysis.nil?
         format.html { redirect_to products_path, notice: 'Servidor colapsado' }
-      elsif analysis[:produce_time] <= maximum_time
+      elsif analysis[:time] <= maximum_time
         if analysis[:quantity] == 0
           format.html { redirect_to products_path, notice: 'Supera Stock maximo' }
         else
@@ -74,10 +74,10 @@ class ProductsController < ApplicationController
     @producer_price = params[:producer_price].to_i
     @producer_stock = params[:producer_stock].to_i
     @producer = Producer.find_by(producer_id: params[:producer_id])
-    @produce_time = 0
+    @time = 0
     @producer.product_in_sales.each do |product_in_sale|
       if product_in_sale.product.sku == @product.sku
-        @produce_time = product_in_sale.average_time
+        @time = product_in_sale.average_time
       end
     end
   end
@@ -86,13 +86,13 @@ class ProductsController < ApplicationController
     quantity = params[:quantity].to_i
     producer_price = params[:producer_price].to_i
     producer = Producer.find_by(producer_id: params[:producer_id])
-    @produce_time = 0
+    @time = 0
     producer.product_in_sales.each do |product_in_sale|
       if product_in_sale.product.sku == @product.sku
-        @produce_time = product_in_sale.average_time
+        @time = product_in_sale.average_time
       end
     end
-    result = @product.buy_to_producer(producer, quantity, producer_price, @produce_time)
+    result = @product.buy_to_producer(producer.producer_id, quantity, producer_price, @time)
     respond_to do |format|
       if result == nil
         format.html { redirect_to products_path, notice: 'Servidor colapsado' }
@@ -116,15 +116,18 @@ class ProductsController < ApplicationController
     respond_to do |format|
       if analysis.nil?
         format.html { redirect_to products_path, notice: 'Servidor colapsado' }
-      elsif analysis[:produce_time] <= maximum_time
-        if analysis[:purchase_ingredients].size == 0
-          @product.produce_product(analysis[:quantity])
-          format.html { redirect_to products_path, notice: 'Producto enviado a producir' }
-        else
-          format.html { redirect_to controller: 'products', action: 'confirm_produce', quantity: analysis[:quantity], purchase_ingredients: analysis[:purchase_ingredients] }
+      elsif analysis[:success]
+        if analysis[:time] <= maximum_time
+          if analysis[:purchase_ingredients].size == 0
+            @product.produce(analysis[:quantity])
+            format.html { redirect_to products_path, notice: 'Producto enviado a producir' }
+          else
+            format.html { redirect_to controller: 'products', action: 'confirm_produce', quantity: analysis[:quantity], purchase_ingredients: analysis[:purchase_ingredients] }
+          end
+          format.html { redirect_to produce_product_path, notice: 'No se alcanza a cumplir el tiempo'}
         end
       else
-        format.html { redirect_to produce_product_path, notice: 'No se alcanza a cumplir el tiempo'}
+        format.html { redirect_to produce_product_path, notice: 'No se logra producir: ' + analysis.to_json}
       end
     end
   end
@@ -135,7 +138,7 @@ class ProductsController < ApplicationController
 
   def post_confirm_produce
     @product.purchase_ingredients(@purchase_ingredients)
-    @product.produce_product(@quantity)
+    @product.produce(@quantity)
     respond_to do |format|
       format.html { redirect_to produce_product_path, notice: 'Ingredientes enviados a comprar y producto a producir' }
     end
@@ -177,7 +180,7 @@ class ProductsController < ApplicationController
       @purchase_ingredients = []
       if params[:purchase_ingredients] != nil
         params[:purchase_ingredients].each do |item|
-          @purchase_ingredients.push({ producer_id: item[:producer_id], quantity: item[:quantity].to_i, produce_time: item[:produce_time].to_f, sku: item[:sku] })
+          @purchase_ingredients.push({ producer_id: item[:producer_id], quantity: item[:quantity].to_i, time: item[:time].to_f, sku: item[:sku] })
         end
       end
     end

@@ -14,6 +14,7 @@ class AcceptServerPurchaseOrderJob < ApplicationJob
   end
 
   def perform(id)
+    $redis.del('obtener_orden_de_compra:' + id)
   	response = recepcionar_orden_de_compra(id)
     puts response.body
     puts response.code

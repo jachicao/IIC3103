@@ -16,6 +16,7 @@ class CancelServerPurchaseOrderJob < ApplicationJob
   end
 
   def perform(id, anulacion)
+    $redis.del('obtener_orden_de_compra:' + id)
     response = anular_orden_de_compra(id, anulacion)
     puts response.body
     puts response.code

@@ -21,7 +21,8 @@ class GetBankTransactionsJob < ApplicationJob
     cache_response = $redis.get(key)
     if cache_response != nil
       return {
-          :body => JSON.parse(cache_response, symbolize_names: true)
+          :body => JSON.parse(cache_response, symbolize_names: true),
+          :code => 200,
       }
     end
     response = obtener_cartola(id, fecha_inicio, fecha_fin)
@@ -29,7 +30,7 @@ class GetBankTransactionsJob < ApplicationJob
     body = JSON.parse(response.body, symbolize_names: true)
 
     $redis.set(key, body.to_json)
-    $redis.expire(key, ENV['BANCO_CACHE_EXPIRE_TIME'].to_i.seconds.to_i)
+    $redis.expire(key, ENV['CACHE_EXPIRE_TIME'].to_i.seconds.to_i)
 
     return {
         :body => body,

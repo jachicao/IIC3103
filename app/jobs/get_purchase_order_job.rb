@@ -14,10 +14,22 @@ class GetPurchaseOrderJob < ApplicationJob
   end
 
   def perform(id)
+    key = 'obtener_orden_de_compra:' + id
+    cache_response = $redis.get(key)
+    if cache_response != nil
+      return {
+          :body => JSON.parse(cache_response, symbolize_names: true),
+          :code => 200,
+      }
+    end
     response = obtener_orden_de_compra(id)
-    puts response.body
+    body = JSON.parse(response.body, symbolize_names: true)
+
+    $redis.set(key, body.to_json)
+    $redis.expire(key, ENV['CACHE_EXPIRE_TIME'].to_i.seconds.to_i)
+
     return {
-        :body => JSON.parse(response.body, symbolize_names: true),
+        :body => body,
         :code =>  response.code,
         :header => response.header,
     }

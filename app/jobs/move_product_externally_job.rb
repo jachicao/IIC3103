@@ -20,6 +20,7 @@ class MoveProductExternallyJob < ApplicationJob
   end
 
   def perform(producto_id, from_store_house_id, to_store_house_id, oc, precio)
+    $redis.del('obtener_orden_de_compra:' + oc)
     $redis.del('get_skus_with_stock:' + from_store_house_id)
     response = mover_stock_bodega(producto_id, to_store_house_id, oc, precio)
     puts 'Moviendo externamente'
