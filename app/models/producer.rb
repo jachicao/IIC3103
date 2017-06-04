@@ -9,6 +9,11 @@ class Producer < ApplicationRecord
     return self.group_number == ENV['GROUP_NUMBER'].to_i
   end
 
+  def has_wrong_api
+    invalid_groups = [4, 6, 8] #TODO: remove this
+    return invalid_groups.include?(self.group_number)
+  end
+
   def get_price_of_product(sku)
     response = GetGroupPricesJob.perform_now(self.group_number)
     case response[:code]

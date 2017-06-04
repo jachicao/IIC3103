@@ -62,16 +62,15 @@ class AnalyzePurchaseOrderWorker
                   else
                     best_product_in_sale = nil
                     best_product_in_sale_price = 0
+                    #comprar a los que tienen stock
                     ingredient.item.product_in_sales.each do |product_in_sale|
                       if product_in_sale.is_mine
                       else
-                        invalid_groups = [4, 6, 8] #TODO: remove this
-                        if !(invalid_groups.include?(product_in_sale.producer.group_number))
+                        if product_in_sale.producer.has_wrong_api
+                        else
                           producer_details = product_in_sale.producer.get_product_details(ingredient.item.sku)
-                          puts 'their stock: ' + producer_details[:stock].to_s
-                          puts 'we need: ' + difference_ingredient.to_s
                           if producer_details[:stock] >= difference_ingredient
-                            if best_product_in_sale.nil? || best_product_in_sale.average_time > product_in_sale.average_time
+                            if best_product_in_sale.nil? || best_product_in_sale_price > producer_details[:precio]
                               best_product_in_sale = product_in_sale
                               best_product_in_sale_price = producer_details[:precio]
                             end
@@ -79,17 +78,33 @@ class AnalyzePurchaseOrderWorker
                         end
                       end
                     end
-                    if best_product_in_sale != nil
-                      if (DateTime.current + best_product_in_sale.average_time.to_f.hours) <= purchase_order.delivery_date
-                        purchase_items.push({
-                                                quantity: difference_ingredient,
-                                                producer_id: best_product_in_sale.producer.producer_id,
-                                                sku: ingredient.item.sku,
-                                                price: best_product_in_sale_price,
-                                                time: best_product_in_sale.average_time })
-                      else
-                        reject = true
+                    if best_product_in_sale.nil?
+=begin
+                      #comprar a los que no tienen stock
+                      ingredient.item.product_in_sales.each do |product_in_sale|
+                        if product_in_sale.is_mine
+                        else
+                          if product_in_sale.producer.has_wrong_api
+                          else
+                            producer_details = product_in_sale.producer.get_product_details(ingredient.item.sku)
+                            if (DateTime.current + product_in_sale.average_time.to_f.hours) <= purchase_order.delivery_date
+                              if best_product_in_sale.nil? || best_product_in_sale_price > producer_details[:precio]
+                                best_product_in_sale = product_in_sale
+                                best_product_in_sale_price = producer_details[:precio]
+                              end
+                            end
+                          end
+                        end
+=end
                       end
+                    end
+                    if best_product_in_sale != nil
+                      purchase_items.push({
+                                              quantity: difference_ingredient,
+                                              producer_id: best_product_in_sale.producer.producer_id,
+                                              sku: ingredient.item.sku,
+                                              price: best_product_in_sale_price,
+                                              time: best_product_in_sale.average_time })
                     else
                       reject = true
                     end
