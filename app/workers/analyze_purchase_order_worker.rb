@@ -66,6 +66,8 @@ class AnalyzePurchaseOrderWorker
                       if product_in_sale.is_mine
                       else
                         producer_details = product_in_sale.producer.get_product_details(ingredient.item.sku)
+                        puts 'their stock: ' + producer_details[:stock].to_s
+                        puts 'we need: ' + difference_ingredient.to_s
                         if producer_details[:stock] >= difference_ingredient
                           if best_product_in_sale.nil? || best_product_in_sale.average_time > product_in_sale.average_time
                             best_product_in_sale = product_in_sale
@@ -95,6 +97,7 @@ class AnalyzePurchaseOrderWorker
                 purchase_order.reject_purchase_order('Stock insuficiente')
               else
                 purchase_items.each do |purchase_item|
+                  puts purchase_item
                   item = Product.find_by(sku: purchase_item[:sku])
                   if purchase_item[:producer_id] == ENV['GROUP_ID']
                     item.buy_to_factory(purchase_item[:quantity])
