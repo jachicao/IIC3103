@@ -13,6 +13,8 @@ class UpdateInvoicesStatusWorker
         else
           invoice.destroy
         end
+      else
+        invoice.destroy
       end
     end
   end

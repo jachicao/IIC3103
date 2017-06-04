@@ -19,6 +19,8 @@ class UpdatePurchaseOrdersStatusWorker
         else
           purchase_order.destroy
         end
+      else
+        purchase_order.destroy
       end
     end
   end

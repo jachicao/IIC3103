@@ -21,6 +21,8 @@ class DispatchProductsToGroupWorker
       end
     end
 
+    purchase_order = PurchaseOrder.find_by(po_id: po_id)
+
     while quantity_left > 0
       store_houses.each do |store_house|
         if quantity_left > 0
@@ -46,6 +48,7 @@ class DispatchProductsToGroupWorker
                           external_result = MoveProductExternallyJob.perform_now(p[:_id], despacho_id, to_store_house_id, po_id, price)
                           if external_result[:code] == 200
                             quantity_left -= 1
+                            purchase_order.update(quantity_dispatched: purchase_order.quantity - quantity_left)
                             puts 'quantity left: ' + quantity_left.to_s
                             break
                           elsif external_result[:code] == 429
@@ -75,7 +78,6 @@ class DispatchProductsToGroupWorker
         end
       end
     end
-    purchase_order = PurchaseOrder.find_by(po_id: po_id)
     purchase_order.confirm_dispatched
   end
 end
