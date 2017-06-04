@@ -78,7 +78,7 @@
         <tbody>
         <% @factory_orders.each do |factoryOrder| %>
             <tr>
-              <td><%= Product.all.find_by(sku: factoryOrder[:sku]).name %></td>
+              <td><%= Product.find_by(sku: factoryOrder[:sku]).name %></td>
               <td><%= factoryOrder[:quantity] %></td>
               <td><%= factoryOrder[:available] %></td>
             </tr>
@@ -97,7 +97,7 @@
   <%= column_chart [['Boletas', @bills.count]],
                    title: 'Cantidad de Boletas Generadas', width: '500px'%>
   <h2> Monto</h2>
-  <%= column_chart [['Boletas', @bills.sum(:total_amount)]],
+  <%= column_chart [['Boletas', @bills.sum(:amount)]],
                    title: 'Monto total ventas con boleta', width: '500px'%>
 </div>
 

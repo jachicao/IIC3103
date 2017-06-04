@@ -13,7 +13,7 @@ class GetBankAccountJob < ApplicationJob
   end
 
   def perform()
-    response = obtener_cuenta(ENV['BANK_ID'])
+    response = obtener_cuenta(Bank.get_bank_id)
     #puts response.body
     body = JSON.parse(response.body, symbolize_names: true)
     return {

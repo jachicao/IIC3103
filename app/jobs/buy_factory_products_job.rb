@@ -2,12 +2,20 @@ class BuyFactoryProductsJob < ApplicationJob
   queue_as :default
 
   def perform(sku, cantidad, costo_unitario)
-    response = GetFactoryAccountJob.perform_now
-    if response.nil?
-      return { :error => 'Error en transferencia' }
+    factory_account = nil
+    while factory_account.nil?
+      factory_account = GetFactoryAccountJob.perform_now
+      if factory_account.nil?
+        sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
+      end
     end
-    factory_account = response[:body][:cuentaId]
-    transaction = MakeBankTransactionJob.perform_now(cantidad * costo_unitario, ENV['BANK_ID'], factory_account)[:body]
-    MakeProductsJob.perform_later(sku, cantidad, transaction[:_id])
+    transaction = nil
+    while transaction.nil?
+      transaction = Bank.transfer_money(factory_account[:body][:cuentaId], cantidad * costo_unitario)
+      if transaction.nil?
+        sleep(5)
+      end
+    end
+    MakeProductsJob.perform_later(sku, cantidad, transaction[:body][:_id])
   end
 end

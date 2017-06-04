@@ -2,27 +2,27 @@
 
 <p>
   <strong>Estado:</strong>
-  <%= @response_server[:estado] %>
+  <%= @server_body[:estado] %>
 </p>
 
 <p>
   <strong>Bruto:</strong>
-  <%= @response_server[:bruto] %>
+  <%= @server_body[:bruto] %>
 </p>
 
 <p>
   <strong>Iva:</strong>
-  <%= @response_server[:iva] %>
+  <%= @server_body[:iva] %>
 </p>
 
 <p>
   <strong>Motivo rechazo:</strong>
-  <%= @response_server[:motivo_rechazo] %>
+  <%= @server_body[:rechazo] %>
 </p>
 
 <p>
   <strong>Motivo anulación:</strong>
-  <%= @response_server[:motivo_anulacion] %>
+  <%= @server_body[:anulacion] %>
 </p>
 
 <%= link_to 'Back', invoices_path %>

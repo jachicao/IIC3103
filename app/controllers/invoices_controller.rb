@@ -34,6 +34,12 @@ class InvoicesController < ApplicationController
   private
     def set_invoice
       @invoice = Invoice.find(params[:id])
-      @response_server = @invoice.get_server_details
+      response = Invoice.get_server_details(@invoice._id)
+      case response[:code]
+        when 200
+          @server_body = response[:body].first
+        else
+          return render :json => { :error => response[:body] }, status: response[:code]
+      end
     end
 end

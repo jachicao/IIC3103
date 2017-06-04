@@ -11,7 +11,6 @@
     <th>Cliente</th>
     <th>Total</th>
     <th>OC</th>
-    <th>Fecha de Pago</th>
     <th colspan="1"></th>
   </tr>
   </thead>
@@ -21,11 +20,10 @@
       <tr>
         <td><%= invoice._id %></td>
         <td><%= invoice.is_bill %></td>
-        <td><%= invoice.supplier %></td>
-        <td><%= invoice.client %></td>
-        <td><%= invoice.total_amount %></td>
+        <td><%= invoice.supplier_id %></td>
+        <td><%= invoice.client_id %></td>
+        <td><%= invoice.amount %></td>
         <td><%= invoice.po_id %></td>
-        <td><%= invoice.payment_date %></td>
         <td><%= link_to 'Server details', invoice_path(invoice) %></td>
       </tr>
   <% end %>

@@ -2,7 +2,7 @@ class Producer < ApplicationRecord
   has_many :product_in_sales
 
   def self.get_me
-    return Producer.all.find_by(group_number: ENV['GROUP_NUMBER'].to_i)
+    return Producer.find_by(group_number: ENV['GROUP_NUMBER'].to_i)
   end
 
   def is_me
@@ -24,7 +24,7 @@ class Producer < ApplicationRecord
           end
         end
     end
-    return Product.all.find_by(sku: sku).unit_cost
+    return Product.find_by(sku: sku).unit_cost
   end
 
   def get_product_details(sku)
@@ -41,6 +41,6 @@ class Producer < ApplicationRecord
           end
         end
     end
-    return { precio: Product.all.find_by(sku: sku).unit_cost, sku: sku, stock: 0 }
+    return { precio: Product.find_by(sku: sku).unit_cost, sku: sku, stock: 0 }
   end
 end

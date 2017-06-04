@@ -16,9 +16,6 @@ class GetBankTransactionJob < ApplicationJob
     response = obtener_transaccion(id)
     puts response.body
     body = JSON.parse(response.body, symbolize_names: true)
-    if body[:origen] == ENV['BANK_ID']
-      body[:monto] = -body[:monto]
-    end
     return {
         :body => body,
         :code =>  response.code,

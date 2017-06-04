@@ -29,6 +29,9 @@
   cache:
     cron: '*/30 * * * * *'   # Runs when second = 0/30, every minute
     class: CacheWorker
+  purchase_orders:
+    cron: '0 */5 * * * *'   # Runs when second = 0, every 5 minutes
+    class: CheckPurchaseOrdersWorker
 
 # you can override concurrency based on environment
 production:

@@ -1,7 +1,7 @@
-class PayInvoiceJob < ApplicationJob
+class NotifyPaymentServerInvoiceJob < ApplicationJob
   queue_as :default
 
-  def pagar_factura(id)
+  def factura_pagada(id)
     req_params = {
       :id => id,
       :_id => id,
@@ -14,7 +14,7 @@ class PayInvoiceJob < ApplicationJob
   end
 
   def perform(id)
-    response = pagar_factura(id)
+    response = factura_pagada(id)
     puts response.body
     body = JSON.parse(response.body, symbolize_names: true)
     return {

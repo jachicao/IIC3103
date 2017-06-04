@@ -51,7 +51,7 @@ class ProductsController < ApplicationController
   def post_buy_to_producer
     maximum_time = params[:maximum_time].to_f
     quantity = params[:quantity].to_i
-    producer = Producer.all.find_by(producer_id: params[:producer_id])
+    producer = Producer.find_by(producer_id: params[:producer_id])
     analysis = @product.get_max_purchase_analysis(producer, quantity)
 
     respond_to do |format|
@@ -73,7 +73,7 @@ class ProductsController < ApplicationController
     @quantity = params[:quantity].to_i
     @producer_price = params[:producer_price].to_i
     @producer_stock = params[:producer_stock].to_i
-    @producer = Producer.all.find_by(producer_id: params[:producer_id])
+    @producer = Producer.find_by(producer_id: params[:producer_id])
     @produce_time = 0
     @producer.product_in_sales.each do |product_in_sale|
       if product_in_sale.product.sku == @product.sku
@@ -85,7 +85,7 @@ class ProductsController < ApplicationController
   def post_confirm_buy_to_producer
     quantity = params[:quantity].to_i
     producer_price = params[:producer_price].to_i
-    producer = Producer.all.find_by(producer_id: params[:producer_id])
+    producer = Producer.find_by(producer_id: params[:producer_id])
     @produce_time = 0
     producer.product_in_sales.each do |product_in_sale|
       if product_in_sale.product.sku == @product.sku

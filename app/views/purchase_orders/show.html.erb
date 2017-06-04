@@ -1,64 +1,81 @@
 <p id="notice"><%= notice %></p>
 
-<% if @response.nil? %>
-    <h2>
-      Servidor colapsado
-    </h2>
-<% else %>
-    <p>
-      <strong>Grupo Cliente:</strong>
-      <%= @cliente %>
-    </p>
 
-    <p>
-      <strong>Grupo Proveedor:</strong>
-      <%= @proveedor %>
-    </p>
+<p>
+  <strong>Grupo Cliente:</strong>
+  <%= @purchase_order.get_client.group_number %>
+</p>
 
-    <p>
-      <strong>Producto:</strong>
-      <%= @product.name %>
-    </p>
+<p>
+  <strong>Grupo Proveedor:</strong>
+  <%= @purchase_order.get_supplier.group_number %>
+</p>
 
-    <p>
-      <strong>Precio unitario:</strong>
-      <%= @response[:precioUnitario]%>
-    </p>
+<p>
+  <strong>Producto:</strong>
+  <%= @purchase_order.get_product.name %>
+</p>
 
-    <p>
-      <strong>Cantidad:</strong>
-      <%= @response[:cantidad]%>
-    </p>
+<p>
+  <strong>Precio unitario:</strong>
+  <%= @purchase_order.unit_price %>
+</p>
 
-    <p>
-      <strong>Estado:</strong>
-      <%= @response[:estado]%>
-    </p>
+<p>
+  <strong>Cantidad:</strong>
+  <%= @purchase_order.quantity %>
+</p>
 
-    <p>
-      <strong>Canal:</strong>
-      <%= @response[:canal]%>
-    </p>
+<p>
+  <strong>Estado:</strong>
+  <%= @server_body[:estado] %>
+</p>
 
-    <p>
-      <strong>Cantidad Despachada:</strong>
-      <%= @response[:cantidadDespachada]%>
-    </p>
+<p>
+  <strong>Canal:</strong>
+  <%= @server_body[:canal] %>
+</p>
 
-    <p>
-      <strong>Fecha Entrega:</strong>
-      <%= @response[:fechaEntrega]%>
-    </p>
+<p>
+  <strong>Cantidad Despachada:</strong>
+  <%= @server_body[:cantidadDespachada] %>
+</p>
 
-    <% if @proveedor == ENV['GROUP_NUMBER'].to_i %>
-      <% if @response[:estado] == "creada" %>
-        <%= link_to 'Accept', { :controller => :purchase_orders, :action => :accept, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %> |
-        <%= link_to 'Reject', { :controller => :purchase_orders, :action => :reject, :po_id => @purchase_order.po_id, :client_id => @response[:cliente] }, {:method => :patch } %> |
-      <% elsif @purchase_order.sending != true && @response[:estado] == "aceptada"  %>
-        <%= link_to 'Dispatch', dispatch_purchase_order_path(id: @purchase_order.id) %> |
-      <% end %>
-    <% end %>
+<p>
+  <strong>Fecha Entrega:</strong>
+  <%= @purchase_order.delivery_date %>
+</p>
 
-<% end %>
+<p>
+  <strong>Motivo Rechazo:</strong>
+  <%= @server_body[:rechazo]%>
+</p>
+
+<p>
+  <strong>Motivo Anulación:</strong>
+  <%= @server_body[:anulacion]%>
+</p>
+
+<h2>
+  Facturas
+</h2>
+
+<table>
+  <thead>
+  <tr>
+    <th>Id</th>
+    <th colspan="1"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @purchase_order.get_invoices.each do |invoice| %>
+      <tr>
+        <td><%= invoice._id %></td>
+        <td><%= link_to 'Show', invoice_path(id: invoice.id) %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
 
 <%= link_to 'Back', purchase_orders_path %>

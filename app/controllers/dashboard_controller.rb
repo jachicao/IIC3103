@@ -74,7 +74,7 @@ class DashboardController < ApplicationController
       @failed = failed_transactions
       @transactions = []
       @transferencias.each do |t|
-        if t[:origen] == ENV['BANK_ID']
+        if t[:origen] == Bank.get_bank_id
           if @transactions == []
             @transactions.push(t)
           else

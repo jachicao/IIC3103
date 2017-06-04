@@ -21,9 +21,9 @@ class CreateBillJob < ApplicationJob
     body = JSON.parse(response.body, symbolize_names: true)
     Invoice.create(
         _id: body[:_id],
-        supplier: body[:proveedor],
-        client: body[:cliente],
-        total_amount: body[:total],
+        supplier_id: body[:proveedor],
+        client_id: body[:cliente],
+        amount: body[:total],
         po_id: body[:oc],
         is_bill: true,
     )

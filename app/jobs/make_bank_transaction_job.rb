@@ -14,7 +14,8 @@ class MakeBankTransactionJob < ApplicationJob
   end
 
 
-  def perform(monto, origen, destino)
+  def perform(destino, monto)
+    origen = Bank.get_bank_id
     $redis.del('obtener_cartola')
     response = transferir(monto, origen, destino)
     puts response.body
@@ -28,6 +29,7 @@ class MakeBankTransactionJob < ApplicationJob
                   destination: destino,
                   amount: monto,
         )
+        return nil
     end
     return {
         :body => body,

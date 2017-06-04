@@ -18,10 +18,6 @@ class StoreHousesController < ApplicationController
 
   def move_internally
     @store_houses = StoreHouse.all
-    respond_to do |format|
-      format.html { render :move_internally }
-      format.json { render :json => { :error => 'Only html' } }
-    end
   end
 
   def submit_move_internally
@@ -40,14 +36,6 @@ class StoreHousesController < ApplicationController
         format.html { redirect_to store_houses_path, notice: 'Cantidad excede stock' }
       end
     end
-  end
-
-  def move_externally
-
-  end
-
-  def submit_move_externally
-
   end
 
   private

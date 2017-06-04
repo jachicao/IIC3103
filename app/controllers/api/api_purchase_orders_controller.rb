@@ -1,5 +1,5 @@
 class Api::ApiPurchaseOrdersController < Api::ApiController
-  before_action :set_purchase_order, only: [:update_accepted, :update_rejected]
+  before_action :set_purchase_order, only: [:accepted, :rejected]
 
   # POST /purchase_orders
   # POST /purchase_orders.json
@@ -12,29 +12,41 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
     end
     if params[:payment_method].nil?
       return render :json => { :success => false, :error => 'Falta payment_method' }, status: :bad_request
+    else
+      if params[:payment_method] == 'contra_despacho'
+      elsif params[:payment_method] == 'contra_factura'
+      else
+        return render :json => { :success => false, :error => 'payment_method debe ser contra_despacho o contra_factura' }, status: :bad_request
+      end
     end
 
-    response = GetPurchaseOrderJob.perform_now(params[:po_id])
+    set_purchase_order
+
+    if @purchase_order != nil
+      return render :json => { :success => true }
+    end
+
+    response = PurchaseOrder.get_server_details(params[:po_id])
     case response[:code]
       when 200
         body = response[:body].first
         params[:store_reception_id] = params[:id_store_reception]
-        @purchase_order = PurchaseOrder.new({po_id: params[:po_id],
+        @purchase_order = PurchaseOrder.new({ po_id: body[:_id],
                                               store_reception_id: params[:store_reception_id],
                                               payment_method: params[:payment_method],
                                               client_id: body[:cliente],
                                               supplier_id: body[:proveedor],
-                                              delivery_date: body[:fechaEntrega],
+                                              delivery_date: DateTime.parse(body[:fechaEntrega]),
                                               unit_price: body[:precioUnitario],
                                               sku: body[:sku],
                                               quantity: body[:cantidad],
                                               own: false,
                                               dispatched: false })
         if @purchase_order.save
-          #AcceptPurchaseOrdersWorker.perform_async(params[:po_id])
-          return render json: { :success => true }
+          AnalyzePurchaseOrderWorker.perform_async(body[:_id])
+          return render :json => { :success => true }
         else
-          return render json: { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity
+          return render :json => { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity
         end
     end
     return render :json => { :success => false, :error => response[:body] }, status: response[:code]
@@ -42,23 +54,52 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
 
   # PATCH/PUT /purchase_orders/1/accepted
   # PATCH/PUT /purchase_orders/1/accepted.json
-  def update_accepted
+  def accepted
     if @purchase_order != nil
-      return render json: { :success => true }
+      return render :json => { :success => true }
+=begin
+      response = PurchaseOrder.get_server_details(params[:po_id])
+      case response[:code]
+        when 200
+          body = response[:body].first
+          case body[:estado]
+            when 'creada'
+              return render :json => { :success => true }
+          end
+          return render :json => { :success => false, :error => 'Estado de orden de compra no es \'creada\'' }, status: :bad_request
+      end
+      return render :json => { :success => false, :error => response[:body] }, status: response[:code]
+=end
     else
-      return render :json => { :success => false,  :error => 'PurchaseOrder not found' }, status: :not_found
+      return render :json => { :success => false, :error => 'PurchaseOrder not found' }, status: :not_found
     end
   end
 
   # PATCH/PUT /purchase_orders/1/rejected
   # PATCH/PUT /purchase_orders/1/rejected.json
-  def update_rejected
-    puts rejected
+  def rejected
+=begin
+    if params[:cause].nil?
+      return render :json => { :success => false, :error => 'Falta cause' }, status: :bad_request
+    end
+=end
     if @purchase_order != nil
-      @purchase_order.destroy
-      return render json: { :success => true }
+      return render :json => { :success => true }
+=begin
+      response = PurchaseOrder.get_server_details(params[:po_id])
+      case response[:code]
+        when 200
+          body = response[:body].first
+          case body[:estado]
+            when 'creada'
+              return render :json => { :success => true }
+          end
+          return render :json => { :success => false, :error => 'Estado de orden de compra no es \'creada\'' }, status: :bad_request
+      end
+      return render :json => { :success => false, :error => response[:body] }, status: response[:code]
+=end
     else
-      return render :json => { :success => false,  :error => 'PurchaseOrder not found' }, status: :not_found
+      return render :json => { :success => false, :error => 'PurchaseOrder not found' }, status: :not_found
     end
   end
 

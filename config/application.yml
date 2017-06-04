@@ -15,7 +15,6 @@ GROUP_NUMBER: "1"
 
 ONLINE_USER: "grupo1"
 
-ALMACENES_STATUS_429: "ALMACENES_STATUS_429"
 SERVER_RATE_LIMIT_TIME: "60"
 
 ALMACENES_CACHE_EXPIRE_TIME: "30"
@@ -37,8 +36,6 @@ development:
   ONLINE_PASSWORD: "1Y74E9AQ"
   CENTRAL_SERVER_URL: "https://integracion-2017-dev.herokuapp.com"
   GROUPS_SERVER_URL: "http://dev.integra17-%d.ing.puc.cl"
-  OUR_SERVER_URL: "http://dev.integra17-1.ing.puc.cl"
-
 
 production:
   GROUP_ID: "5910c0910e42840004f6e680"
@@ -47,4 +44,3 @@ production:
   ONLINE_PASSWORD: "KC5;Pt2l"
   CENTRAL_SERVER_URL: "https://integracion-2017-prod.herokuapp.com"
   GROUPS_SERVER_URL: "http://integra17-%d.ing.puc.cl"
-  OUR_SERVER_URL: "http://integra17-1.ing.puc.cl"

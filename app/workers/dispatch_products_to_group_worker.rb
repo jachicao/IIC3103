@@ -75,7 +75,7 @@ class DispatchProductsToGroupWorker
         end
       end
     end
-    purchase_order = PurchaseOrder.all.find_by(po_id: po_id)
+    purchase_order = PurchaseOrder.find_by(po_id: po_id)
     purchase_order.confirm_dispatched
   end
 end

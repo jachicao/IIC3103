@@ -16,8 +16,8 @@
   <tbody>
   <% @purchase_ingredients.each do |ingredient| %>
       <tr>
-        <td><%= Producer.all.find_by(producer_id: ingredient[:producer_id]).group_number %></td>
-        <td><%= Product.all.find_by(sku: ingredient[:sku]).name %></td>
+        <td><%= Producer.find_by(producer_id: ingredient[:producer_id]).group_number %></td>
+        <td><%= Product.find_by(sku: ingredient[:sku]).name %></td>
         <td><%= ingredient[:quantity] %></td>
         <td><%= ingredient[:produce_time] %></td>
         <td><%= ingredient[:price] %></td>

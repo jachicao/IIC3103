@@ -22,7 +22,7 @@ class GetStoreHousesJob < ApplicationJob
       }
     end
 
-    response = get_almacenes()
+    response = get_almacenes
     #puts response
     body = JSON.parse(response.body, symbolize_names: true)
     case response.code

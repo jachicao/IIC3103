@@ -10,7 +10,7 @@ class Api::ApiController < ActionController::Base
     #    :error => 'Authorization header needed'
     #  }, status: :unauthorized
     #end
-    #producer = Producer.all.find_by(producer_id: authorization);
+    #producer = Producer.find_by(producer_id: authorization);
     #if producer.nil?
     #  return render :json => {
     #      :error => 'Wrong Authorization'

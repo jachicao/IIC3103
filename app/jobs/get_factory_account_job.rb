@@ -23,7 +23,7 @@ class GetFactoryAccountJob < ApplicationJob
           :body => JSON.parse(cache_response, symbolize_names: true)
       }
     end
-    response = get_cuenta_fabrica()
+    response = get_cuenta_fabrica
     body = JSON.parse(response.body, symbolize_names: true)
     case response.code
       when 429

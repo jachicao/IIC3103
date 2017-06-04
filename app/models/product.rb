@@ -146,7 +146,7 @@ class Product < ApplicationRecord
         (Time.now + (time_to_produce * 3 * 24).to_f.hours).to_i * 1000, #TODO: QUITAR ESTO
         quantity,
         price,
-        'contado'
+        'contra_factura'
     )
   end
 
@@ -221,8 +221,8 @@ class Product < ApplicationRecord
   def purchase_ingredients(ingredients)
     me = Producer.get_me
     ingredients.each do |ingredient|
-      item = Product.all.find_by(sku: ingredient[:sku])
-      producer = Producer.all.find_by(producer_id: ingredient[:producer_id])
+      item = Product.find_by(sku: ingredient[:sku])
+      producer = Producer.find_by(producer_id: ingredient[:producer_id])
       if me.producer_id == producer.producer_id
         item.buy_to_factory(ingredient[:quantity])
       else

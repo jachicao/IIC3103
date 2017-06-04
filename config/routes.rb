@@ -8,33 +8,25 @@ Rails.application.routes.draw do
   # We ask that you don't use the :as option here, as Spree relies on it being the default of "spree"
   mount Sidekiq::Web => '/sidekiq'
   mount Spree::Core::Engine, at: '/spree/'
-  resources :purchase_orders do
-    collection do
-      patch 'accept'
-      patch 'reject'
-      get 'get_products', to: 'purchase_orders#get_products'
-      post 'created', to: 'purchase_orders#created'
-    end
-  end
-  get '/purchase_orders/:id/dispatch_product', to: 'purchase_orders#dispatch_product', :as => :dispatch_purchase_order
 
-  resources :store_houses do
-    collection do
-      get 'move_internally'
-      post 'submit_move_internally'
-      get 'move_externally'
-      post 'submit_move_externally'
-    end
-  end
+  resources :purchase_orders, only: [:index, :show]
+  patch '/purchase_orders/:id/accept', to: 'purchase_orders#accept', :as => :accept_purchase_order
+  patch '/purchase_orders/:id/reject', to: 'purchase_orders#reject', :as => :reject_purchase_order
+  patch '/purchase_orders/:id/dispatch_product', to: 'purchase_orders#dispatch_product', :as => :dispatch_purchase_order
+
+  get '/store_houses/move_internally', to: 'store_houses#move_internally', :as => :move_internally_store_house
+  post '/store_houses/move_internally', to: 'store_houses#submit_move_internally', :as => :post_move_internally_store_house
+  resources :store_houses, only: [:index, :show]
 
   resources :product_in_sales, only: [:index]
   resources :producers, only: [:index]
   resources :pending_products, only: [:index, :show]
 
-
   get 'create_bill_web/:id', to: 'invoices#create_bill_web', as: :create_bill_web
 
-  resources :invoices
+  resources :invoices, only: [:index, :show]
+  post '/invoices/:id/pay', to: 'invoices#pay', :as => :pay
+
   resources :factory_orders, only: [:index]
 
   get '/bank/', to: 'bank#index'
@@ -63,14 +55,14 @@ Rails.application.routes.draw do
     get '/products', to: 'api_products#index'
     get '/publico/precios', to: 'api_products#get_stock'
     put '/invoices/:invoice_id', to: 'api_invoices#create'
-    patch '/invoices/:invoice_id/accepted', to: 'api_invoices#update_accepted'
-    patch '/invoices/:invoice_id/rejected', to: 'api_invoices#update_rejected'
-    patch '/invoices/:invoice_id/paid', to: 'api_invoices#update_paid'
-    patch '/invoices/:invoice_id/delivered', to: 'api_invoices#update_delivered'
+    patch '/invoices/:invoice_id/accepted', to: 'api_invoices#accepted'
+    patch '/invoices/:invoice_id/rejected', to: 'api_invoices#rejected'
+    patch '/invoices/:invoice_id/paid', to: 'api_invoices#paid'
+    patch '/invoices/:invoice_id/delivered', to: 'api_invoices#delivered'
 
     put '/purchase_orders/:po_id', to: 'api_purchase_orders#create'
-    patch '/purchase_orders/:po_id/accepted', to: 'api_purchase_orders#update_accepted'
-    patch '/purchase_orders/:po_id/rejected', to: 'api_purchase_orders#update_rejected'
+    patch '/purchase_orders/:po_id/accepted', to: 'api_purchase_orders#accepted'
+    patch '/purchase_orders/:po_id/rejected', to: 'api_purchase_orders#rejected'
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

@@ -1,26 +1,125 @@
 class Invoice < ApplicationRecord
-  belongs_to :purchase_order
   belongs_to :spree_order, class_name: 'Spree::Order'
 
-  def get_server_details
-    return GetInvoiceJob.perform_now(self._id)[:body].first
-  end
-
-  def self.bill_create(client, total_amount)
-    return CreateBillJob.perform_now(client, total_amount)[:body]
-  end
-
-  def invoice_create(po_id)
-    return CreateInvoiceJob.perform_now(po_id)[:body]
+  def self.bill_create(client, amount)
+    return CreateBillJob.perform_now(client, amount)[:body]
   end
 
   def self.url_create(bill)
-    urlok = ENV['OUR_SERVER_URL'] + '/spree'
-    urlfail = ENV['OUR_SERVER_URL'] + '/spree/cart'
+    urlok = (ENV['GROUPS_SERVER_URL'] % [ENV['GROUP_NUMBER'].to_i]) + '/spree'
+    urlfail = (ENV['GROUPS_SERVER_URL'] % [ENV['GROUP_NUMBER'].to_i]) + '/spree/cart'
     url = ENV['CENTRAL_SERVER_URL'] + '/web/pagoenlinea'
     url += "?callbackUrl=#{URI.escape(urlok, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
     url += "&cancelUrl=#{URI.escape(urlfail, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
     url += "&boletaId=#{bill[:_id]}"
     return url
   end
+
+  def self.create_invoice(po_id)
+    purchase_order = PurchaseOrder.find_by(po_id: po_id)
+    server = CreateServerInvoiceJob.perform_now(po_id)
+    case server[:code]
+      when 200..226
+
+      else
+        return {
+            :success => false,
+            :server => server,
+            :group => {},
+        }
+    end
+    body = server[:body]
+    group = CreateGroupInvoiceJob.perform_now(po_id, purchase_order.get_client.group_number, Bank.get_bank_id)
+    case group[:code]
+      when 200..226
+      else
+        self.cancel_invoice(body[:_id], 'Rejected by group')
+        return {
+            :success => false,
+            :server => server,
+            :group => group,
+        }
+    end
+
+    Invoice.create( #TODO
+        _id: body[:_id],
+        supplier_id: body[:proveedor],
+        client_id: body[:cliente],
+        po_id: body[:oc],
+    )
+    return {
+        :success => true,
+        :server => server,
+        :group => group,
+    }
+  end
+
+
+  def self.get_server_details(id)
+    return GetInvoiceJob.perform_now(id)
+  end
+
+  def self.cancel_invoice(id, reason)
+    return CancelServerInvoiceJob.perform_now(id, reason)
+  end
+
+  def get_supplier
+    return Producer.find_by(producer_id: self.supplier_id)
+  end
+
+  def get_client
+    return Producer.find_by(producer_id: self.client_id)
+  end
+
+  def accept
+    group = AcceptGroupInvoiceJob.perform_now(self._id, get_supplier.group_number)
+    return {
+        :group => group
+    }
+  end
+
+  def reject(reason)
+    server = RejectServerInvoiceJob.perform_now(self._id, reason)
+    group = RejectGroupInvoiceJob.perform_now(self._id, get_supplier.group_number, reason)
+    self.update(rejected: true)
+    return {
+        :server => server,
+        :group => group,
+    }
+  end
+
+  def pay
+    if self.paid
+    else
+      transaction = nil
+      purchase_order = get_purchase_order
+      amount = purchase_order.quantity * purchase_order.unit_price1
+      while transaction.nil?
+        transaction = Bank.transfer_money(self.bank_id, amount)
+      end
+      server = NotifyPaymentServerInvoiceJob.perform_now(self._id)
+      group = NotifyPaymentGroupInvoiceJob.perform_now(self._id, get_supplier.group_number, transaction[:body][:_id])
+      self.update(paid: true)
+      return {
+          :server => server,
+          :group => group,
+      }
+    end
+  end
+
+  def notify_dispatch
+    group = NotifyDispatchGroupInvoiceJob.perform_now(self._id, get_client.group_number)
+    return {
+        :group => group
+    }
+  end
+
+  def get_purchase_order
+    return PurchaseOrder.find_by(po_id: self.po_id)
+  end
+
+  def is_made_by_me
+    return self.client_id == ENV['GROUP_ID']
+  end
+
 end
