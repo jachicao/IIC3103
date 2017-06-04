@@ -7,7 +7,7 @@ class Product < ApplicationRecord
       return
     end
     $updating_stock = true
-    UpdateStockAvailableWorker.perform_async
+    #UpdateStockAvailableWorker.perform_async
     $updating_stock = nil
   end
 
@@ -22,7 +22,7 @@ class Product < ApplicationRecord
         end
       end
     else
-      update_stock_available
+      #update_stock_available
     end
     return 0
   end
@@ -38,7 +38,7 @@ class Product < ApplicationRecord
         end
       end
     else
-      update_stock_available
+      #update_stock_available
     end
     return 0
   end

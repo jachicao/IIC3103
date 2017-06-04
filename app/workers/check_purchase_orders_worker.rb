@@ -14,9 +14,7 @@ class CheckPurchaseOrdersWorker
           else
             case purchase_order.payment_method
               when 'contra_despacho'
-                server = PurchaseOrder.get_server_details(purchase_order.po_id)
-                body = server[:body].first
-                case body[:estado]
+                case purchase_order.status
                   when 'finalizada'
                     invoice.pay
                 end
@@ -30,9 +28,7 @@ class CheckPurchaseOrdersWorker
         else
           if purchase_order.sending
           else
-            server = PurchaseOrder.get_server_details(purchase_order.po_id)
-            body = server[:body].first
-            case body[:estado]
+            case purchase_order.status
               when 'aceptada'
                 analysis = purchase_order.analyze_stock_to_dispatch
                 if analysis != nil

@@ -65,6 +65,7 @@ class PurchaseOrder < ApplicationRecord
                                         unit_price: body[:precioUnitario],
                                         sku: body[:sku],
                                         quantity: body[:cantidad],
+                                        status: body[:estado],
                                         own: true,
                                         dispatched: false)
     if purchase_order.save
@@ -85,10 +86,6 @@ class PurchaseOrder < ApplicationRecord
 
   def self.get_server_details(po_id)
     return GetPurchaseOrderJob.perform_now(po_id)
-  end
-
-  def get_server_details
-    return GetPurchaseOrderJob.perform_now(self.po_id)
   end
 
   def analyze_stock_to_dispatch

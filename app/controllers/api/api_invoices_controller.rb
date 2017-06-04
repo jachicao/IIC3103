@@ -15,7 +15,7 @@ class Api::ApiInvoicesController < Api::ApiController
     response = Invoice.get_server_details(params[:invoice_id])
     case response[:code]
       when 200
-        body = response[:body].first
+        body = response[:body]
         @invoice = Invoice.new(
             _id: body[:_id],
             supplier_id: body[:proveedor],
@@ -41,7 +41,7 @@ class Api::ApiInvoicesController < Api::ApiController
       response = Invoice.get_server_details(params[:invoice_id])
       case response[:code]
         when 200
-          body = response[:body].first
+          body = response[:body]
           case body[:estado]
             when 'pendiente'
               return render :json => { :success => true }
@@ -67,7 +67,7 @@ class Api::ApiInvoicesController < Api::ApiController
       response = Invoice.get_server_details(params[:invoice_id])
       case response[:code]
         when 200
-          body = response[:body].first
+          body = response[:body]
           case body[:estado]
             when 'pendiente'
               return render :json => { :success => true }
@@ -93,7 +93,7 @@ class Api::ApiInvoicesController < Api::ApiController
       response = Invoice.get_server_details(params[:invoice_id])
       case response[:code]
         when 200
-          body = response[:body].first
+          body = response[:body]
           case body[:estado]
             when 'pagado'
               transaction = Bank.get_transaction(params[:id_transaction])
@@ -123,7 +123,7 @@ class Api::ApiInvoicesController < Api::ApiController
         response = PurchaseOrder.get_server_details(@invoice.po_id)
         case response[:code]
           when 200
-            body = response[:body].first
+            body = response[:body]
             if body[:cantidadDespachada] >= body[:cantidad]
               return render :json => { :success => true }
             else

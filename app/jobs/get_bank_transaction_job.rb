@@ -19,7 +19,6 @@ class GetBankTransactionJob < ApplicationJob
     return {
         :body => body,
         :code =>  response.code,
-        :header => response.header,
     }
   end
 end

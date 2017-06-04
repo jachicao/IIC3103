@@ -65,12 +65,7 @@ class UpdateStockAvailableWorker
     PurchaseOrder.all.each do |purchase_order|
       if purchase_order.is_made_by_me
       else
-        server = purchase_order.get_server_details
-        puts 'server body'
-        puts server
-=begin
-        body = server[:body].first
-        if body[:estado] == 'aceptada'
+        if purchase_order.status == 'aceptada'
           sku = purchase_order.get_product.sku
           my_products.each do |product|
             if sku == product[:sku]
@@ -78,7 +73,6 @@ class UpdateStockAvailableWorker
             end
           end
         end
-=end
       end
     end
 

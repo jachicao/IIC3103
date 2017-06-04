@@ -61,16 +61,15 @@ class CheckMinimumStockWorker
     end
 
     #ordenes de compra hechas por mi
-    my_purchase_orders = PurchaseOrder.get_my_orders
-    my_purchase_orders.each do |purchase_order|
-      server = PurchaseOrder.get_server_details(purchase_order.po_id)
-      body = server[:body].first
-      if body[:estado] == 'creada' || body[:estado] == 'aceptada'
-        sku = purchase_order.get_product.sku
-        quantity = purchase_order.quantity
-        my_products.each do |product|
-          if sku == product[:sku]
-            product[:stock] += quantity
+    PurchaseOrder.all.each do |purchase_order|
+      if purchase_order.is_made_by_me
+        if purchase_order.status == 'creada' || purchase_order.status == 'aceptada'
+          sku = purchase_order.get_product.sku
+          quantity = purchase_order.quantity
+          my_products.each do |product|
+            if sku == product[:sku]
+              product[:stock] += quantity
+            end
           end
         end
       end
@@ -104,25 +103,20 @@ class CheckMinimumStockWorker
     end
 
     #ordenes de compra recibidas
-    client_purchase_orders = PurchaseOrder.get_client_orders
-    client_purchase_orders.each do |purchase_order|
-      server = PurchaseOrder.get_server_details(purchase_order.po_id)
-      body = server[:body].first
-      if body[:estado] == 'aceptada'
-        sku = purchase_order.get_product.sku
-        my_products.each do |product|
-          if sku == product[:sku]
-            product[:stock] -= purchase_order.quantity
+    PurchaseOrder.all.each do |purchase_order|
+      if purchase_order.is_made_by_me
+      else
+        if purchase_order.status == 'aceptada'
+          sku = purchase_order.get_product.sku
+          my_products.each do |product|
+            if sku == product[:sku]
+              product[:stock] -= purchase_order.quantity
+            end
           end
         end
       end
     end
-    my_products.each do |product|
-      product[:quantity] = [product[:quantity], 5000].min # maximo 5000 unidades
-      product[:stock] = [product[:stock], 0].max
-    end
 
-    puts my_products
     my_products.each do |p|
       difference = p[:quantity] - p[:stock]
       if difference > 0

@@ -16,7 +16,12 @@ class GetInvoiceJob < ApplicationJob
     response = get_factura(id)
     puts response.body
     puts response.code
+
     body = JSON.parse(response.body, symbolize_names: true)
+    if body.kind_of?(Array)
+      body = body.first
+    end
+
     return {
         :body => body,
         :code =>  response.code,

@@ -29,7 +29,7 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
     response = PurchaseOrder.get_server_details(params[:po_id])
     case response[:code]
       when 200
-        body = response[:body].first
+        body = response[:body]
         params[:store_reception_id] = params[:id_store_reception]
         @purchase_order = PurchaseOrder.new({ po_id: body[:_id],
                                               store_reception_id: params[:store_reception_id],
@@ -40,6 +40,7 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
                                               unit_price: body[:precioUnitario],
                                               sku: body[:sku],
                                               quantity: body[:cantidad],
+                                              status: body[:estado],
                                               own: false,
                                               dispatched: false })
         if @purchase_order.save
@@ -61,7 +62,7 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
       response = PurchaseOrder.get_server_details(params[:po_id])
       case response[:code]
         when 200
-          body = response[:body].first
+          body = response[:body]
           case body[:estado]
             when 'creada'
               return render :json => { :success => true }
@@ -89,7 +90,7 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
       response = PurchaseOrder.get_server_details(params[:po_id])
       case response[:code]
         when 200
-          body = response[:body].first
+          body = response[:body]
           case body[:estado]
             when 'creada'
               return render :json => { :success => true }
