@@ -66,6 +66,7 @@ class UpdateStockAvailableWorker
       if purchase_order.is_made_by_me
       else
         server = purchase_order.get_server_details
+        puts server
         body = server[:body].first
         if body[:estado] == 'aceptada'
           sku = purchase_order.get_product.sku
@@ -82,6 +83,8 @@ class UpdateStockAvailableWorker
       product[:stock_available] = [product[:stock_available], 0].max
       product[:stock] = [product[:stock], 0].max
     end
+
+    puts my_products
 
     key = 'available_stock'
     $redis.set(key, my_products.to_json)
