@@ -66,7 +66,9 @@ class UpdateStockAvailableWorker
       if purchase_order.is_made_by_me
       else
         server = purchase_order.get_server_details
+        puts 'server body'
         puts server
+=begin
         body = server[:body].first
         if body[:estado] == 'aceptada'
           sku = purchase_order.get_product.sku
@@ -76,6 +78,7 @@ class UpdateStockAvailableWorker
             end
           end
         end
+=end
       end
     end
 

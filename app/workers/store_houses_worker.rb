@@ -99,6 +99,9 @@ class StoreHousesWorker
   end
 
   def perform(*args)
+    if ENV['DOCKER_RUNNING'].nil?
+      return
+    end
     if $cleaning_store_houses != nil
       return nil
     end

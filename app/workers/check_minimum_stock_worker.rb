@@ -26,6 +26,9 @@ class CheckMinimumStockWorker
   end
 
   def perform(*args)
+    if ENV['DOCKER_RUNNING'].nil?
+      return
+    end
     puts 'starting CheckMinimumStockWorker'
     my_products = []
     Producer.get_me.product_in_sales.each do |product_in_sale|
