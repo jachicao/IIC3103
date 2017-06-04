@@ -1,24 +1,11 @@
 class PurchaseOrder < ApplicationRecord
 
   def self.get_my_orders
-    result = []
-    PurchaseOrder.all.each do |purchase_order|
-      if purchase_order.is_made_by_me
-        result.push(purchase_order)
-      end
-    end
-    return result
+    return PurchaseOrder.all.select { |v| v.is_made_by_me }
   end
 
   def self.get_client_orders
-    result = []
-    PurchaseOrder.all.each do |purchase_order|
-      if purchase_order.is_made_by_me
-      else
-        result.push(purchase_order)
-      end
-    end
-    return result
+    return PurchaseOrder.all.select { |v| !v.is_made_by_me }
   end
 
   def self.create_new_purchase_order(producer_id, sku, delivery_date, quantity, unit_price, payment_method)
@@ -98,6 +85,10 @@ class PurchaseOrder < ApplicationRecord
 
   def self.get_server_details(po_id)
     return GetPurchaseOrderJob.perform_now(po_id)
+  end
+
+  def get_server_details
+    return GetPurchaseOrderJob.perform_now(self.po_id)
   end
 
   def analyze_stock_to_dispatch

@@ -65,7 +65,7 @@ class UpdateStockAvailableWorker
     PurchaseOrder.all.each do |purchase_order|
       if purchase_order.is_made_by_me
       else
-        server = PurchaseOrder.get_server_details(purchase_order.po_id)
+        server = purchase_order.get_server_details
         body = server[:body].first
         if body[:estado] == 'aceptada'
           sku = purchase_order.get_product.sku
