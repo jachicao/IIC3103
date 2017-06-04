@@ -78,8 +78,8 @@ class AnalyzePurchaseOrderWorker
                         end
                       end
                     end
-                    if best_product_in_sale.nil?
 =begin
+                    if best_product_in_sale.nil?
                       #comprar a los que no tienen stock
                       ingredient.item.product_in_sales.each do |product_in_sale|
                         if product_in_sale.is_mine
@@ -95,9 +95,9 @@ class AnalyzePurchaseOrderWorker
                             end
                           end
                         end
-=end
                       end
                     end
+=end
                     if best_product_in_sale != nil
                       purchase_items.push({
                                               quantity: difference_ingredient,
