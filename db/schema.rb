@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170604201748) do
+ActiveRecord::Schema.define(version: 20170604204657) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -67,6 +67,7 @@ ActiveRecord::Schema.define(version: 20170604201748) do
     t.string   "bank_id"
     t.boolean  "paid",           default: false
     t.boolean  "rejected",       default: false
+    t.string   "status"
     t.index ["_id"], name: "index_invoices_on__id", using: :btree
   end
 
