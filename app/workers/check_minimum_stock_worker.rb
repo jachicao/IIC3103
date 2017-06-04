@@ -112,7 +112,7 @@ class CheckMinimumStockWorker
             sku = purchase_order.sku
             my_products.each do |product|
               if sku == product[:sku]
-                product[:stock] -= purchase_order.quantity
+                product[:stock] -= (purchase_order.quantity - purchase_order.quantity_dispatched)
               end
             end
           end

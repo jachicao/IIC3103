@@ -16,7 +16,6 @@ class PurchaseOrder < ApplicationRecord
     id_almacen_recepcion = recepcion.first[:_id]
 
     response_server = CreateServerPurchaseOrderJob.perform_now(
-        ENV['GROUP_ID'],
         producer_id,
         sku,
         delivery_date,
@@ -65,9 +64,7 @@ class PurchaseOrder < ApplicationRecord
                                         unit_price: body[:precioUnitario],
                                         sku: body[:sku],
                                         quantity: body[:cantidad],
-                                        status: body[:estado],
-                                        own: true,
-                                        dispatched: false)
+                                        status: body[:estado])
     if purchase_order.save
       return {
           :success => true,

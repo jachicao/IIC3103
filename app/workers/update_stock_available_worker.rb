@@ -71,7 +71,7 @@ class UpdateStockAvailableWorker
             sku = purchase_order.sku
             my_products.each do |product|
               if sku == product[:sku]
-                product[:stock_available] -= purchase_order.quantity
+                product[:stock_available] -= (purchase_order.quantity - purchase_order.quantity_dispatched)
               end
             end
           end
@@ -88,6 +88,6 @@ class UpdateStockAvailableWorker
 
     key = 'available_stock'
     $redis.set(key, my_products.to_json)
-    $redis.expire(key, ENV['CACHE_EXPIRE_TIME'].to_i.seconds.to_i)
+    $redis.expire(key, (2 * ENV['CACHE_EXPIRE_TIME'].to_i).seconds.to_i)
   end
 end
