@@ -16,13 +16,14 @@ class GetPurchaseOrderJob < ApplicationJob
   def perform(id)
     response = obtener_orden_de_compra(id)
     body = JSON.parse(response.body, symbolize_names: true)
+
     if body.kind_of?(Array)
       body = body.first
     end
 
     return {
         :body => body,
-        :code =>  response.code,
+        :code => response.code,
     }
   end
 end
