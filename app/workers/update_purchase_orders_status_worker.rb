@@ -16,6 +16,8 @@ class UpdatePurchaseOrdersStatusWorker
                                 sku: body[:sku],
                                 quantity: body[:cantidad],
                                 status: body[:estado])
+        else
+          purchase_order.destroy
         end
       end
     end
