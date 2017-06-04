@@ -4,9 +4,9 @@ class PurchaseOrdersController < ApplicationController
   # GET /purchase_orders
   # GET /purchase_orders.json
   def index
-    @own_purchase_orders = PurchaseOrder.where(own: true)
-    @received_purchase_orders = PurchaseOrder.where(own: false, dispatched: false)
-    @dispatched_purchase_orders = PurchaseOrder.where(own: false, dispatched: true)
+    @own_purchase_orders = PurchaseOrder.get_my_orders
+    @received_purchase_orders = PurchaseOrder.get_client_orders.select { |v| !v.dispatched}
+    @dispatched_purchase_orders = PurchaseOrder.get_client_orders.select { |v| v.dispatched}
   end
 
   # GET /purchase_orders/1

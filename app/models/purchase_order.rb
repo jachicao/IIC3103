@@ -1,11 +1,19 @@
 class PurchaseOrder < ApplicationRecord
 
   def self.get_my_orders
-    return PurchaseOrder.all.select { |v| v.is_made_by_me }
+    result = PurchaseOrder.all.select { |v| v.is_made_by_me }
+    if result != nil
+      return result
+    end
+    return []
   end
 
   def self.get_client_orders
-    return PurchaseOrder.all.select { |v| !v.is_made_by_me }
+    result = PurchaseOrder.all.select { |v| !v.is_made_by_me }
+    if result != nil
+      return result
+    end
+    return []
   end
 
   def self.create_new_purchase_order(producer_id, sku, delivery_date, quantity, unit_price, payment_method)
