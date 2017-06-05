@@ -169,7 +169,7 @@ class PurchaseOrder < ApplicationRecord
       return invoice
     end
     return nil
-    #return Invoice.create_invoice(self.po_id) #TODO
+    return Invoice.create_invoice(self.po_id)
   end
 
   def get_invoices
