@@ -47,13 +47,17 @@ class AnalyzePurchaseOrderWorker
                     me = false
                     ingredient.item.product_in_sales.each do |product_in_sale|
                       if product_in_sale.is_mine
-                        if (DateTime.current + (my_product_in_sale.average_time + product_in_sale.average_time).to_f.hours) <= purchase_order.delivery_date
-                          me = true
-                          purchase_items.push({ quantity: difference_ingredient,
-                                                producer_id: product_in_sale.producer.producer_id,
-                                                sku: ingredient.item.sku })
+                        if ingredient.item.ingredients.size > 0
+
+                        else
+                          if (DateTime.current + (my_product_in_sale.average_time + product_in_sale.average_time).to_f.hours) <= purchase_order.delivery_date
+                            me = true
+                            purchase_items.push({ quantity: difference_ingredient,
+                                                  producer_id: product_in_sale.producer.producer_id,
+                                                  sku: ingredient.item.sku })
+                          end
+                          break
                         end
-                        break
                       end
                     end
                     if me

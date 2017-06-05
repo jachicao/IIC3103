@@ -2,6 +2,15 @@ class Product < ApplicationRecord
   has_many :ingredients
   has_many :product_in_sales
 
+  def produced_by_me
+    self.product_in_sales.each do |product_in_sale|
+      if product_in_sale.is_mine
+        return true
+      end
+    end
+    return false
+  end
+
   def update_stock_available
     if $updating_stock != nil
       return
@@ -321,4 +330,67 @@ class Product < ApplicationRecord
     end
   end
 
+  def analyze_min_stock(my_products, quantity)
+    my_products.each do |p|
+      if p[:sku] == self.sku
+        difference = quantity - p[:stock]
+        if difference > 0
+          if self.produced_by_me
+            if self.ingredients.size > 0
+              unit_lote = (difference.to_f / self.lote.to_f).ceil
+              has_enough = true
+              self.ingredients.each do |ingredient|
+                stock_ingredient = 0
+                my_products.each do |p_stock|
+                  if p_stock[:sku] == ingredient.item.sku
+                    stock_ingredient = p_stock[:stock]
+                  end
+                end
+                ingredient_quantity = ingredient.quantity * unit_lote - stock_ingredient
+                if ingredient_quantity > 0
+                  has_enough = false
+                end
+              end
+              if has_enough
+                self.produce(unit_lote)
+              else
+                self.ingredients.each do |ingredient|
+                  ingredient.item.analyze_min_stock(my_products, ingredient.quantity * unit_lote)
+                end
+              end
+            else
+              puts 'produciendo ' + difference.to_s + ' de ' + self.name
+              self.buy_to_factory(difference)
+            end
+          else
+            best_product_in_sale = nil
+            best_product_in_sale_price = 0
+            self.product_in_sales.each do |product_in_sale|
+              if product_in_sale.is_mine
+              else
+                if product_in_sale.producer.has_wrong_api
+                else
+                  producer_details = product_in_sale.producer.get_product_details(self.sku)
+                  if producer_details[:stock] >= difference
+                    if best_product_in_sale.nil? || best_product_in_sale_price > producer_details[:precio]
+                      best_product_in_sale = product_in_sale
+                      best_product_in_sale_price = producer_details[:precio]
+                    end
+                  end
+                end
+              end
+            end
+            if best_product_in_sale != nil
+              puts 'comprando ' + difference.to_s + ' de ' + self.name
+              self.buy_to_producer(
+                  best_product_in_sale.producer.producer_id,
+                  difference,
+                  best_product_in_sale_price,
+                  best_product_in_sale.average_time)
+            end
+          end
+        end
+      end
+    end
+  end
 end
