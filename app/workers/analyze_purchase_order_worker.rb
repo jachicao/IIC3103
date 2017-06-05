@@ -1,32 +1,6 @@
 class AnalyzePurchaseOrderWorker
   include Sidekiq::Worker
 
-  def get_factory_analysis(sku, quantity)
-    analysis = nil
-    product = Product.find_by(sku: sku)
-    while analysis.nil?
-      analysis = product.get_factory_analysis(quantity)
-      if analysis.nil?
-        puts 'AnalyzePurchaseOrderWorker: sleeping server-rate seconds'
-        sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
-      end
-    end
-    return analysis
-  end
-
-  def get_ingredients_analysis(sku, quantity)
-    analysis = nil
-    product = Product.find_by(sku: sku)
-    while analysis.nil?
-      analysis = product.get_ingredients_analysis(quantity)
-      if analysis.nil?
-        puts 'AnalyzePurchaseOrderWorker: sleeping server-rate seconds'
-        sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
-      end
-    end
-    return analysis
-  end
-
   def buy(result)
     product = Product.find_by(sku: result[:sku])
     if result[:purchase_items] != nil

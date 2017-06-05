@@ -84,8 +84,6 @@ class UpdateStockAvailableWorker
       product[:stock] = [product[:stock], 0].max
     end
 
-    puts my_products
-
     key = 'available_stock'
     $redis.set(key, my_products.to_json)
     $redis.expire(key, (2 * ENV['CACHE_EXPIRE_TIME'].to_i).seconds.to_i)

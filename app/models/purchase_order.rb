@@ -152,6 +152,11 @@ class PurchaseOrder < ApplicationRecord
     }
   end
 
+  def destroy_purchase_order(causa)
+    self.cancel_purchase_order(causa)
+    self.destroy
+  end
+
   def cancel_purchase_order(causa)
     return CancelServerPurchaseOrderJob.perform_now(self.po_id, causa)
   end

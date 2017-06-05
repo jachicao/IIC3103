@@ -13,8 +13,7 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
     if params[:payment_method].nil?
       return render :json => { :success => false, :error => 'Falta payment_method' }, status: :bad_request
     else
-      if params[:payment_method] == 'contra_despacho'
-      elsif params[:payment_method] == 'contra_factura'
+      if ['contra_despacho', 'contra_factura'].include?(params[:payment_method])
       else
         return render :json => { :success => false, :error => 'payment_method debe ser contra_despacho o contra_factura' }, status: :bad_request
       end

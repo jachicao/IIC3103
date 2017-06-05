@@ -356,10 +356,10 @@ class Product < ApplicationRecord
           if has_enough
             return {
                 :sku => self.sku,
+                :quantity => difference,
                 :buy => true,
                 :success => true,
                 :producer_id => my_product_in_sale.producer.producer_id,
-                :quantity => difference,
                 :time => my_product_in_sale.average_time,
             }
           else
@@ -369,7 +369,6 @@ class Product < ApplicationRecord
             end
             buy = false
             success = true
-            my_time = my_product_in_sale.average_time
             extra_time = 0
             purchase_items.each do |p|
               if p[:success]
@@ -385,21 +384,21 @@ class Product < ApplicationRecord
             end
             return {
                 :sku => self.sku,
+                :quantity => difference,
                 :buy => buy,
                 :success => success,
                 :producer_id => my_product_in_sale.producer.producer_id,
-                :quantity => difference,
-                :time => my_time + extra_time,
+                :time => my_product_in_sale.average_time + extra_time,
                 :purchase_items => purchase_items,
             }
           end
         else
           return {
               :sku => self.sku,
+              :quantity => difference,
               :buy => true,
               :success => true,
               :producer_id => my_product_in_sale.producer.producer_id,
-              :quantity => difference,
               :time => my_product_in_sale.average_time,
           }
         end
@@ -424,16 +423,17 @@ class Product < ApplicationRecord
         if best_product_in_sale != nil
           return {
               :sku => self.sku,
+              :quantity => difference,
               :buy => true,
               :success => true,
               :producer_id => best_product_in_sale.producer.producer_id,
-              :quantity => difference,
               :price => best_product_in_sale_price,
-              :time => best_product_in_sale.average_time,
+              :time => 0,
           }
         else
           return {
               :sku => self.sku,
+              :quantity => difference,
               :buy => true,
               :success => false,
           }
@@ -442,6 +442,7 @@ class Product < ApplicationRecord
     else
       return {
           :sku => self.sku,
+          :quantity => 0,
           :buy => false,
           :success => true,
           :time => 0,

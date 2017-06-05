@@ -8,20 +8,25 @@ class CheckPurchaseOrdersWorker
     # Do something
     PurchaseOrder.all.each do |purchase_order|
       if purchase_order.is_made_by_me
-        invoice = purchase_order.get_not_rejected_invoice
-        if invoice != nil
-          if invoice.paid
-          else
-            case purchase_order.payment_method
-              when 'contra_despacho'
-                case purchase_order.status
-                  when 'finalizada'
+        case purchase_order.status
+          when 'aceptada'
+            invoice = purchase_order.get_not_rejected_invoice
+            if invoice != nil
+              if invoice.paid
+              else
+                case purchase_order.payment_method
+                  when 'contra_despacho'
+                    case purchase_order.status
+                      when 'finalizada'
+                        invoice.pay
+                    end
+                  when 'contra_factura'
                     invoice.pay
                 end
-              when 'contra_factura'
-                invoice.pay
+              end
             end
-          end
+          when 'rechazada'
+            purchase_order.destroy_purchase_order('Rejected by group')
         end
       else
         if purchase_order.dispatched
