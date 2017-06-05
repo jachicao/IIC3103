@@ -119,7 +119,7 @@ class ProductsController < ApplicationController
       elsif analysis[:success]
         if analysis[:time] <= maximum_time
           if analysis[:purchase_ingredients].size == 0
-            @product.produce(analysis[:quantity])
+            @product.produce(analysis[:quantity] * @product.lote)
             format.html { redirect_to products_path, notice: 'Producto enviado a producir' }
           else
             format.html { redirect_to controller: 'products', action: 'confirm_produce', quantity: analysis[:quantity], purchase_ingredients: analysis[:purchase_ingredients] }
@@ -138,7 +138,7 @@ class ProductsController < ApplicationController
 
   def post_confirm_produce
     @product.purchase_ingredients(@purchase_ingredients)
-    @product.produce(@quantity)
+    @product.produce(@quantity * @product.lote)
     respond_to do |format|
       format.html { redirect_to produce_product_path, notice: 'Ingredientes enviados a comprar y producto a producir' }
     end
@@ -162,6 +162,7 @@ class ProductsController < ApplicationController
   # GET /products/1
   # GET /products/1.json
   def show
+    puts @product.analyze_purchase_order(2000)
   end
 
   private

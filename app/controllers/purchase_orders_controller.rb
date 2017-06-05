@@ -5,14 +5,14 @@ class PurchaseOrdersController < ApplicationController
   # GET /purchase_orders.json
   def index
     @own_purchase_orders = PurchaseOrder.get_my_orders
-    @received_purchase_orders = PurchaseOrder.get_client_orders.select { |v| !v.dispatched}
-    @dispatched_purchase_orders = PurchaseOrder.get_client_orders.select { |v| v.dispatched}
+    @received_purchase_orders = PurchaseOrder.get_client_orders.select { |v| !v.dispatched }
+    @dispatched_purchase_orders = PurchaseOrder.get_client_orders.select { |v| v.dispatched }
+
   end
 
   # GET /purchase_orders/1
   # GET /purchase_orders/1.json
   def show
-
   end
 
   def dispatch_product
