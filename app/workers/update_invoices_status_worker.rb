@@ -8,7 +8,9 @@ class UpdateInvoicesStatusWorker
         body = server[:body]
         if body != nil
           invoice.update(
-              status: body[:estado]
+              status: body[:estado],
+              rejected_reason: body[:rechazo],
+              cancelled_reason: body[:anulacion],
           )
         else
           invoice.destroy

@@ -13,7 +13,10 @@ class UpdatePurchaseOrdersStatusWorker
                                 unit_price: body[:precioUnitario],
                                 sku: body[:sku],
                                 quantity: body[:cantidad],
-                                status: body[:estado])
+                                status: body[:estado],
+                                rejected_reason: body[:rechazo],
+                                cancelled_reason: body[:anulacion],
+          )
         else
           purchase_order.destroy
         end

@@ -20,6 +20,9 @@
   - low
 
 :schedule:
+  min_stock:
+    cron: '0 0 * * * *'       # Runs every hour
+    class: CheckMinimumStockWorker
   pending_products:
     cron: '0 */10 * * * *'    # Runs every 10 minutes
     class: ProduceProductWorker
@@ -27,23 +30,23 @@
     cron: '0 */10 * * * *'    # Runs every 10 minutes
     class: StoreHousesWorker
   check_purchase_orders:
-    cron: '0 */5 * * * *'     # Runs every 5 minutes
+    cron: '0 * * * * *'     # Runs every minute
     class: CheckPurchaseOrdersWorker
-  min_stock:
-    cron: '0 0 * * * *'       # Runs every hour
-    class: CheckMinimumStockWorker
   update_purchase_orders:
-    cron: '0 * * * * *'    # Runs every minutes
+    cron: '0 * * * * *'    # Runs every minute
     class: UpdatePurchaseOrdersStatusWorker
+  update_invoices:
+    cron: '0 * * * * *'    # Runs every minute
+    class: UpdateInvoicesStatusWorker
   cache:
     cron: '*/30 * * * * *'    # Runs when second = 0/30, every minute
     class: CacheWorker
-  update_stock_available:
-    cron: '*/30 * * * * *'    # Runs when second = 0/30, every minute
-    class: UpdateStockAvailableWorker
   update_groups_stock:
     cron: '*/30 * * * * *'    # Runs when second = 0/30, every minute
     class: UpdateGroupsStockWorker
+  update_stock_available:
+    cron: '*/30 * * * * *'    # Runs when second = 0/30, every minute
+    class: UpdateStockAvailableWorker
 
 # you can override concurrency based on environment
 production:

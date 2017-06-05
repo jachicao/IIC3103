@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170604215819) do
+ActiveRecord::Schema.define(version: 20170605043551) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,12 +62,14 @@ ActiveRecord::Schema.define(version: 20170604215819) do
     t.integer  "amount"
     t.string   "po_id"
     t.datetime "payment_date"
-    t.boolean  "is_bill",        default: false
+    t.boolean  "is_bill",          default: false
     t.integer  "spree_order_id"
     t.string   "bank_id"
-    t.boolean  "paid",           default: false
-    t.boolean  "rejected",       default: false
+    t.boolean  "paid",             default: false
+    t.boolean  "rejected",         default: false
     t.string   "status"
+    t.string   "rejected_reason"
+    t.string   "cancelled_reason"
     t.index ["_id"], name: "index_invoices_on__id", using: :btree
   end
 
@@ -128,6 +130,8 @@ ActiveRecord::Schema.define(version: 20170604215819) do
     t.datetime "delivery_date"
     t.string   "status"
     t.integer  "quantity_dispatched", default: 0
+    t.string   "rejected_reason"
+    t.string   "cancelled_reason"
     t.index ["po_id"], name: "index_purchase_orders_on_po_id", using: :btree
   end
 
