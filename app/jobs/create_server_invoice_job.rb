@@ -6,7 +6,7 @@ class CreateServerInvoiceJob < ApplicationJob
         :oc => id,
     }
     return HTTParty.put(
-        ENV['CENTRAL_SERVER_URL'] + '/sii',
+        ENV['CENTRAL_SERVER_URL'] + '/sii/',
         :body => req_params,
         :headers => { content_type: 'application/json', accept: 'application/json'}
     )
