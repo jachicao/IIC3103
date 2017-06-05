@@ -45,7 +45,9 @@ class Invoice < ApplicationRecord
         _id: body[:_id],
         supplier_id: body[:proveedor],
         client_id: body[:cliente],
-        po_id: body[:oc],
+        po_id: body[:oc][:_id],
+        status: body[:estado],
+        amount: body[:total],
     )
     return {
         :success => true,

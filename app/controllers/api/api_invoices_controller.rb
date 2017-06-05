@@ -20,8 +20,9 @@ class Api::ApiInvoicesController < Api::ApiController
             _id: body[:_id],
             supplier_id: body[:proveedor],
             client_id: body[:cliente],
+            po_id: body[:oc][:_id],
+            status: body[:estado],
             amount: body[:total],
-            po_id: body[:oc],
             bank_id: params[:bank_account],
         )
         if @invoice.save

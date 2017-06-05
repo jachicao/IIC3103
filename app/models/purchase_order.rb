@@ -164,11 +164,6 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def create_invoice
-    invoice = Invoice.find_by(po_id: self.po_id)
-    if invoice != nil
-      return invoice
-    end
-    return nil
     return Invoice.create_invoice(self.po_id)
   end
 
