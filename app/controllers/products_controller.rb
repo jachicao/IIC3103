@@ -162,7 +162,6 @@ class ProductsController < ApplicationController
   # GET /products/1
   # GET /products/1.json
   def show
-    puts @product.analyze_purchase_order(2000)
   end
 
   private

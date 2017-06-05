@@ -39,7 +39,9 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
                                               unit_price: body[:precioUnitario],
                                               sku: body[:sku],
                                               quantity: body[:cantidad],
-                                              status: body[:estado] })
+                                              status: body[:estado],
+                                              channel: body[:canal]
+                                            })
         if @purchase_order.save
           AnalyzePurchaseOrderWorker.perform_async(body[:_id])
           return render :json => { :success => true }

@@ -56,9 +56,20 @@
   <%= @server_body[:anulacion]%>
 </p>
 
+<p>
+  <strong>Store reception id:</strong>
+  <%= @purchase_order.store_reception_id %>
+</p>
+
 <h2>
   Facturas
 </h2>
+
+<% if !@purchase_order.is_made_by_me %>
+    <% if Invoice.find_by(po_id: @purchase_order.po_id).nil? %>
+        <%= link_to 'Crear factura', create_invoice_purchase_order_path(id: @purchase_order.id), { :method => :patch } %>
+    <% end %>
+<% end %>
 
 <table>
   <thead>

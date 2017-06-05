@@ -32,12 +32,9 @@
   check_purchase_orders:
     cron: '0 * * * * *'     # Runs every minute
     class: CheckPurchaseOrdersWorker
-  update_purchase_orders:
+  check_invoices:
     cron: '0 * * * * *'    # Runs every minute
-    class: UpdatePurchaseOrdersStatusWorker
-  update_invoices:
-    cron: '0 * * * * *'    # Runs every minute
-    class: UpdateInvoicesStatusWorker
+    class: CheckInvoicesWorker
   cache:
     cron: '*/30 * * * * *'    # Runs when second = 0/30, every minute
     class: CacheWorker

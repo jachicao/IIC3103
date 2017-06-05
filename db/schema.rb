@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170605043551) do
+ActiveRecord::Schema.define(version: 20170605053006) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -132,6 +132,7 @@ ActiveRecord::Schema.define(version: 20170605043551) do
     t.integer  "quantity_dispatched", default: 0
     t.string   "rejected_reason"
     t.string   "cancelled_reason"
+    t.string   "channel"
     t.index ["po_id"], name: "index_purchase_orders_on_po_id", using: :btree
   end
 

@@ -64,7 +64,9 @@ class PurchaseOrder < ApplicationRecord
                                         unit_price: body[:precioUnitario],
                                         sku: body[:sku],
                                         quantity: body[:cantidad],
-                                        status: body[:estado])
+                                        status: body[:estado],
+                                        channel: body[:canal]
+    )
     if purchase_order.save
       return {
           :success => true,
@@ -162,7 +164,12 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def create_invoice
-    return Invoice.create_invoice(self.po_id)
+    invoice = Invoice.find_by(po_id: self.po_id)
+    if invoice != nil
+      return invoice
+    end
+    return nil
+    #return Invoice.create_invoice(self.po_id) #TODO
   end
 
   def get_invoices

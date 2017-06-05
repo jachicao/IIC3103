@@ -9,7 +9,7 @@
       <th>Producto</th>
       <th>Cantidad</th>
       <th>Estado</th>
-      <th colspan="1"></th>
+      <th colspan="2"></th>
     </tr>
   </thead>
 
@@ -21,6 +21,7 @@
         <td><%= purchase_order.quantity %></td>
         <td><%= purchase_order.status %></td>
         <td><%= link_to 'Show', purchase_order %></td>
+        <td><%= link_to 'Destroy', purchase_order_path(id: purchase_order.id), method: :delete, data: { confirm: '¿Estás segur@?' } %></td>
       </tr>
     <% end %>
   </tbody>
@@ -32,11 +33,12 @@
   <thead>
     <tr>
       <th>Po</th>
+      <th>Canal</th>
       <th>Producto</th>
       <th>Cantidad</th>
       <th>Cantidad despachada</th>
       <th>Estado</th>
-      <th colspan="1"></th>
+      <th colspan="2"></th>
     </tr>
   </thead>
 
@@ -44,11 +46,13 @@
     <% @received_purchase_orders.each do |purchase_order| %>
       <tr>
         <td><%= purchase_order.po_id %></td>
+        <td><%= purchase_order.channel %></td>
         <td><%= purchase_order.get_product.name %></td>
         <td><%= purchase_order.quantity %></td>
         <td><%= purchase_order.quantity_dispatched %></td>
         <td><%= purchase_order.status %></td>
         <td><%= link_to 'Show', purchase_order %></td>
+        <td><%= link_to 'Destroy', purchase_order_path(id: purchase_order.id), method: :delete, data: { confirm: '¿Estás segur@?' } %></td>
       </tr>
     <% end %>
   </tbody>
@@ -60,11 +64,12 @@
   <thead>
     <tr>
       <th>Po</th>
+      <th>Canal</th>
       <th>Producto</th>
       <th>Cantidad</th>
       <th>Cantidad despachada</th>
       <th>Estado</th>
-      <th colspan="1"></th>
+      <th colspan="2"></th>
     </tr>
   </thead>
 
@@ -72,11 +77,13 @@
     <% @dispatched_purchase_orders.each do |purchase_order| %>
       <tr>
         <td><%= purchase_order.po_id %></td>
+        <td><%= purchase_order.channel %></td>
         <td><%= purchase_order.get_product.name %></td>
         <td><%= purchase_order.quantity %></td>
         <td><%= purchase_order.quantity_dispatched %></td>
         <td><%= purchase_order.status %></td>
         <td><%= link_to 'Show', purchase_order %></td>
+        <td><%= link_to 'Destroy', purchase_order_path(id: purchase_order.id), method: :delete, data: { confirm: '¿Estás segur@?' } %></td>
       </tr>
     <% end %>
   </tbody>

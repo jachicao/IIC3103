@@ -93,7 +93,7 @@ class Invoice < ApplicationRecord
     else
       transaction = nil
       purchase_order = get_purchase_order
-      amount = purchase_order.quantity * purchase_order.unit_price1
+      amount = purchase_order.quantity * purchase_order.unit_price
       while transaction.nil?
         transaction = Bank.transfer_money(self.bank_id, amount)
       end
@@ -119,7 +119,7 @@ class Invoice < ApplicationRecord
   end
 
   def is_made_by_me
-    return self.client_id == ENV['GROUP_ID']
+    return !self.get_purchase_order.is_made_by_me
   end
 
 end

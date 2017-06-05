@@ -1,5 +1,5 @@
 class PurchaseOrdersController < ApplicationController
-  before_action :set_purchase_order, only: [:show, :accept, :reject, :destroy, :dispatch_product]
+  before_action :set_purchase_order, only: [:show, :accept, :reject, :destroy, :dispatch_product, :create_invoice]
 
   # GET /purchase_orders
   # GET /purchase_orders.json
@@ -54,6 +54,16 @@ class PurchaseOrdersController < ApplicationController
 
   def destroy
     @purchase_order.destroy_purchase_order('Cancelada vía botón')
+    respond_to do |format|
+      format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully destroyed.' }
+    end
+  end
+
+  def create_invoice
+    @purchase_order.create_invoice
+    respond_to do |format|
+      format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Invoice was successfully created.' }
+    end
   end
 
   private
