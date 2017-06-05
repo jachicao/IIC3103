@@ -34,8 +34,7 @@ class AnalyzePurchaseOrderWorker
       if my_product_in_sale != nil
         if purchase_order.unit_price >= my_product_in_sale.price
           product = my_product_in_sale.product
-          quantity = purchase_order.quantity
-          difference = quantity - product.get_stock_available
+          difference = purchase_order.quantity - product.get_stock_available
           if difference > 0
             unit_lote = (difference.to_f / product.lote.to_f).ceil
             if (DateTime.current + my_product_in_sale.average_time.to_f.hours) <= purchase_order.delivery_date

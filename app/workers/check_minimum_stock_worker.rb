@@ -129,33 +129,61 @@ class CheckMinimumStockWorker
       if difference > 0
         product = Product.find_by(sku: p[:sku])
         if product.ingredients.size > 0
-          puts 'CheckMinimumStockWorker: produciendo ' + difference.to_s + ' de ' + product.name
           unit_lote = (difference.to_f / product.lote.to_f).ceil
+          has_enough = true
           product.ingredients.each do |ingredient|
-            quantity = ingredient.quantity * unit_lote - ingredient.item.get_stock_available
+            stock_ingredient = 0
+            my_products.each do |p_stock|
+              if p_stock[:sku] == ingredient.item.sku
+                stock_ingredient = p_stock[:stock]
+              end
+            end
+            quantity = ingredient.quantity * unit_lote - stock_ingredient
             if quantity > 0
+              has_enough = false
               me = false
+              #mandar a producir stock
               ingredient.item.product_in_sales.each do |product_in_sale|
                 if product_in_sale.is_mine
                   me = true
-                  puts 'CheckMinimumStockWorker: comprando ' + quantity.to_s + ' de ' + ingredient.item.name
+                  puts 'CheckMinimumStockWorker: produciendo ' + quantity.to_s + ' de ' + ingredient.item.name + ' para ' + product.name
                   ingredient.item.buy_to_factory(quantity)
                   break
                 end
               end
               if me
               else
-                best = ingredient.item.get_best_producer(quantity)
-                if best[:success]
-                  puts best[:producer_id]
-                  puts 'CheckMinimumStockWorker: comprando ' + quantity.to_s + ' de ' + ingredient.item.name
-                  ingredient.item.buy_to_producer(best[:producer_id], quantity, best[:price], best[:time]) #TODO
+                #mandar a comprar stock a los que tienen
+                best_product_in_sale = nil
+                best_product_in_sale_price = 0
+                ingredient.item.product_in_sales.each do |product_in_sale|
+                  if product_in_sale.is_mine
+                  else
+                    if product_in_sale.producer.has_wrong_api
+                    else
+                      producer_details = product_in_sale.producer.get_product_details(ingredient.item.sku)
+                      if producer_details[:stock] >= quantity
+                        if best_product_in_sale.nil? || best_product_in_sale_price > producer_details[:precio]
+                          best_product_in_sale = product_in_sale
+                          best_product_in_sale_price = producer_details[:precio]
+                        end
+                      end
+                    end
+                  end
+                end
+                if best_product_in_sale != nil
+                  puts 'CheckMinimumStockWorker: comprando ' + quantity.to_s + ' de ' + ingredient.item.name + ' para ' + product.name
+                  ingredient.item.buy_to_producer(best_product_in_sale.producer.producer_id, quantity, best_product_in_sale_price, best_product_in_sale.average_time) #TODO
                 end
               end
             end
           end
+          if has_enough
+            puts 'CheckMinimumStockWorker: produciendo ' + difference.to_s + ' de ' + product.name
+            product.buy_to_factory(difference)
+          end
         else
-          puts 'CheckMinimumStockWorker: comprando ' + difference.to_s + ' de ' + product.name
+          puts 'CheckMinimumStockWorker: produciendo ' + difference.to_s + ' de ' + product.name
           product.buy_to_factory(difference)
         end
       end
