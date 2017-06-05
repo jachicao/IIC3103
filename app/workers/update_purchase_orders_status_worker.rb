@@ -6,7 +6,6 @@ class UpdatePurchaseOrdersStatusWorker
       server = GetPurchaseOrderJob.perform_now(purchase_order.po_id)
       if server[:code] == 200
         body = server[:body]
-        puts 'server body: '
         if body != nil
           purchase_order.update(client_id: body[:cliente],
                                 supplier_id: body[:proveedor],
