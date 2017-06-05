@@ -1,5 +1,5 @@
 class PurchaseOrdersController < ApplicationController
-  before_action :set_purchase_order, only: [:show, :accept, :reject, :dispatch_product]
+  before_action :set_purchase_order, only: [:show, :accept, :reject, :destroy, :dispatch_product]
 
   # GET /purchase_orders
   # GET /purchase_orders.json
@@ -50,6 +50,10 @@ class PurchaseOrdersController < ApplicationController
         format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Failed to reject: ' + result.to_json }
       end
     end
+  end
+
+  def destroy
+    @purchase_order.destroy_purchase_order('Cancelada vía botón')
   end
 
   private

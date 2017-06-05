@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   mount Sidekiq::Web => '/sidekiq'
   mount Spree::Core::Engine, at: '/spree/'
 
-  resources :purchase_orders, only: [:index, :show]
+  resources :purchase_orders, only: [:index, :show, :destroy]
   patch '/purchase_orders/:id/accept', to: 'purchase_orders#accept', :as => :accept_purchase_order
   patch '/purchase_orders/:id/reject', to: 'purchase_orders#reject', :as => :reject_purchase_order
   patch '/purchase_orders/:id/dispatch_product', to: 'purchase_orders#dispatch_product', :as => :dispatch_purchase_order

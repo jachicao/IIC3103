@@ -26,9 +26,9 @@
   check_store_houses:
     cron: '0 */10 * * * *'    # Runs every 10 minutes
     class: StoreHousesWorker
-  #check_purchase_orders:
-    #cron: '0 */5 * * * *'     # Runs every 5 minutes
-    #class: CheckPurchaseOrdersWorker
+  check_purchase_orders:
+    cron: '0 */5 * * * *'     # Runs every 5 minutes
+    class: CheckPurchaseOrdersWorker
   min_stock:
     cron: '0 0 * * * *'       # Runs every hour
     class: CheckMinimumStockWorker
