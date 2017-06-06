@@ -42,8 +42,6 @@ class CheckPurchaseOrdersWorker
                   end
                 end
             end
-          when 'rechazada'
-            purchase_order.destroy_purchase_order('Rejected by group')
           when 'finalizada'
             case purchase_order.payment_method
               when 'contra_despacho'
@@ -55,6 +53,8 @@ class CheckPurchaseOrdersWorker
                   end
                 end
             end
+          when 'rechazada'
+            purchase_order.destroy_purchase_order('Rejected by group')
           when 'anulada'
             purchase_order.destroy
         end
@@ -73,6 +73,8 @@ class CheckPurchaseOrdersWorker
                 end
               end
             end
+          when 'rechazada'
+            purchase_order.destroy
           when 'anulada'
             purchase_order.destroy
         end

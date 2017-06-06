@@ -9,6 +9,13 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def self.create_new_purchase_order(producer_id, sku, delivery_date, quantity, unit_price, payment_method)
+    if quantity > 5000
+      return {
+          :success => false,
+          :server => {},
+          :group => {},
+      }
+    end
     recepcion = StoreHouse.get_recepciones
     if recepcion == nil
       return nil
@@ -105,7 +112,7 @@ class PurchaseOrder < ApplicationRecord
       if self.payment_method == 'contra_factura'
         self.create_invoice
       end
-      DispatchProductsToGroupWorker.perform_async(self.store_reception_id, self.sku, self.quantity, self.po_id, self.unit_price)
+      DispatchProductsToGroupWorker.perform_async(self.store_reception_id, self.po_id)
       self.update(sending: true)
     end
   end

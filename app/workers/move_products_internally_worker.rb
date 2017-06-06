@@ -80,11 +80,9 @@ class MoveProductsInternallyWorker
 
   def perform(from_store_houses, to_store_houses, sku, quantity)
     puts 'starting MoveProductsInternallyWorker'
-    while true
-      quantity = move_stock(from_store_houses, to_store_houses, sku, quantity)
-      if quantity <= 0
-        break
-      end
+    new_quantity = move_stock(from_store_houses, to_store_houses, sku, quantity)
+    if new_quantity > 0
+      MoveProductsInternallyWorker.perform_async(from_store_houses, to_store_houses, sku, new_quantity)
     end
   end
 end

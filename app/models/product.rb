@@ -340,6 +340,14 @@ class Product < ApplicationRecord
   end
 
   def analyze_purchase_order(quantity)
+    if quantity > 5000
+      return {
+          :sku => self.sku,
+          :quantity => 0,
+          :buy => false,
+          :success => false,
+      }
+    end
     difference = quantity - self.get_stock_available
     if difference > 0
       my_product_in_sale = get_my_product_sale
@@ -453,7 +461,7 @@ class Product < ApplicationRecord
   def analyze_min_stock(my_products, quantity)
     my_products.each do |p|
       if p[:sku] == self.sku
-        difference = quantity - p[:stock]
+        difference = [quantity, 5000].min - p[:stock]
         if difference > 0
           if self.produced_by_me
             if self.ingredients.size > 0
