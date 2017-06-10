@@ -16,7 +16,7 @@ class DashboardController < ApplicationController
     end
 
     def get_set_factory_orders
-      return FactoryOrder
+      return FactoryOrder.all
     end
 
     def get_bills
