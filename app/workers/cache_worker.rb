@@ -60,6 +60,18 @@ class CacheWorker
         end
       end
     end
+
+    server_store_houses.each do |server_store_house|
+      counter = 0
+      StoreHouse.all.each do |store_house|
+        if server_store_house[:_id] == store_house._id
+          counter += 1
+        end
+        if counter > 1
+          store_house.destroy
+        end
+      end
+    end
     StoreHouse.all.each do |store_house|
       stock = get_stock(store_house._id)
       stock.each do |p|

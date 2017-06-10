@@ -17,7 +17,7 @@
     <% @factory_orders.each do |factory_order| %>
       <tr>
         <td><%= factory_order.fo_id %></td>
-        <td><%= factory_order.sku %></td>
+        <td><%= factory_order.product.name %></td>
         <td><%= factory_order.available %></td>
         <td><%= factory_order.quantity %></td>
       </tr>
