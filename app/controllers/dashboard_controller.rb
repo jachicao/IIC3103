@@ -16,13 +16,7 @@ class DashboardController < ApplicationController
     end
 
     def get_set_factory_orders
-      result = []
-
-      FactoryOrder.all.each do |f|
-        result.push({ sku: f.sku, quantity: f.quantity, available: f.available })
-      end
-
-      return result
+      return FactoryOrder
     end
 
     def get_bills

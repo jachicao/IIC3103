@@ -73,8 +73,8 @@
         <% @factory_orders.each do |factoryOrder| %>
             <tr>
               <td><%= factoryOrder.product.name %></td>
-              <td><%= factoryOrder[:quantity] %></td>
-              <td><%= factoryOrder[:available] %></td>
+              <td><%= factoryOrder.quantity %></td>
+              <td><%= factoryOrder.available %></td>
             </tr>
         <% end %>
         </tbody>
