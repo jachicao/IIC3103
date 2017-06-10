@@ -21,8 +21,7 @@ class PurchaseOrdersController < ApplicationController
       if result == nil
         format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Servidor colapsado' }
       elsif result > 0
-        product = @purchase_order.get_product
-        format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Falta ' + result.to_s + ' de ' + product.name }
+        format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Falta ' + result.to_s + ' de ' + @purchase_order.product.name }
       else
         @purchase_order.dispatch_order
         format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Purchase order was successfully dispatched.' }

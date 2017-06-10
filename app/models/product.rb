@@ -1,6 +1,9 @@
 class Product < ApplicationRecord
   has_many :ingredients
   has_many :product_in_sales
+  has_many :stocks
+  has_many :purchase_orders
+  has_many :factory_orders
 
   def get_my_product_sale
     self.product_in_sales.each do |product_in_sale|
@@ -20,45 +23,38 @@ class Product < ApplicationRecord
     return false
   end
 
-  def update_stock_available
-    if $updating_stock != nil
-      return
+  def stock
+    total = 0
+    self.stocks.each do |s|
+      total += s.quantity
     end
-    $updating_stock = true
-    #UpdateStockAvailableWorker.perform_async
-    $updating_stock = nil
+    return total
   end
 
-  def get_stock
-    key = 'available_stock'
-    cache = $redis.get(key)
-    if cache != nil
-      json = JSON.parse(cache, symbolize_names: true)
-      json.each do |p|
-        if p[:sku] == self.sku
-          return p[:stock]
+  def stock_available
+    total = self.stock
+    PendingProduct.all.each do |pending_product|
+      pending_product.product.ingredients do |ingredient|
+        if ingredient.item.sku == self.sku
+          total -= ingredient.quantity * pending_product.quantity
         end
       end
-    else
-      #update_stock_available
     end
-    return 0
-  end
+    PurchaseOrder.all.each do |purchase_order|
+      if purchase_order.is_made_by_me
+      else
+        if purchase_order.dispatched
+        else
+          if purchase_order.status == 'aceptada'
+            if purchase_order.sku == self.sku
+              total -= (purchase_order.quantity - purchase_order.quantity_dispatched)
+            end
+          end
+        end
+      end
+    end
 
-  def get_stock_available
-    key = 'available_stock'
-    cache = $redis.get(key)
-    if cache != nil
-      json = JSON.parse(cache, symbolize_names: true)
-      json.each do |p|
-        if p[:sku] == self.sku
-          return p[:stock_available]
-        end
-      end
-    else
-      #update_stock_available
-    end
-    return 0
+    return total
   end
 
   def get_max_production(quantity)
@@ -348,7 +344,7 @@ class Product < ApplicationRecord
           :success => false,
       }
     end
-    difference = quantity - self.get_stock_available
+    difference = quantity - self.stock_available
     if difference > 0
       my_product_in_sale = get_my_product_sale
       if my_product_in_sale != nil
@@ -356,7 +352,7 @@ class Product < ApplicationRecord
           unit_lote = (difference.to_f / self.lote.to_f).ceil
           has_enough = true
           self.ingredients.each do |ingredient|
-            ingredient_quantity = ingredient.quantity * unit_lote - ingredient.item.get_stock_available
+            ingredient_quantity = ingredient.quantity * unit_lote - ingredient.item.stock_available
             if ingredient_quantity > 0
               has_enough = false
             end

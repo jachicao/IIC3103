@@ -37,7 +37,7 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
                                               supplier_id: body[:proveedor],
                                               delivery_date: DateTime.parse(body[:fechaEntrega]),
                                               unit_price: body[:precioUnitario],
-                                              sku: body[:sku],
+                                              product: Product.find_by(sku: body[:sku]),
                                               quantity: body[:cantidad],
                                               status: body[:estado],
                                               channel: body[:canal]

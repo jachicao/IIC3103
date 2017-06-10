@@ -1,30 +1,6 @@
 class CheckMinimumStockWorker
   include Sidekiq::Worker
 
-  def get_store_houses
-    store_houses = nil
-    while store_houses.nil?
-      store_houses = StoreHouse.all
-      if store_houses.nil?
-        puts 'CheckMinimumStockWorker: sleeping server-rate seconds'
-        sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
-      end
-    end
-    return store_houses
-  end
-
-  def get_stock(store_house_id)
-    stock = nil
-    while stock.nil?
-      stock = StoreHouse.get_stock(store_house_id)
-      if stock.nil?
-        puts 'CheckMinimumStockWorker: sleeping server-rate seconds'
-        sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
-      end
-    end
-    return stock
-  end
-
   def perform(*args)
     if ENV['DOCKER_RUNNING'].nil?
       return
@@ -48,13 +24,11 @@ class CheckMinimumStockWorker
       end
     end
 
-    store_houses = get_store_houses
-    store_houses.each do |store_house|
-      stock = get_stock(store_house[:_id])
-      stock.each do |p|
+    StoreHouse.all.each do |store_house|
+      store_house.stocks.each do |s|
         my_products.each do |product|
-          if p[:sku] == product[:sku]
-            product[:stock] += p[:total]
+          if s.product.sku == product[:sku]
+            product[:stock] += s.quantity
           end
         end
       end
@@ -64,7 +38,7 @@ class CheckMinimumStockWorker
     PurchaseOrder.all.each do |purchase_order|
       if purchase_order.is_made_by_me
         if purchase_order.status == 'creada' || purchase_order.status == 'aceptada'
-          sku = purchase_order.get_product.sku
+          sku = purchase_order.product.sku
           quantity = purchase_order.quantity
           my_products.each do |product|
             if sku == product[:sku]

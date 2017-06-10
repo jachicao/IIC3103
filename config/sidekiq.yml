@@ -20,30 +20,27 @@
   - low
 
 :schedule:
-  min_stock:
-    cron: '0 0 * * * *'       # Runs every hour
-    class: CheckMinimumStockWorker
-  pending_products:
-    cron: '0 */10 * * * *'    # Runs every 10 minutes
-    class: ProduceProductWorker
-  check_store_houses:
-    cron: '0 */10 * * * *'    # Runs every 10 minutes
-    class: StoreHousesWorker
-  check_purchase_orders:
-    cron: '0 * * * * *'     # Runs every minute
-    class: CheckPurchaseOrdersWorker
-  check_invoices:
-    cron: '0 * * * * *'    # Runs every minute
-    class: CheckInvoicesWorker
+  #min_stock:
+  #  cron: '0 0 * * * *'       # Runs every hour
+  #  class: CheckMinimumStockWorker
+  #pending_products:
+  #  cron: '0 */10 * * * *'    # Runs every 10 minutes
+  #  class: ProduceProductWorker
+  #check_store_houses:
+  #  cron: '0 */10 * * * *'    # Runs every 10 minutes
+  #  class: StoreHousesWorker
+  #check_purchase_orders:
+  #  cron: '0 * * * * *'     # Runs every minute
+  #  class: CheckPurchaseOrdersWorker
+  #check_invoices:
+  #  cron: '0 * * * * *'    # Runs every minute
+  #  class: CheckInvoicesWorker
   cache:
     cron: '*/30 * * * * *'    # Runs when second = 0/30, every minute
     class: CacheWorker
-  update_groups_stock:
-    cron: '*/30 * * * * *'    # Runs when second = 0/30, every minute
-    class: UpdateGroupsStockWorker
-  update_stock_available:
-    cron: '*/30 * * * * *'    # Runs when second = 0/30, every minute
-    class: UpdateStockAvailableWorker
+  #update_groups_stock:
+  #  cron: '*/30 * * * * *'    # Runs when second = 0/30, every minute
+  #  class: UpdateGroupsStockWorker
 
 # you can override concurrency based on environment
 production:

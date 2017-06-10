@@ -1,35 +1,31 @@
 <p id="notice"><%= notice %></p>
 
 <h1>Store Houses</h1>
-<% if @store_houses != nil %>
-  <table>
-    <thead>
-    <tr>
-      <th>Id</th>
-      <th>Capacidad</th>
-      <th>Disponible</th>
-      <th>Utilizado</th>
-      <th>Tipo</th>
-      <th colspan="1"></th>
-    </tr>
-    </thead>
+<table>
+  <thead>
+  <tr>
+    <th>Id</th>
+    <th>Capacidad</th>
+    <th>Disponible</th>
+    <th>Utilizado</th>
+    <th>Tipo</th>
+    <th colspan="1"></th>
+  </tr>
+  </thead>
 
-    <tbody>
-    <% @store_houses.each do |store_house| %>
-        <tr>
-          <td><%= store_house[:_id] %></td>
-          <td><%= store_house[:totalSpace] %></td>
-          <td><%= store_house[:availableSpace] %></td>
-          <td><%= store_house[:usedSpace] %></td>
-          <td><%= store_house[:type] %></td>
-          <td><%= link_to 'Show', store_house_path(store_house[:_id]) %></td>
-        </tr>
-    <% end %>
-    </tbody>
-  </table>
-<% else %>
-    <h2>Servidor colapsado</h2>
-<% end %>
+  <tbody>
+  <% @store_houses.each do |store_house| %>
+      <tr>
+        <td><%= store_house._id %></td>
+        <td><%= store_house.total_space %></td>
+        <td><%= store_house.available_space %></td>
+        <td><%= store_house.used_space %></td>
+        <td><%= store_house.type %></td>
+        <td><%= link_to 'Show', store_house_path(id: store_house._id) %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
 
 <br>
 <%= link_to 'Mover productos internamente', move_internally_store_house_path %>

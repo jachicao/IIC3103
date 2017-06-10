@@ -6,62 +6,54 @@
 
 <div class="container">
   <h2> Almacenes </h2>
-  <% if @almacenes != nil %>
-      <table class="table table-striped">
-        <thead>
-        <tr>
-          <th>Tipo</th>
-          <th>Capacidad</th>
-          <th>Disponible</th>
-          <th>Utilizado</th>
-          <th colspan="3"></th>
-        </tr>
-        </thead>
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Tipo</th>
+      <th>Capacidad</th>
+      <th>Disponible</th>
+      <th>Utilizado</th>
+      <th colspan="3"></th>
+    </tr>
+    </thead>
 
-        <tbody>
-        <% @almacenes.each do |almacen| %>
-            <tr>
-              <td><%= almacen[:type] %></td>
-              <td><%= almacen[:totalSpace] %></td>
-              <td><%= almacen[:availableSpace] %></td>
-              <td><%= almacen[:usedSpace] %></td>
-            </tr>
-        <% end %>
-        </tbody>
-      </table>
-  <% else %>
-      <h3> Servidor colapsado </h3>
-  <% end %>
+    <tbody>
+    <% @almacenes.each do |almacen| %>
+        <tr>
+          <td><%= almacen.type %></td>
+          <td><%= almacen.total_space %></td>
+          <td><%= (almacen.total_space - almacen.used_space) %></td>
+          <td><%= almacen.used_space %></td>
+        </tr>
+    <% end %>
+    </tbody>
+  </table>
 </div>
 
 <div class="container">
   <h2>Productos</h2>
-  <% if @productos != nil %>
-      <table class="table table-striped">
-        <thead>
-        <tr>
-          <th>Sku</th>
-          <th>Nombre</th>
-          <th>Stock</th>
-          <th>Stock Disponible</th>
-          <th colspan="3"></th>
-        </tr>
-        </thead>
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Sku</th>
+      <th>Nombre</th>
+      <th>Stock</th>
+      <th>Stock Disponible</th>
+      <th colspan="3"></th>
+    </tr>
+    </thead>
 
-        <tbody>
-        <% @productos.each do |producto| %>
-            <tr>
-              <td><%= producto[:sku] %></td>
-              <td><%= producto[:name] %></td>
-              <td><%= producto[:stock] %></td>
-              <td><%= producto[:stock_available] %></td>
-            </tr>
-        <% end %>
-        </tbody>
-      </table>
-  <% else %>
-      <h3> Servidor colapsado </h3>
-  <% end %>
+    <tbody>
+    <% @productos.each do |producto| %>
+        <tr>
+          <td><%= producto[:sku] %></td>
+          <td><%= producto[:name] %></td>
+          <td><%= producto[:stock] %></td>
+          <td><%= producto[:stock_available] %></td>
+        </tr>
+    <% end %>
+    </tbody>
+  </table>
 </div>
 
 <div class="container">
@@ -80,7 +72,7 @@
         <tbody>
         <% @factory_orders.each do |factoryOrder| %>
             <tr>
-              <td><%= Product.find_by(sku: factoryOrder[:sku]).name %></td>
+              <td><%= factoryOrder.product.name %></td>
               <td><%= factoryOrder[:quantity] %></td>
               <td><%= factoryOrder[:available] %></td>
             </tr>

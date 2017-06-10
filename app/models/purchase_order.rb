@@ -1,4 +1,5 @@
 class PurchaseOrder < ApplicationRecord
+  belongs_to :product
 
   def self.get_my_orders
     return PurchaseOrder.all.select { |v| v.is_made_by_me }
@@ -16,11 +17,13 @@ class PurchaseOrder < ApplicationRecord
           :group => {},
       }
     end
-    recepcion = StoreHouse.get_recepciones
-    if recepcion == nil
-      return nil
+
+    id_almacen_recepcion = nil
+    StoreHouse.all.each do |store_house|
+      if store_house.recepcion
+        id_almacen_recepcion = store_house._id
+      end
     end
-    id_almacen_recepcion = recepcion.first[:_id]
 
     response_server = CreateServerPurchaseOrderJob.perform_now(
         producer_id,
@@ -69,7 +72,7 @@ class PurchaseOrder < ApplicationRecord
                                         supplier_id: body[:proveedor],
                                         delivery_date: DateTime.parse(body[:fechaEntrega]),
                                         unit_price: body[:precioUnitario],
-                                        sku: body[:sku],
+                                        product: Product.find_by(sku: body[:sku]),
                                         quantity: body[:cantidad],
                                         status: body[:estado],
                                         channel: body[:canal]
@@ -137,10 +140,6 @@ class PurchaseOrder < ApplicationRecord
 
   def get_supplier
     return Producer.find_by(producer_id: self.supplier_id)
-  end
-
-  def get_product
-    return Product.find_by(sku: self.sku)
   end
 
   def accept_purchase_order

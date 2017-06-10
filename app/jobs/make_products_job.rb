@@ -34,7 +34,7 @@ class MakeProductsJob < ApplicationJob
     end
     FactoryOrder.create(
         fo_id: body[:_id],
-        sku: body[:sku],
+        product: Product.find_by(sku: body[:sku]),
         quantity: body[:cantidad],
         available: DateTime.parse(body[:disponible]),
     )

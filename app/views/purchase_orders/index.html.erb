@@ -17,7 +17,7 @@
     <% @own_purchase_orders.each do |purchase_order| %>
       <tr>
         <td><%= purchase_order.po_id %></td>
-        <td><%= purchase_order.get_product.name %></td>
+        <td><%= purchase_order.product.name %></td>
         <td><%= purchase_order.quantity %></td>
         <td><%= purchase_order.status %></td>
         <td><%= link_to 'Show', purchase_order %></td>
@@ -47,7 +47,7 @@
       <tr>
         <td><%= purchase_order.po_id %></td>
         <td><%= purchase_order.channel %></td>
-        <td><%= purchase_order.get_product.name %></td>
+        <td><%= purchase_order.product.name %></td>
         <td><%= purchase_order.quantity %></td>
         <td><%= purchase_order.quantity_dispatched %></td>
         <td><%= purchase_order.status %></td>
@@ -78,7 +78,7 @@
       <tr>
         <td><%= purchase_order.po_id %></td>
         <td><%= purchase_order.channel %></td>
-        <td><%= purchase_order.get_product.name %></td>
+        <td><%= purchase_order.product.name %></td>
         <td><%= purchase_order.quantity %></td>
         <td><%= purchase_order.quantity_dispatched %></td>
         <td><%= purchase_order.status %></td>

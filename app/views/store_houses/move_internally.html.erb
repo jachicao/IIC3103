@@ -7,8 +7,8 @@
       <%= label_tag :desde %>
       <select name="from_store_house_id">
         <% @store_houses.each do |store_house| %>
-            <option value="<%= store_house[:_id] %>">
-              <%= store_house[:type] + ' (id: ' + store_house[:_id] + ')' %>
+            <option value="<%= store_house._id %>">
+              <%= store_house.type + ' (id: ' + store_house._id + ')' %>
             </option>
         <% end %>
       </select>
@@ -18,8 +18,8 @@
       <%= label_tag :hacia %>
       <select name="to_store_house_id">
         <% @store_houses.each do |store_house| %>
-            <option value="<%= store_house[:_id] %>">
-              <%= store_house[:type] + ' (id: ' + store_house[:_id] + ')' %>
+            <option value="<%= store_house._id %>">
+              <%= store_house.type + ' (id: ' + store_house._id + ')' %>
             </option>
         <% end %>
       </select>

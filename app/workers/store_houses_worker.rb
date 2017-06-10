@@ -1,30 +1,6 @@
 class StoreHousesWorker
   include Sidekiq::Worker
 
-  def get_store_houses
-    store_houses = nil
-    while store_houses.nil?
-      store_houses = StoreHouse.all
-      if store_houses.nil?
-        puts 'StoreHousesWorker: sleeping server-rate seconds'
-        sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
-      end
-    end
-    return store_houses
-  end
-
-  def get_stock(store_house_id)
-    stock = nil
-    while stock.nil?
-      stock = StoreHouse.get_stock(store_house_id)
-      if stock.nil?
-        puts 'StoreHousesWorker: sleeping server-rate seconds'
-        sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
-      end
-    end
-    return stock
-  end
-
   def get_products(store_house_id, sku, limit)
     products = nil
     while products.nil?
@@ -37,28 +13,20 @@ class StoreHousesWorker
     return products
   end
 
-  def move_stock(store_houses)
+  def move_stock
     stock_left = 0
-    store_houses.each do |from_store_house|
-      if from_store_house[:pulmon] or from_store_house[:recepcion]
-        from_stock = get_stock(from_store_house[:_id])
-        from_used_space = 0
-        from_stock.each do |from_p|
-          from_used_space += from_p[:total]
-        end
+    StoreHouse.all.each do |from_store_house|
+      if from_store_house.pulmon or from_store_house.recepcion
+        from_used_space = from_store_house.used_space
         if from_used_space > 0
-          from_stock.each do |from_p|
-            from_p_sku = from_p[:sku]
-            from_p_total = from_p[:total]
+          from_store_house.stocks.each do |from_p|
+            from_p_sku = from_p.product.sku
+            from_p_total = from_p.quantity
             if from_p_total > 0
-              store_houses.each do |to_store_house|
-                to_total_space = to_store_house[:totalSpace]
-                if (not to_store_house[:pulmon]) and (not to_store_house[:recepcion]) and (not to_store_house[:despacho])
-                  to_used_space = 0
-                  to_stock = get_stock(to_store_house[:_id])
-                  to_stock.each do |to_p|
-                    to_used_space += to_p[:total]
-                  end
+              StoreHouse.all.each do |to_store_house|
+                to_total_space = to_store_house.total_space
+                if to_store_house.otro
+                  to_used_space = to_store_house.used_space
                   if to_total_space - to_used_space > 0 and from_used_space > 0 and from_p_total > 0
                     stock_left += [to_total_space - to_used_space, from_p_total].min
                     total_to_move = [to_total_space - to_used_space, from_p_total, 100].min
@@ -107,9 +75,8 @@ class StoreHousesWorker
     end
     $cleaning_store_houses = true
     puts 'starting StoreHousesWorker'
-    store_houses = get_store_houses
     while true
-      if move_stock(store_houses) == true
+      if move_stock == true
         break
       end
     end

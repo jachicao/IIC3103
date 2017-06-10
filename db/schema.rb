@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170605053006) do
+ActiveRecord::Schema.define(version: 20170610044323) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,7 +20,9 @@ ActiveRecord::Schema.define(version: 20170605053006) do
     t.string   "sku"
     t.datetime "available"
     t.integer  "quantity"
+    t.integer  "product_id"
     t.index ["fo_id"], name: "index_factory_orders_on_fo_id", using: :btree
+    t.index ["product_id"], name: "index_factory_orders_on_product_id", using: :btree
   end
 
   create_table "failed_transactions", force: :cascade do |t|
@@ -133,7 +135,9 @@ ActiveRecord::Schema.define(version: 20170605053006) do
     t.string   "rejected_reason"
     t.string   "cancelled_reason"
     t.string   "channel"
+    t.integer  "product_id"
     t.index ["po_id"], name: "index_purchase_orders_on_po_id", using: :btree
+    t.index ["product_id"], name: "index_purchase_orders_on_product_id", using: :btree
   end
 
   create_table "purchased_products", force: :cascade do |t|
@@ -1156,11 +1160,37 @@ ActiveRecord::Schema.define(version: 20170605053006) do
     t.index ["kind"], name: "index_spree_zones_on_kind", using: :btree
   end
 
+  create_table "stocks", force: :cascade do |t|
+    t.integer  "product_id"
+    t.integer  "store_house_id"
+    t.integer  "quantity"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+    t.index ["product_id"], name: "index_stocks_on_product_id", using: :btree
+    t.index ["store_house_id"], name: "index_stocks_on_store_house_id", using: :btree
+  end
+
+  create_table "store_houses", force: :cascade do |t|
+    t.string   "_id"
+    t.integer  "total_space"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.boolean  "despacho",    default: false
+    t.boolean  "recepcion",   default: false
+    t.boolean  "pulmon",      default: false
+    t.boolean  "otro",        default: false
+    t.index ["_id"], name: "index_store_houses_on__id", using: :btree
+  end
+
+  add_foreign_key "factory_orders", "products"
   add_foreign_key "ingredients", "products"
   add_foreign_key "pending_products", "products"
   add_foreign_key "product_in_sales", "producers"
   add_foreign_key "product_in_sales", "products"
+  add_foreign_key "purchase_orders", "products"
   add_foreign_key "purchased_products", "pending_products"
   add_foreign_key "purchased_products", "producers"
   add_foreign_key "purchased_products", "products"
+  add_foreign_key "stocks", "products"
+  add_foreign_key "stocks", "store_houses"
 end

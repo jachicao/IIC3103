@@ -5,21 +5,15 @@ class ProduceProductWorker
     # Do something
     puts 'Checking items to produce'
     if PendingProduct.all.size > 0
-      all_stock = StoreHouse.all_stock
-      if all_stock.nil?
-        return nil
-      end
       despacho_used_space = 0
       despacho_total_space = 0
       despachos = []
       not_despachos = []
-      all_stock.each do |store_house|
-        if store_house[:despacho]
-          despacho_total_space = store_house[:totalSpace]
+      StoreHouse.all.each do |store_house|
+        if store_house.despacho
+          despacho_total_space = store_house.total_space
+          despacho_used_space = store_house.used_space
           despachos.push(store_house)
-          store_house[:inventario].each do |p|
-            despacho_used_space += p[:total]
-          end
         else
           not_despachos.push(store_house)
         end
@@ -51,12 +45,12 @@ class ProduceProductWorker
               end
               space_required += ingredient_quantity
               total = 0
-              all_stock.each do |store_house|
-                store_house[:inventario].each do |p|
-                  if p[:sku] == purchased_product.product.sku
-                    total += p[:total]
-                    if store_house[:despacho]
-                      total_in_despacho += p[:total]
+              StoreHouse.all.each do |store_house|
+                store_house.stocks.each do |s|
+                  if s.product.sku == purchased_product.product.sku
+                    total += s.quantity
+                    if store_house.despacho
+                      total_in_despacho += s.quantity
                     end
                   end
                 end
@@ -79,11 +73,11 @@ class ProduceProductWorker
                   end
                 end
                 total_despacho = 0
-                all_stock.each do |store_house|
-                  store_house[:inventario].each do |p|
-                    if p[:sku] == purchased_product.product.sku
-                      if store_house[:despacho]
-                        total_despacho += p[:total]
+                StoreHouse.all.each do |store_house|
+                  store_house.stocks.each do |s|
+                    if s.product.sku == purchased_product.product.sku
+                      if store_house.despacho
+                        total_despacho += s.quantity
                       end
                     end
                   end

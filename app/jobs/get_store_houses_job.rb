@@ -14,14 +14,6 @@ class GetStoreHousesJob < ApplicationJob
   end
 
   def perform()
-    key = 'get_almacenes'
-    cache_response = $redis.get(key)
-    if cache_response != nil
-      return {
-          :body => JSON.parse(cache_response, symbolize_names: true),
-          :code => 200,
-      }
-    end
 
     response = get_almacenes
     #puts response
@@ -32,8 +24,6 @@ class GetStoreHousesJob < ApplicationJob
         return nil
     end
 
-    $redis.set(key, body.to_json)
-    $redis.expire(key, ENV['CACHE_EXPIRE_TIME'].to_i.seconds.to_i)
     return {
         :body => body,
         :code =>  response.code,

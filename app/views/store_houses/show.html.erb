@@ -1,52 +1,37 @@
 <p id="notice"><%= notice %></p>
 
-<% if @store_house != nil and @stock != nil %>
-  <p>
-    <strong>Id:</strong>
-    <%= @store_house[:_id] %>
-  </p>
+<p>
+  <strong>Id:</strong>
+  <%= @store_house.id %>
+</p>
 
-  <p>
-    <strong>Capacidad:</strong>
-    <%= @store_house[:totalSpace] %>
-  </p>
+  <strong>Disponible:</strong>
+  <%= @store_house.available_space %>
+</p>
 
-  <p>
-    <strong>Utilizado:</strong>
-    <%= @store_house[:usedSpace] %>
-  </p>
+<p>
+  <strong>Tipo:</strong>
+  <%= @store_house.type %>
+</p>
 
-  <p>
-    <strong>Disponible:</strong>
-    <%= @store_house[:availableSpace] %>
-  </p>
-
-  <p>
-    <strong>Tipo:</strong>
-    <%= @store_house[:type] %>
-  </p>
-
-  <h2>Inventario</h2>
-    <table>
-      <thead>
-      <tr>
-        <th>Producto</th>
-        <th>Total</th>
-      </tr>
-      </thead>
-      <tbody>
-        <% @stock.each do |p| %>
+<h2>Inventario</h2>
+<table>
+  <thead>
+  <tr>
+    <th>Producto</th>
+    <th>Total</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @store_house.stocks.each do |stock| %>
+      <% if stock.quantity > 0 %>
           <tr>
-            <td><%= Product.find_by(sku: p[:sku]).name %></td>
-            <td><%= p[:total] %></td>
+            <td><%= stock.product.name %></td>
+            <td><%= stock.quantity %></td>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-<% else %>
-    <p>
-      <strong>Servidor colapsado</strong>
-    </p>
-<% end %>
+      <% end %>
+  <% end %>
+  </tbody>
+</table>
 
 <%= link_to 'Back', store_houses_path %>

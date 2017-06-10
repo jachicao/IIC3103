@@ -8,7 +8,7 @@ class Api::ApiProductsController < Api::ApiController
     me = Producer.get_me
     me.product_in_sales.each do |product_in_sale|
       product = product_in_sale.product
-      result.push({ sku: product.sku, name: product.name, price: product_in_sale.price, stock: product.get_stock_available })
+      result.push({ sku: product.sku, name: product.name, price: product_in_sale.price, stock: product.stock_available })
     end
 
     return render json: result
@@ -20,7 +20,7 @@ class Api::ApiProductsController < Api::ApiController
     me = Producer.get_me
     me.product_in_sales.each do |product_in_sale|
       product = product_in_sale.product
-      result.push({ sku: product.sku, precio: product_in_sale.price, stock: product.get_stock_available })
+      result.push({ sku: product.sku, precio: product_in_sale.price, stock: product.stock_available })
     end
     return render json: result
   end

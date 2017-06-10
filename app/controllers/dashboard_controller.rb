@@ -10,7 +10,7 @@ class DashboardController < ApplicationController
       me = Producer.get_me
       me.product_in_sales.each do |product_in_sale|
         product = product_in_sale.product
-        result.push({ sku: product.sku, name: product.name, stock: product.get_stock, stock_available: product.get_stock_available })
+        result.push({ sku: product.sku, name: product.name, stock: product.stock, stock_available: product.stock_available })
       end
       return result
     end
