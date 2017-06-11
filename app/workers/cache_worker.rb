@@ -72,13 +72,20 @@ class CacheWorker
         end
       end
     end
+
     StoreHouse.all.each do |store_house|
       stock = get_stock(store_house._id)
-      stock.each do |p|
-        store_house.stocks.each do |s|
+      store_house.stocks.each do |s|
+        found = false
+        stock.each do |p|
           if s.product.sku == p[:_id]
             s.update(quantity: p[:total])
+            found = true
           end
+        end
+        if found
+        else
+          s.update(quantity: 0)
         end
       end
     end

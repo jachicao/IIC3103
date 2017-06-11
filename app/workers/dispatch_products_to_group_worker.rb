@@ -30,10 +30,10 @@ class DispatchProductsToGroupWorker
               if products != nil
                 products[:body].each do |p|
                   if quantity_left > 0
-                    internal_result = MoveProductInternallyJob.perform_now(p[:_id], store_house._id, despacho_id)
+                    internal_result = MoveProductInternallyJob.perform_now(sku, p[:_id], store_house._id, despacho_id)
                     if internal_result[:code] == 200
                       while true
-                        external_result = MoveProductExternallyJob.perform_now(p[:_id], despacho_id, to_store_house_id, po_id, price)
+                        external_result = MoveProductExternallyJob.perform_now(sku, p[:_id], despacho_id, to_store_house_id, po_id, price)
                         if external_result[:code] == 200
                           quantity_left -= 1
                           purchase_order.update(quantity_dispatched: purchase_order.quantity - quantity_left)

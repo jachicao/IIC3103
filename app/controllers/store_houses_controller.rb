@@ -21,16 +21,16 @@ class StoreHousesController < ApplicationController
   end
 
   def submit_move_internally
-    from_store_houses = StoreHouse.all.select { |v| v._id == params[:from_store_house_id] }
-    to_store_houses = StoreHouse.all.select { |v| v._id == params[:to_store_house_id] }
+    from_store_house_id = params[:from_store_house_id]
+    to_store_house_id = params[:to_store_house_id]
     quantity = params[:quantity].to_i
     sku = params[:sku]
-    result = StoreHouse.can_move_stock(from_store_houses, to_store_houses, sku, quantity)
+    result = StoreHouse.can_move_stock(from_store_house_id, to_store_house_id, sku, quantity)
     respond_to do |format|
       if result == nil
         format.html { redirect_to store_houses_path, notice: 'Servidor colapsado' }
       elsif result == true
-        StoreHouse.move_stock(from_store_houses, to_store_houses, sku, quantity)
+        StoreHouse.move_stock(from_store_house_id, to_store_house_id, sku, quantity)
         format.html { redirect_to store_houses_path, notice: 'Productos movidos exitosamente' }
       else
         format.html { redirect_to store_houses_path, notice: 'Cantidad excede stock' }

@@ -25,9 +25,6 @@ class CheckPurchaseOrdersWorker
         purchase_order.destroy
       end
     end
-    if ENV['DOCKER_RUNNING'].nil?
-      return
-    end
     PurchaseOrder.all.each do |purchase_order|
       if purchase_order.is_made_by_me
         case purchase_order.status

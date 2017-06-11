@@ -1,5 +1,5 @@
 class PendingProductsController < ApplicationController
-  before_action :set_pending_product, only: [:show]
+  before_action :set_pending_product, only: [:show, :destroy]
 
   def index
     @pending_products = PendingProduct.all
@@ -7,6 +7,13 @@ class PendingProductsController < ApplicationController
 
   def show
 
+  end
+
+  def destroy
+    @pending_product.destroy
+    respond_to do |format|
+      format.html { redirect_to :index, notice: 'Pending product was successfully destroyed.' }
+    end
   end
 
   private

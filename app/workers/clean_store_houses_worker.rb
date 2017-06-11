@@ -1,4 +1,4 @@
-class StoreHousesWorker
+class CleanStoreHousesWorker
   include Sidekiq::Worker
 
   def get_products(store_house_id, sku, limit)
@@ -6,7 +6,7 @@ class StoreHousesWorker
     while products.nil?
       products = GetProductStockJob.perform_now(store_house_id, sku, limit)
       if products.nil?
-        puts 'StoreHousesWorker: sleeping server-rate seconds'
+        puts 'CleanStoreHousesWorker: sleeping server-rate seconds'
         sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
       end
     end
@@ -30,21 +30,21 @@ class StoreHousesWorker
                   if to_total_space - to_used_space > 0 and from_used_space > 0 and from_p_total > 0
                     stock_left += [to_total_space - to_used_space, from_p_total].min
                     total_to_move = [to_total_space - to_used_space, from_p_total, 100].min
-                    puts 'StoreHousesWorker: Moviendo ' + total_to_move.to_s
+                    puts 'CleanStoreHousesWorker: Moviendo ' + total_to_move.to_s
                     products = get_products(from_store_house[:_id], from_p_sku, total_to_move)
                     if products[:body].count > 0
                       products[:body].each do |product|
                         if to_total_space - to_used_space > 0 and from_used_space > 0 and from_p_total > 0 and total_to_move > 0
-                          result = MoveProductInternallyJob.perform_now(product[:_id], from_store_house[:_id], to_store_house[:_id])
+                          result = MoveProductInternallyJob.perform_now(from_p_sku, product[:_id], from_store_house[:_id], to_store_house[:_id])
                           if result[:code] == 200
                             total_to_move -= 1
                             from_p_total -= 1
                             from_used_space -= 1
                             to_used_space += 1
                             stock_left -= 1
-                            puts 'StoreHousesWorker: quantity left ' + total_to_move.to_s
+                            puts 'CleanStoreHousesWorker: quantity left ' + total_to_move.to_s
                           elsif result[:code] == 429
-                            puts 'StoreHousesWorker: sleeping server-rate seconds'
+                            puts 'CleanStoreHousesWorker: sleeping server-rate seconds'
                             sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
                           else
                             puts result
@@ -74,7 +74,7 @@ class StoreHousesWorker
       return nil
     end
     $cleaning_store_houses = true
-    puts 'starting StoreHousesWorker'
+    puts 'starting CleanStoreHousesWorker'
     while true
       if move_stock == true
         break

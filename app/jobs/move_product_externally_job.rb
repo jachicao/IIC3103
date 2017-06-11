@@ -19,13 +19,21 @@ class MoveProductExternallyJob < ApplicationJob
       )
   end
 
-  def perform(producto_id, from_store_house_id, to_store_house_id, oc, precio)
+  def perform(sku, producto_id, from_store_house_id, to_store_house_id, oc, precio)
     $redis.del('obtener_orden_de_compra:' + oc)
     $redis.del('get_skus_with_stock:' + from_store_house_id)
     response = mover_stock_bodega(producto_id, to_store_house_id, oc, precio)
     puts 'Moviendo externamente'
     puts response.code
     #puts response.body
+    if response.code == 200
+      from_store_house = StoreHouse.find_by(_id: from_store_house_id)
+      from_store_house.stocks.each do |s|
+        if s.product.sku == sku
+          s.update(quantity: s.quantity - 1)
+        end
+      end
+    end
     body = JSON.parse(response.body, symbolize_names: true)
     return {
         :body => body,

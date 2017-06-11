@@ -27,10 +27,10 @@ class DispatchProductsToDirectionWorker
               if products != nil
                 products[:body].each do |p|
                   if quantity_left > 0
-                    internal_result = MoveProductInternallyJob.perform_now(p[:_id], store_house._id, despacho_id)
+                    internal_result = MoveProductInternallyJob.perform_now(sku, p[:_id], store_house._id, despacho_id)
                     if internal_result[:code] == 200
                       while true
-                        external_result = DispatchProductJob.perform_now(p[:_id], despacho_id, direction, price, po_id)
+                        external_result = DispatchProductJob.perform_now(sku, p[:_id], despacho_id, direction, price, po_id)
                         if external_result[:code] == 200
                           quantity_left -= 1
                           puts 'quantity left: ' + quantity_left.to_s

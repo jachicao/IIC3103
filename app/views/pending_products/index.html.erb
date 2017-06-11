@@ -7,7 +7,6 @@
   <tr>
     <th>Producto</th>
     <th>Cantidad</th>
-    <th>Purchased Products</th>
     <th colspan="1"></th>
   </tr>
   </thead>
@@ -17,8 +16,7 @@
       <tr>
         <td><%= pending_product.product.name %></td>
         <td><%= pending_product.quantity %></td>
-        <td><%= pending_product.purchased_products.size %></td>
-        <td><%= link_to 'Show', pending_product_path(pending_product.id) %></td>
+        <td><%= link_to 'Destroy', pending_product_path(pending_product.id), method: :delete, data: { confirm: '¿Estás segur@?' } %></td>
       </tr>
   <% end %>
   </tbody>

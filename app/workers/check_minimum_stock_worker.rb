@@ -94,6 +94,8 @@ class CheckMinimumStockWorker
       end
     end
 
+    puts my_products
+
     my_products.each do |p|
       product = Product.find_by(sku: p[:sku])
       product.analyze_min_stock(my_products, p[:quantity])

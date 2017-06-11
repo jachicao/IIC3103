@@ -28,35 +28,54 @@ class StoreHouse < ApplicationRecord
     return total_not_despacho
   end
 
-  def self.can_move_stock(from_store_houses, to_store_houses, sku, quantity)
+  def self.can_move_stock(from_store_house_id, to_store_house_id, sku, quantity)
     quantity_moved = 0
-    from_store_houses.each do |from_store_house|
-      from_store_house.stocks.each do |s|
-        if s.product.sku == sku
-          to_store_houses.each do |to_store_house|
-            available_space = to_store_house.available_space
-            if to_store_house.available_space > 0
-              quantity_moved += [available_space, s.quantity].min
-            end
-          end
+    from_store_house = StoreHouse.find_by(_id: from_store_house_id)
+    to_store_house = StoreHouse.find_by(_id: to_store_house_id)
+    from_store_house.stocks.each do |s|
+      if s.product.sku == sku
+        available_space = to_store_house.available_space
+        if available_space > 0
+          quantity_moved += [available_space, s.quantity].min
         end
       end
     end
     return quantity_moved >= quantity
   end
 
-  def self.move_stock(from_store_houses, to_store_houses, sku, quantity)
-    MoveProductsInternallyWorker.perform_async(from_store_houses, to_store_houses, sku, quantity)
+  def self.move_stock(from_store_house_id, to_store_house_id, sku, quantity)
+    MoveProductsInternallyWorker.perform_async(from_store_house_id, to_store_house_id, sku, quantity)
+  end
+
+  def self.move_stocks(from_store_houses, to_store_houses, sku, quantity)
+    quantity_left = quantity
+    to_store_houses.each do |to_store_house|
+      to_total_space = to_store_house.total_space
+      to_used_space = to_store_house.used_space
+      if to_total_space - to_used_space > 0
+        from_store_houses.each do |from_store_house|
+          from_store_house.stocks.each do |s|
+            if s.product.sku == sku and s.quantity > 0
+              limit = [to_total_space - to_used_space, s.quantity, quantity_left].min
+              self.move_stock(from_store_house._id, to_store_house._id, sku, limit)
+              quantity_left -= limit
+              to_used_space += limit
+            end
+          end
+        end
+      end
+    end
+    return quantity_left <= 0
   end
 
   def available_space
-    return self.total_space - used_space
+    return self.total_space - self.used_space
   end
 
   def used_space
     total = 0
-    self.stocks.each do |stock|
-      total += stock.quantity
+    self.stocks.each do |s|
+      total += s.quantity
     end
     return total
   end

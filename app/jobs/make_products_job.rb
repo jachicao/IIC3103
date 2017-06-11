@@ -32,9 +32,24 @@ class MakeProductsJob < ApplicationJob
         MakeProductsJob.set(wait: 90.seconds).perform_later(sku, cantidad, trx_id)
         return nil
     end
+
+    product = Product.find_by(sku: sku)
+    unit_lote = (cantidad.to_f / product.lote.to_f).ceil
+    product.ingredients.each do |ingredient|
+      StoreHouse.all.each do |store_house|
+        if store_house.despacho
+          store_house.stocks.each do |s|
+            if s.product.sku == sku
+              s.update(quantity: s.quantity - unit_lote * ingredient.quantity)
+            end
+          end
+        end
+      end
+    end
+
     FactoryOrder.create(
         fo_id: body[:_id],
-        product: Product.find_by(sku: body[:sku]),
+        product: product,
         quantity: body[:cantidad],
         available: DateTime.parse(body[:disponible]),
     )

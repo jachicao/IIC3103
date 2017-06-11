@@ -40,15 +40,13 @@ class Product < ApplicationRecord
         end
       end
     end
-    PurchaseOrder.all.each do |purchase_order|
+    self.purchase_orders.each do |purchase_order|
       if purchase_order.is_made_by_me
       else
         if purchase_order.dispatched
         else
           if purchase_order.status == 'aceptada'
-            if purchase_order.sku == self.sku
-              total -= (purchase_order.quantity - purchase_order.quantity_dispatched)
-            end
+            total -= (purchase_order.quantity - purchase_order.quantity_dispatched)
           end
         end
       end

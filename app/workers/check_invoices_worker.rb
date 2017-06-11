@@ -19,9 +19,6 @@ class CheckInvoicesWorker
         invoice.destroy
       end
     end
-    if ENV['DOCKER_RUNNING'].nil?
-      return
-    end
     Invoice.all.each do |invoice|
       if invoice.is_bill
       else
