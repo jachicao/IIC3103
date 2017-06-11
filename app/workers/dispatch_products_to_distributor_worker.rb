@@ -1,5 +1,6 @@
 class DispatchProductsToDistributorWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'low'
 
   def perform(po_id)
     puts 'starting DDispatchProductsToDistributorWorker'

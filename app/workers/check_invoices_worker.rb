@@ -1,7 +1,11 @@
 class CheckInvoicesWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'default'
 
   def perform(*args)
+    if true
+      return nil
+    end
     Invoice.all.each do |invoice|
       server = GetInvoiceJob.perform_now(invoice._id)
       if server[:code] == 200

@@ -1,5 +1,6 @@
 class CleanStoreHousesWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'low'
 
   def get_products(store_house_id, sku, limit)
     products = nil

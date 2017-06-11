@@ -1,5 +1,6 @@
 class UpdatePurchaseOrdersStatusWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'critical'
 
   def perform(*args)
     if $updating_purchase_orders != nil

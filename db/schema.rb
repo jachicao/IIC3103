@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170611044253) do
+ActiveRecord::Schema.define(version: 20170611051624) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -95,8 +95,9 @@ ActiveRecord::Schema.define(version: 20170611044253) do
     t.integer  "product_id"
     t.integer  "price"
     t.decimal  "average_time"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.integer  "stock",        default: 0
     t.index ["producer_id"], name: "index_product_in_sales_on_producer_id", using: :btree
     t.index ["product_id"], name: "index_product_in_sales_on_product_id", using: :btree
   end

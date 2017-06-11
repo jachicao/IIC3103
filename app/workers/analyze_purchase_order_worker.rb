@@ -1,5 +1,6 @@
 class AnalyzePurchaseOrderWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'default'
 
   def buy(result)
     product = Product.find_by(sku: result[:sku])

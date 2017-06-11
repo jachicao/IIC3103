@@ -1,5 +1,6 @@
 class UpdateGroupsStockWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'default'
 
   def perform(*args)
     Producer.all.each do |producer|

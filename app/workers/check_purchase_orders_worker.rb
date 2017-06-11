@@ -2,6 +2,9 @@ class CheckPurchaseOrdersWorker
   include Sidekiq::Worker
 
   def perform(*args)
+    if ENV['DOCKER_RUNNING'].nil?
+      return
+    end
     PurchaseOrder.all.each do |purchase_order|
       if purchase_order.is_made_by_me
         if purchase_order.is_created

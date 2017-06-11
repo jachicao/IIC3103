@@ -1,5 +1,6 @@
 class CacheWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'critical'
 
   def perform(*args)
     store_houses_response = GetStoreHousesJob.perform_now

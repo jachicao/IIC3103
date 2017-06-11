@@ -1,5 +1,6 @@
 class DispatchProductsToDirectionWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'low'
 
   def perform(direction, sku, quantity, po_id, price)
     puts 'starting DispatchProductsToDirectionWorker'

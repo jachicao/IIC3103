@@ -1,5 +1,6 @@
 class MoveProductsInternallyWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'low'
 
   def get_products(id, sku, limit)
     products = nil

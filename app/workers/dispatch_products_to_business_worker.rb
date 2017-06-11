@@ -1,5 +1,6 @@
 class DispatchProductsToBusinessWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'low'
 
   def perform(to_store_house_id, po_id)
     puts 'starting DispatchProductsToBusinessWorker'

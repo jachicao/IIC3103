@@ -3,6 +3,7 @@ require 'json'
 
 class CheckFtpPurchaseOrdersWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'default'
 
   def perform(*args)
     if $checking_ftp_purchase_orders != nil
