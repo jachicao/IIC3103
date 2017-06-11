@@ -14,8 +14,8 @@ class GetInvoiceJob < ApplicationJob
 
   def perform(id)
     response = get_factura(id)
-    puts response.body
-    puts response.code
+    #puts response.body
+    #puts response.code
 
     body = JSON.parse(response.body, symbolize_names: true)
     if body.kind_of?(Array)

@@ -14,21 +14,24 @@ class CheckFtpPurchaseOrdersWorker
               str = str.concat(line)
             end
             parse = JSON.parse(Hash.from_xml(str).to_json, symbolize_names: true)
+            puts parse
             po_id = parse[:order][:id]
             purchase_order = PurchaseOrder.find_by(po_id: po_id)
             if purchase_order.nil?
               server = GetPurchaseOrderJob.perform_now(parse[:order][:id])
-              body = server[:body]
-              PurchaseOrder.create(po_id: body[:_id],
-                                client_id: body[:cliente],
-                                supplier_id: body[:proveedor],
-                                delivery_date: DateTime.parse(body[:fechaEntrega]),
-                                unit_price: body[:precioUnitario],
-                                product: Product.find_by(sku: body[:sku]),
-                                quantity: body[:cantidad],
-                                status: body[:estado],
-                                channel: body[:canal]
-              )
+              if server[:code] == 200
+                body = server[:body]
+                PurchaseOrder.create(po_id: body[:_id],
+                                     client_id: body[:cliente],
+                                     supplier_id: body[:proveedor],
+                                     delivery_date: DateTime.parse(body[:fechaEntrega]),
+                                     unit_price: body[:precioUnitario],
+                                     product: Product.find_by(sku: body[:sku]),
+                                     quantity: body[:cantidad],
+                                     status: body[:estado],
+                                     channel: body[:canal]
+                )
+              end
             end
           end
         end

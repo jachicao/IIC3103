@@ -26,10 +26,12 @@ class MakeProductsJob < ApplicationJob
     puts response.body
     puts response.code
     case response.code
-      when 400..404
-        return nil
+      when 200
+
       when 429
         MakeProductsJob.set(wait: 90.seconds).perform_later(sku, cantidad, trx_id)
+        return nil
+      else
         return nil
     end
 
