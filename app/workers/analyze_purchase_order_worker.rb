@@ -42,16 +42,16 @@ class AnalyzePurchaseOrderWorker
               end
               purchase_order.accept
             else
-              purchase_order.reject_purchase_order('Tiempo insuficiente')
+              purchase_order.reject('Tiempo insuficiente')
             end
           else
-            purchase_order.reject_purchase_order('Stock insuficiente')
+            purchase_order.reject('Stock insuficiente')
           end
         else
-          purchase_order.reject_purchase_order('Precio incorrecto')
+          purchase_order.reject('Precio incorrecto')
         end
       else
-        purchase_order.reject_purchase_order('SKU incorrecto')
+        purchase_order.reject('SKU incorrecto')
       end
     else
       purchase_order.reject('Proveedor incorrecto')
