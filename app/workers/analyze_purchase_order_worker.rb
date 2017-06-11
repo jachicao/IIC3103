@@ -30,7 +30,7 @@ class AnalyzePurchaseOrderWorker
   def perform(po_id)
     purchase_order = PurchaseOrder.find_by(po_id: po_id)
     if purchase_order.supplier_id == ENV['GROUP_ID']
-      my_product_in_sale = ProductInSale.get_my_product_in_sale(purchase_order.sku)
+      my_product_in_sale = ProductInSale.get_my_product_in_sale(purchase_order.product.sku)
       if my_product_in_sale != nil
         if purchase_order.unit_price >= my_product_in_sale.price
           product = my_product_in_sale.product
@@ -40,7 +40,7 @@ class AnalyzePurchaseOrderWorker
               if result[:buy]
                 buy(result)
               end
-              purchase_order.accept_purchase_order
+              purchase_order.accept
             else
               purchase_order.reject_purchase_order('Tiempo insuficiente')
             end
@@ -54,7 +54,7 @@ class AnalyzePurchaseOrderWorker
         purchase_order.reject_purchase_order('SKU incorrecto')
       end
     else
-      purchase_order.reject_purchase_order('Proveedor incorrecto')
+      purchase_order.reject('Proveedor incorrecto')
     end
   end
 end

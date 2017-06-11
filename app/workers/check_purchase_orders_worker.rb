@@ -2,21 +2,15 @@ class CheckPurchaseOrdersWorker
   include Sidekiq::Worker
 
   def perform(*args)
+
     PurchaseOrder.all.each do |purchase_order|
       server = GetPurchaseOrderJob.perform_now(purchase_order.po_id)
       if server[:code] == 200
         body = server[:body]
         if body != nil
-          purchase_order.update(client_id: body[:cliente],
-                                supplier_id: body[:proveedor],
-                                delivery_date: DateTime.parse(body[:fechaEntrega]),
-                                unit_price: body[:precioUnitario],
-                                sku: body[:sku],
-                                quantity: body[:cantidad],
-                                status: body[:estado],
+          purchase_order.update(status: body[:estado],
                                 rejected_reason: body[:rechazo],
                                 cancelled_reason: body[:anulacion],
-                                channel: body[:canal],
           )
         else
           purchase_order.destroy
@@ -27,53 +21,37 @@ class CheckPurchaseOrdersWorker
     end
     PurchaseOrder.all.each do |purchase_order|
       if purchase_order.is_made_by_me
-        case purchase_order.status
-          when 'aceptada'
-            case purchase_order.payment_method
-              when 'contra_factura'
-                invoice = purchase_order.get_not_rejected_invoice
-                if invoice != nil
-                  if invoice.paid
-                  else
-                    invoice.pay
-                  end
-                end
-            end
-          when 'finalizada'
-            case purchase_order.payment_method
-              when 'contra_despacho'
-                invoice = purchase_order.get_not_rejected_invoice
-                if invoice != nil
-                  if invoice.paid
-                  else
-                    invoice.pay
-                  end
-                end
-            end
-          when 'rechazada'
-            purchase_order.destroy_purchase_order('Rejected by group')
-          when 'anulada'
-            purchase_order.destroy
+        if purchase_order.is_created
+        elsif purchase_order.is_accepted
+          case purchase_order.payment_method
+            when 'contra_factura'
+              purchase_order.pay_invoice
+          end
+        elsif purchase_order.is_rejected
+          #purchase_order.destroy_purchase_order('Rejected by group')
+        elsif purchase_order.is_cancelled
+          purchase_order.destroy
+        elsif purchase_order.is_completed
+          purchase_order.pay_invoice
         end
       else
-        case purchase_order.status
-          when 'aceptada'
-            if purchase_order.dispatched
+        if purchase_order.is_created
+          purchase_order.analyze
+        elsif purchase_order.is_accepted
+          if purchase_order.dispatched
+          else
+            if purchase_order.sending
             else
-              if purchase_order.sending
-              else
-                analysis = purchase_order.analyze_stock_to_dispatch
-                if analysis != nil
-                  if analysis <= 0
-                    purchase_order.dispatch_order
-                  end
-                end
+              if purchase_order.product.stock - purchase_order.product.stock_in_despacho >= purchase_order.quantity
+                purchase_order.dispatch_order
               end
             end
-          when 'rechazada'
-            purchase_order.destroy
-          when 'anulada'
-            purchase_order.destroy
+          end
+        elsif purchase_order.is_rejected
+          #purchase_order.destroy
+        elsif purchase_order.is_cancelled
+          purchase_order.destroy
+        elsif purchase_order.is_completed
         end
       end
     end

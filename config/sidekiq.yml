@@ -23,6 +23,9 @@
   min_stock:
     cron: '0 0 * * * *'       # Runs every hour
     class: CheckMinimumStockWorker
+  check_ftp:
+    cron: '0 */5 * * * *'    # Runs every 5 minutes
+    class: CheckFtpPurchaseOrdersWorker
   pending_products:
     cron: '0 */5 * * * *'    # Runs every 5 minutes
     class: ProduceProductWorker

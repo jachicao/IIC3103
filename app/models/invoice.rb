@@ -29,16 +29,19 @@ class Invoice < ApplicationRecord
         }
     end
     body = server[:body]
-    group = CreateGroupInvoiceJob.perform_now(po_id, purchase_order.get_client.group_number, Bank.get_bank_id)
-    case group[:code]
-      when 200..226
-      else
-        self.cancel_invoice(body[:_id], 'Rejected by group')
-        return {
-            :success => false,
-            :server => server,
-            :group => group,
-        }
+    group = nil
+    if purchase_order.is_b2b
+      group = CreateGroupInvoiceJob.perform_now(po_id, purchase_order.get_client_group_number, Bank.get_bank_id)
+      case group[:code]
+        when 200..226
+        else
+          #self.cancel_invoice(body[:_id], 'Rejected by group')
+          #return {
+          #    :success => false,
+          #    :server => server,
+          #    :group => group,
+          #}
+      end
     end
 
     Invoice.create( #TODO
@@ -93,6 +96,7 @@ class Invoice < ApplicationRecord
   def pay
     if self.paid
     else
+      self.update(paid: true)
       transaction = nil
       purchase_order = get_purchase_order
       amount = purchase_order.quantity * purchase_order.unit_price
@@ -101,7 +105,6 @@ class Invoice < ApplicationRecord
       end
       server = NotifyPaymentServerInvoiceJob.perform_now(self._id)
       group = NotifyPaymentGroupInvoiceJob.perform_now(self._id, get_supplier.group_number, transaction[:body][:_id])
-      self.update(paid: true)
       return {
           :server => server,
           :group => group,
@@ -124,4 +127,19 @@ class Invoice < ApplicationRecord
     return !self.get_purchase_order.is_made_by_me
   end
 
+  def is_pending
+    return self.status == 'pendiente'
+  end
+
+  def is_paid
+    return self.status == 'pagado'
+  end
+
+  def is_cancelled
+    return self.status == 'anulada'
+  end
+
+  def is_rejected
+    return self.status == 'rechazada'
+  end
 end

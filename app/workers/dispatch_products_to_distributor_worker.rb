@@ -1,14 +1,8 @@
-class DispatchProductsToGroupWorker
+class DispatchProductsToDistributorWorker
   include Sidekiq::Worker
 
-  def perform(to_store_house_id, po_id)
-    puts 'starting DispatchProductsToGroupWorker'
-    purchase_order = PurchaseOrder.find_by(po_id: po_id)
-
-    quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
-    price = purchase_order.unit_price
-    sku = purchase_order.product.sku
-
+  def perform(po_id)
+    puts 'starting DDispatchProductsToDistributorWorker'
     store_houses = StoreHouse.all
     despacho_id = nil
 
@@ -17,6 +11,11 @@ class DispatchProductsToGroupWorker
         despacho_id = store_house._id
       end
     end
+    purchase_order = PurchaseOrder.find_by(po_id: po_id)
+    quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
+    direction = purchase_order.client_id
+    sku = purchase_order.product.sku
+    price = purchase_order.unit_price
 
     while quantity_left > 0
       store_houses.each do |store_house|
@@ -33,19 +32,19 @@ class DispatchProductsToGroupWorker
                     internal_result = MoveProductInternallyJob.perform_now(sku, p[:_id], store_house._id, despacho_id)
                     if internal_result[:code] == 200
                       while true
-                        external_result = MoveProductExternallyJob.perform_now(sku, p[:_id], despacho_id, to_store_house_id, po_id, price)
+                        external_result = DispatchProductJob.perform_now(sku, p[:_id], despacho_id, direction, price, po_id)
                         if external_result[:code] == 200
                           quantity_left -= 1
                           purchase_order.update(quantity_dispatched: purchase_order.quantity - quantity_left)
                           puts 'quantity left: ' + quantity_left.to_s
                           break
                         elsif external_result[:code] == 429
-                          puts 'DispatchProductsToGroupWorker: sleeping server-rate seconds'
+                          puts 'DispatchProductsToDistributorWorker: sleeping server-rate seconds'
                           sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
                         end
                       end
                     elsif internal_result[:code] == 429
-                      puts 'DispatchProductsToGroupWorker: sleeping server-rate seconds'
+                      puts 'DispatchProductsToDistributorWorker: sleeping server-rate seconds'
                       sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
                       break
                     else
@@ -54,7 +53,7 @@ class DispatchProductsToGroupWorker
                   end
                 end
               else
-                puts 'DispatchProductsToGroupWorker: sleeping server-rate seconds'
+                puts 'DispatchProductsToDistributorWorker: sleeping server-rate seconds'
                 sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
               end
             end
@@ -62,6 +61,5 @@ class DispatchProductsToGroupWorker
         end
       end
     end
-    purchase_order.confirm_dispatched
   end
 end

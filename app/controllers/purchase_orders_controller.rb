@@ -1,5 +1,5 @@
 class PurchaseOrdersController < ApplicationController
-  before_action :set_purchase_order, only: [:show, :accept, :reject, :destroy, :dispatch_product, :create_invoice]
+  before_action :set_purchase_order, only: [:show, :accept, :reject, :destroy, :create_invoice]
 
   # GET /purchase_orders
   # GET /purchase_orders.json
@@ -15,22 +15,8 @@ class PurchaseOrdersController < ApplicationController
   def show
   end
 
-  def dispatch_product
-    result = @purchase_order.analyze_stock_to_dispatch
-    respond_to do |format|
-      if result == nil
-        format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Servidor colapsado' }
-      elsif result > 0
-        format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Falta ' + result.to_s + ' de ' + @purchase_order.product.name }
-      else
-        @purchase_order.dispatch_order
-        format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Purchase order was successfully dispatched.' }
-      end
-    end
-  end
-
   def accept
-    result = @purchase_order.accept_purchase_order
+    result = @purchase_order.accept
     respond_to do |format|
       if result[:server][:code] == 200
         format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Purchase order was successfully accepted.' }
@@ -41,7 +27,7 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def reject
-    result = @purchase_order.reject_purchase_order('causa')
+    result = @purchase_order.reject('causa')
     respond_to do |format|
       if result[:server][:code] == 200
         format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Purchase order was successfully rejected.' }

@@ -10,9 +10,8 @@ Rails.application.routes.draw do
   mount Spree::Core::Engine, at: '/spree/'
 
   resources :purchase_orders, only: [:index, :show, :destroy]
-  patch '/purchase_orders/:id/accept', to: 'purchase_orders#accept', :as => :accept_purchase_order
-  patch '/purchase_orders/:id/reject', to: 'purchase_orders#reject', :as => :reject_purchase_order
-  patch '/purchase_orders/:id/dispatch_product', to: 'purchase_orders#dispatch_product', :as => :dispatch_purchase_order
+  patch '/purchase_orders/:id/accept', to: 'purchase_orders#accept', :as => :accept
+  patch '/purchase_orders/:id/reject', to: 'purchase_orders#reject', :as => :reject
   patch '/purchase_orders/:id/create_invoice', to: 'purchase_orders#create_invoice', :as => :create_invoice_purchase_order
 
   get '/store_houses/move_internally', to: 'store_houses#move_internally', :as => :move_internally_store_house

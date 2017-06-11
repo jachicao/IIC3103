@@ -55,6 +55,16 @@ class Product < ApplicationRecord
     return total
   end
 
+  def stock_in_despacho
+    total = 0
+    self.stocks.each do |s|
+      if s.store_house.despacho
+        total += s.quantity
+      end
+    end
+    return total
+  end
+
   def get_max_production(quantity)
     total_not_despacho = StoreHouse.get_stock_total_not_despacho(sku)
     if total_not_despacho.nil?

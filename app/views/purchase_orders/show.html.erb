@@ -3,12 +3,12 @@
 
 <p>
   <strong>Grupo Cliente:</strong>
-  <%= @purchase_order.get_client.group_number %>
+  <%= @purchase_order.get_client %>
 </p>
 
 <p>
   <strong>Grupo Proveedor:</strong>
-  <%= @purchase_order.get_supplier.group_number %>
+  <%= @purchase_order.supplier_id %>
 </p>
 
 <p>

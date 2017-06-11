@@ -10,14 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170610044323) do
+ActiveRecord::Schema.define(version: 20170611021333) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "factory_orders", force: :cascade do |t|
     t.string   "fo_id"
-    t.string   "sku"
     t.datetime "available"
     t.integer  "quantity"
     t.integer  "product_id"
@@ -68,7 +67,6 @@ ActiveRecord::Schema.define(version: 20170610044323) do
     t.integer  "spree_order_id"
     t.string   "bank_id"
     t.boolean  "paid",             default: false
-    t.boolean  "rejected",         default: false
     t.string   "status"
     t.string   "rejected_reason"
     t.string   "cancelled_reason"
@@ -119,12 +117,11 @@ ActiveRecord::Schema.define(version: 20170610044323) do
     t.string   "po_id"
     t.string   "payment_method"
     t.string   "store_reception_id"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
     t.boolean  "own"
     t.boolean  "dispatched"
     t.boolean  "sending"
-    t.string   "sku"
     t.integer  "quantity"
     t.string   "client_id"
     t.string   "supplier_id"
@@ -136,6 +133,7 @@ ActiveRecord::Schema.define(version: 20170610044323) do
     t.string   "cancelled_reason"
     t.string   "channel"
     t.integer  "product_id"
+    t.boolean  "analyzing",           default: false
     t.index ["po_id"], name: "index_purchase_orders_on_po_id", using: :btree
     t.index ["product_id"], name: "index_purchase_orders_on_product_id", using: :btree
   end

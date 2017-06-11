@@ -27,12 +27,17 @@ API_URL_GROUP_6: ""
 API_URL_GROUP_7: "/api"
 API_URL_GROUP_8: ""
 
+FTP_USERNAME: "grupo1"
+FTP_PURCHASE_ORDERS_FOLDER: "pedidos"
+
 development:
   GROUP_ID: "590baa00d6b4ec0004902462"
   BANK_ID: "590baa00d6b4ec000490246a"
   STORE_HOUSE_PASSWORD: "KtXf8DcNeN$I5::"
   ONLINE_PASSWORD: "1Y74E9AQ"
   CENTRAL_SERVER_URL: "https://integracion-2017-dev.herokuapp.com"
+  FTP_SERVER_URL: "integra17dev.ing.puc.cl"
+  FTP_PASSWORD: "H72wu5fpYMrUGa9b"
   GROUPS_SERVER_URL: "http://dev.integra17-%d.ing.puc.cl"
 
 production:
@@ -41,4 +46,6 @@ production:
   STORE_HOUSE_PASSWORD: "zlSaZW5lbqAjhy8"
   ONLINE_PASSWORD: "KC5;Pt2l"
   CENTRAL_SERVER_URL: "https://integracion-2017-prod.herokuapp.com"
+  FTP_SERVER_URL: "integra17.ing.puc.cl"
+  FTP_PASSWORD: "p7T4uNY3yqdDB8sS"
   GROUPS_SERVER_URL: "http://integra17-%d.ing.puc.cl"

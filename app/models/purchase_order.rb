@@ -97,26 +97,27 @@ class PurchaseOrder < ApplicationRecord
     return GetPurchaseOrderJob.perform_now(po_id)
   end
 
-  def analyze_stock_to_dispatch
-    total = StoreHouse.get_stock_total_not_despacho(self.sku)
-    if total.nil?
-      return nil
-    end
-    if total >= self.quantity
-      return 0
+  def analyze
+    if self.analyzing
     else
-      return self.quantity - total
+      self.update(analyzing: true)
+      AnalyzePurchaseOrderWorker.perform_async(self.po_id)
     end
   end
 
   def dispatch_order
     if self.sending
     else
-      if self.payment_method == 'contra_factura'
-        self.create_invoice
-      end
-      DispatchProductsToGroupWorker.perform_async(self.store_reception_id, self.po_id)
       self.update(sending: true)
+      if self.is_ftp
+        self.create_invoice
+        DispatchProductsToDistributorWorker.perform_async(self.po_id)
+      elsif self.is_b2b
+        if self.payment_method == 'contra_factura'
+          self.create_invoice
+        end
+        DispatchProductsToBusinessWorker.perform_async(self.store_reception_id, self.po_id)
+      end
     end
   end
 
@@ -124,36 +125,52 @@ class PurchaseOrder < ApplicationRecord
     if self.dispatched
     else
       self.update(dispatched: true)
-      if self.payment_method == 'contra_despacho'
-        self.create_invoice
-      end
-      invoice = self.get_not_rejected_invoice
-      if invoice != nil
-        self.get_not_rejected_invoice.notify_dispatch
+      if self.is_b2b
+        if self.payment_method == 'contra_despacho'
+          self.create_invoice
+        end
+        invoice = self.get_invoice
+        if invoice != nil
+          invoice.notify_dispatch
+        end
       end
     end
   end
 
   def get_client
-    return Producer.find_by(producer_id: self.client_id)
+    producer = Producer.find_by(producer_id: self.client_id)
+    if producer != nil
+      return producer.group_number
+    end
+    return self.client_id
   end
 
-  def get_supplier
-    return Producer.find_by(producer_id: self.supplier_id)
+  def get_client_group_number
+    producer = Producer.find_by(producer_id: self.client_id)
+    if producer != nil
+      return producer.group_number
+    end
+    return -1
   end
 
-  def accept_purchase_order
+  def accept
     server = AcceptServerPurchaseOrderJob.perform_now(self.po_id)
-    group = AcceptGroupPurchaseOrderJob.perform_now(get_client.group_number, self.po_id)
+    group = nil
+    if self.is_b2b
+      group = AcceptGroupPurchaseOrderJob.perform_now(get_client_group_number, self.po_id)
+    end
     return {
         :server => server,
         :group => group,
     }
   end
 
-  def reject_purchase_order(causa)
+  def reject(causa)
     server = RejectServerPurchaseOrderJob.perform_now(self.po_id, causa)
-    group = RejectGroupPurchaseOrderJob.perform_now(get_client.group_number, self.po_id, causa)
+    group = nil
+    if self.is_b2b
+      group = RejectGroupPurchaseOrderJob.perform_now(get_client_group_number, self.po_id, causa)
+    end
     return {
         :server => server,
         :group => group,
@@ -161,11 +178,11 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def destroy_purchase_order(causa)
-    self.cancel_purchase_order(causa)
+    self.cancel(causa)
     self.destroy
   end
 
-  def cancel_purchase_order(causa)
+  def cancel(causa)
     return CancelServerPurchaseOrderJob.perform_now(self.po_id, causa)
   end
 
@@ -177,17 +194,46 @@ class PurchaseOrder < ApplicationRecord
     return Invoice.where(po_id: self.po_id)
   end
 
-  def get_not_rejected_invoice
-    self.get_invoices.each do |invoice|
-      if invoice.rejected
-      else
-        return invoice
-      end
+  def get_invoice
+    return Invoice.find_by(po_id: self.po_id)
+  end
+
+  def pay_invoice
+    invoice = self.get_invoice
+    if invoice != nil
+      invoice.pay
     end
-    return nil
   end
 
   def is_made_by_me
     return self.client_id == ENV['GROUP_ID']
+  end
+
+  def is_b2b
+    return self.channel == 'b2b'
+  end
+
+  def is_ftp
+    return self.channel == 'ftp'
+  end
+
+  def is_created
+    return self.status == 'aceptada'
+  end
+
+  def is_accepted
+    return self.status == 'aceptada'
+  end
+
+  def is_completed
+    return self.status == 'finalizada'
+  end
+
+  def is_rejected
+    return self.status == 'rechazada'
+  end
+
+  def is_cancelled
+    return self.status == 'anulada'
   end
 end

@@ -43,7 +43,6 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
                                               channel: body[:canal]
                                             })
         if @purchase_order.save
-          AnalyzePurchaseOrderWorker.perform_async(body[:_id])
           return render :json => { :success => true }
         else
           return render :json => { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity

@@ -53,7 +53,7 @@ class CheckMinimumStockWorker
     FactoryOrder.all.each do |factory_order|
       if DateTime.current <= factory_order.available
         my_products.each do |product|
-          if factory_order.sku == product[:sku]
+          if factory_order.product.sku == product[:sku]
             product[:stock] += factory_order.quantity
           end
         end
@@ -83,7 +83,7 @@ class CheckMinimumStockWorker
         if purchase_order.dispatched
         else
           if purchase_order.status == 'aceptada'
-            sku = purchase_order.sku
+            sku = purchase_order.product.sku
             my_products.each do |product|
               if sku == product[:sku]
                 product[:stock] -= (purchase_order.quantity - purchase_order.quantity_dispatched)
