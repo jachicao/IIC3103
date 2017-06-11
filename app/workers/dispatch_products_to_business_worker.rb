@@ -13,7 +13,6 @@ class DispatchProductsToBusinessWorker
     end
     purchase_order = PurchaseOrder.find_by(po_id: po_id)
     quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
-    direction = purchase_order.client_id
     sku = purchase_order.product.sku
     price = purchase_order.unit_price
 

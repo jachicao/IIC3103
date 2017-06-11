@@ -68,16 +68,44 @@ class Invoice < ApplicationRecord
     return CancelServerInvoiceJob.perform_now(id, reason)
   end
 
+  def get_supplier_group_number
+    producer = Producer.find_by(producer_id: self.supplier_id)
+    if producer != nil
+      return producer.group_number
+    end
+    return -1
+  end
+
+  def get_client_group_number
+    producer = Producer.find_by(producer_id: self.client_id)
+    if producer != nil
+      return producer.group_number
+    end
+    return -1
+  end
+
   def get_supplier
-    return Producer.find_by(producer_id: self.supplier_id)
+    producer = Producer.find_by(producer_id: self.supplier_id)
+    if producer != nil
+      return producer.group_number
+    end
+    return self.supplier_id
   end
 
   def get_client
-    return Producer.find_by(producer_id: self.client_id)
+    producer = Producer.find_by(producer_id: self.client_id)
+    if producer != nil
+      return producer.group_number
+    end
+    return self.client_id
   end
 
   def accept
-    group = AcceptGroupInvoiceJob.perform_now(self._id, get_supplier.group_number)
+    purchase_order = self.get_purchase_order
+    group = nil
+    if purchase_order != nil and purchase_order.is_b2b
+      group = AcceptGroupInvoiceJob.perform_now(self._id, get_supplier_group_number)
+    end
     return {
         :group => group
     }
@@ -85,8 +113,11 @@ class Invoice < ApplicationRecord
 
   def reject(reason)
     server = RejectServerInvoiceJob.perform_now(self._id, reason)
-    group = RejectGroupInvoiceJob.perform_now(self._id, get_supplier.group_number, reason)
-    self.update(rejected: true)
+    group = nil
+    purchase_order = self.get_purchase_order
+    if purchase_order != nil and purchase_order.is_b2b
+      group = RejectGroupInvoiceJob.perform_now(self._id, get_supplier_group_number, reason)
+    end
     return {
         :server => server,
         :group => group,
@@ -97,14 +128,17 @@ class Invoice < ApplicationRecord
     if self.paid
     else
       self.update(paid: true)
-      transaction = nil
-      purchase_order = get_purchase_order
+      purchase_order = self.get_purchase_order
       amount = purchase_order.quantity * purchase_order.unit_price
+      transaction = nil
       while transaction.nil?
         transaction = Bank.transfer_money(self.bank_id, amount)
       end
       server = NotifyPaymentServerInvoiceJob.perform_now(self._id)
-      group = NotifyPaymentGroupInvoiceJob.perform_now(self._id, get_supplier.group_number, transaction[:body][:_id])
+      group = nil
+      if purchase_order.is_b2b
+        group = NotifyPaymentGroupInvoiceJob.perform_now(self._id, get_supplier_group_number, transaction[:body][:_id])
+      end
       return {
           :server => server,
           :group => group,
@@ -113,7 +147,11 @@ class Invoice < ApplicationRecord
   end
 
   def notify_dispatch
-    group = NotifyDispatchGroupInvoiceJob.perform_now(self._id, get_client.group_number)
+    purchase_order = self.get_purchase_order
+    group = nil
+    if purchase_order != nil and purchase_order.is_b2b
+      group = NotifyDispatchGroupInvoiceJob.perform_now(self._id, get_client_group_number)
+    end
     return {
         :group => group
     }
