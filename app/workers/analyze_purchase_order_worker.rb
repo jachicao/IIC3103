@@ -11,7 +11,7 @@ class AnalyzePurchaseOrderWorker
     if result[:buy] and result[:success]
       my_product_in_sale = product.get_my_product_sale
       if my_product_in_sale != nil
-        if my_product_in_sale.ingredients.size > 0
+        if product.ingredients.size > 0
           product.produce(result[:quantity])
         else
           product.buy_to_factory(result[:quantity])
