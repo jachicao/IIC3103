@@ -52,7 +52,7 @@ class Product < ApplicationRecord
       end
     end
 
-    return total
+    return [total, 0].max
   end
 
   def stock_in_despacho
