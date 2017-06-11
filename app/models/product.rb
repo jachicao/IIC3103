@@ -354,7 +354,7 @@ class Product < ApplicationRecord
     end
     difference = quantity - self.stock_available
     if difference > 0
-      my_product_in_sale = get_my_product_sale
+      my_product_in_sale = self.get_my_product_sale
       if my_product_in_sale != nil
         if self.ingredients.size > 0
           unit_lote = (difference.to_f / self.lote.to_f).ceil

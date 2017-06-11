@@ -51,7 +51,7 @@ class CacheWorker
       end
 
       StoreHouse.all.each do |store_house|
-        stock_response = GetProductsWithStockJob.perform_now(store_house_id)
+        stock_response = GetProductsWithStockJob.perform_now(store_house._id)
         if stock_response != nil
           stock = stock_response[:body]
           store_house.stocks.each do |s|
