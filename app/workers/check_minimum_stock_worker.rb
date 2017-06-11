@@ -37,7 +37,7 @@ class CheckMinimumStockWorker
     #ordenes de compra hechas por mi
     PurchaseOrder.all.each do |purchase_order|
       if purchase_order.is_made_by_me
-        if purchase_order.status == 'creada' || purchase_order.status == 'aceptada'
+        if purchase_order.is_created || purchase_order.is_accepted
           sku = purchase_order.product.sku
           quantity = purchase_order.quantity
           my_products.each do |product|
@@ -82,7 +82,7 @@ class CheckMinimumStockWorker
       else
         if purchase_order.dispatched
         else
-          if purchase_order.status == 'aceptada'
+          if purchase_order.is_accepted
             sku = purchase_order.product.sku
             my_products.each do |product|
               if sku == product[:sku]

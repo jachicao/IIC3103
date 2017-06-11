@@ -5,6 +5,10 @@ class CheckFtpPurchaseOrdersWorker
   include Sidekiq::Worker
 
   def perform(*args)
+    if $checking_ftp_purchase_orders != nil
+      return nil
+    end
+    $checking_ftp_purchase_orders = true
     Net::SFTP.start(ENV['FTP_SERVER_URL'], ENV['FTP_USERNAME'], :password => ENV['FTP_PASSWORD']) do |sftp|
       sftp.dir.entries('/' + ENV['FTP_PURCHASE_ORDERS_FOLDER']).each do |pedido|
         if pedido.name.end_with?('.xml')
@@ -37,5 +41,6 @@ class CheckFtpPurchaseOrdersWorker
         end
       end
     end
+    $checking_ftp_purchase_orders = nil
   end
 end

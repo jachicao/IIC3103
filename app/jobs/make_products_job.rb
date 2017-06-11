@@ -42,7 +42,7 @@ class MakeProductsJob < ApplicationJob
         if store_house.despacho
           store_house.stocks.each do |s|
             if s.product.sku == sku
-              s.update(quantity: s.quantity - unit_lote * ingredient.quantity)
+              s.update(quantity: [s.quantity - unit_lote * ingredient.quantity, 0].max)
             end
           end
         end

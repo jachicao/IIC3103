@@ -45,7 +45,7 @@ class Product < ApplicationRecord
       else
         if purchase_order.dispatched
         else
-          if purchase_order.status == 'aceptada'
+          if purchase_order.is_accepted
             total -= (purchase_order.quantity - purchase_order.quantity_dispatched)
           end
         end

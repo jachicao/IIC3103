@@ -2,7 +2,10 @@ class CheckPurchaseOrdersWorker
   include Sidekiq::Worker
 
   def perform(*args)
-
+    if $checking_purchase_orders != nil
+      return nil
+    end
+    $checking_purchase_orders = true
     PurchaseOrder.all.each do |purchase_order|
       server = GetPurchaseOrderJob.perform_now(purchase_order.po_id)
       if server[:code] == 200
@@ -56,4 +59,5 @@ class CheckPurchaseOrdersWorker
       end
     end
   end
+  $checking_purchase_orders = nil
 end
