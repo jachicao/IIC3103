@@ -4,7 +4,7 @@
 # pick it up automatically.
 ---
 :verbose: true
-:concurrency: 10
+:concurrency: <%= ENV.fetch("RAILS_MAX_THREADS") { 10 } %>
 :logfile: ./log/sidekiq.log
 
 # Set timeout to 8 on Heroku, longer if you manage your own systems.
@@ -44,9 +44,3 @@
   update_groups_stock:
     cron: '*/30 * * * * *'    # Runs when second = 0/30, every minute
     class: UpdateGroupsStockWorker
-
-# you can override concurrency based on environment
-production:
-  :concurrency: 25
-staging:
-  :concurrency: 15

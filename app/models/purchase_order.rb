@@ -227,7 +227,7 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def is_created
-    return self.status == 'aceptada'
+    return self.status == 'creada'
   end
 
   def is_accepted
