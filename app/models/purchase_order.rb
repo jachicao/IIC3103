@@ -145,6 +145,15 @@ class PurchaseOrder < ApplicationRecord
     return self.client_id
   end
 
+  def get_supplier
+    producer = Producer.find_by(producer_id: self.supplier_id)
+    if producer != nil
+      return producer.group_number
+    end
+    return self.supplier_id
+  end
+
+
   def get_client_group_number
     producer = Producer.find_by(producer_id: self.client_id)
     if producer != nil

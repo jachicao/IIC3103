@@ -30,7 +30,7 @@ class AnalyzePurchaseOrderWorker
   def perform(po_id)
     purchase_order = PurchaseOrder.find_by(po_id: po_id)
     if purchase_order.supplier_id == ENV['GROUP_ID']
-      my_product_in_sale = ProductInSale.get_my_product_in_sale(purchase_order.product.sku)
+      my_product_in_sale = purchase_order.product.get_my_product_sale
       if my_product_in_sale != nil
         if purchase_order.unit_price >= my_product_in_sale.price
           product = my_product_in_sale.product

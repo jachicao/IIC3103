@@ -15,13 +15,4 @@ class ProductInSale < ApplicationRecord
     end
     return result
   end
-
-  def self.get_my_product_in_sale(sku)
-    Producer.get_me.product_in_sales.each do |product_in_sale|
-      if product_in_sale.product.sku == sku
-        return product_in_sale
-      end
-    end
-    return nil
-  end
 end
