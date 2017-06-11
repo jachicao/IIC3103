@@ -38,6 +38,7 @@ services:
       REDIS_PROVIDER: 'REDIS_HOST'
       REDIS_HOST: 'develop-redis'
       DOCKER_RUNNING: 'true'
+      RAILS_MAX_THREADS: '10'
     ports:
       - "3000"
     networks:

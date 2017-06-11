@@ -2,26 +2,7 @@ class CheckPurchaseOrdersWorker
   include Sidekiq::Worker
 
   def perform(*args)
-    if $checking_purchase_orders != nil
-      return nil
-    end
-    $checking_purchase_orders = true
-    PurchaseOrder.all.each do |purchase_order|
-      server = GetPurchaseOrderJob.perform_now(purchase_order.po_id)
-      if server[:code] == 200
-        body = server[:body]
-        if body != nil
-          purchase_order.update(status: body[:estado],
-                                rejected_reason: body[:rechazo],
-                                cancelled_reason: body[:anulacion],
-          )
-        else
-          purchase_order.destroy
-        end
-      else
-        purchase_order.destroy
-      end
-    end
+
     PurchaseOrder.all.each do |purchase_order|
       if purchase_order.is_made_by_me
         if purchase_order.is_created
@@ -59,5 +40,4 @@ class CheckPurchaseOrdersWorker
       end
     end
   end
-  $checking_purchase_orders = nil
 end

@@ -38,6 +38,7 @@ services:
       DB_HOST: 'db'
       REDIS_HOST: 'redis'
       DOCKER_RUNNING: 'true'
+      RAILS_MAX_THREADS: '25'
     ports:
       - "3000"
     networks:

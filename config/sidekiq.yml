@@ -32,6 +32,9 @@
   clean_store_houses:
     cron: '0 */5 * * * *'    # Runs every 5 minutes
     class: CleanStoreHousesWorker
+  update_purchase_orders:
+    cron: '0 * * * * *'     # Runs every minute
+    class: UpdatePurchaseOrdersStatusWorker
   check_purchase_orders:
     cron: '0 * * * * *'     # Runs every minute
     class: CheckPurchaseOrdersWorker
