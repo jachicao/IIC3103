@@ -18,12 +18,7 @@ class PurchaseOrder < ApplicationRecord
       }
     end
 
-    id_almacen_recepcion = nil
-    StoreHouse.all.each do |store_house|
-      if store_house.recepcion
-        id_almacen_recepcion = store_house._id
-      end
-    end
+    id_almacen_recepcion = StoreHouse.get_recepcion._id
 
     response_server = CreateServerPurchaseOrderJob.perform_now(
         producer_id,

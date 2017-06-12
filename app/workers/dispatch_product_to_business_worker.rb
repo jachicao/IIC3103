@@ -10,11 +10,13 @@ class DispatchProductToBusinessWorker < ApplicationWorker
       internal_result = MoveProductToStoreHouseWorker.new.perform(sku, product_id, from_store_house_id, despacho_id)
       if internal_result[:code] == 200
         while true
-          external_result = MoveProductToBusinessWorker.new.perform(sku, product_id, despacho_id, to_store_house_id, po_id, price)
+          external_result = MoveProductToBusinessWorker.new.perform(sku, product_id, despacho_id, to_store_house_id, price, po_id)
           if external_result[:code] == 200
             break
-          else
+          elsif external_result[:code] == 429
             sleep(5)
+          else
+            break #TODO
           end
         end
       end
