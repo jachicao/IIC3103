@@ -30,7 +30,7 @@ class DispatchProductsToBusinessWorker < ApplicationWorker
             end
           end
         end
-        DispatchProductsToBusinessWorker.perform_in((ENV['SERVER_RATE_LIMIT_TIME'].to_i * 2).seconds, po_id)
+        DispatchProductsToBusinessWorker.perform_in((ENV['SERVER_RATE_LIMIT_TIME'].to_i * 1).seconds, po_id)
       end
     end
   end

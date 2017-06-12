@@ -26,7 +26,7 @@ class MoveProductsInternallyWorker < ApplicationWorker
       end
     end
     if quantity > 0
-      MoveProductsInternallyWorker.perform_in((ENV['SERVER_RATE_LIMIT_TIME'].to_i * 2).seconds, from_store_house_id, to_store_house_id, sku, quantity)
+      MoveProductsInternallyWorker.perform_in((ENV['SERVER_RATE_LIMIT_TIME'].to_i * 1).seconds, from_store_house_id, to_store_house_id, sku, quantity)
     end
   end
 end

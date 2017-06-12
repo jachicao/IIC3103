@@ -30,7 +30,7 @@ class DispatchProductsToDistributorWorker < ApplicationWorker
             end
           end
         end
-        DispatchProductsToDistributorWorker.perform_in((ENV['SERVER_RATE_LIMIT_TIME'].to_i * 2).seconds, po_id)
+        DispatchProductsToDistributorWorker.perform_in((ENV['SERVER_RATE_LIMIT_TIME'].to_i * 1).seconds, po_id)
       end
     end
   end

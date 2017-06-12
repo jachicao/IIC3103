@@ -16,6 +16,7 @@ class DispatchProductToBusinessWorker < ApplicationWorker
           elsif external_result[:code] == 429
             sleep(5)
           else
+            puts external_result
             break #TODO
           end
         end
