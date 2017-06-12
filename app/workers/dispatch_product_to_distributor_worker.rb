@@ -13,6 +13,8 @@ class DispatchProductToDistributorWorker < ApplicationWorker
           external_result = MoveProductToDirectionWorker.new.perform(sku, product_id, despacho_id, direction, price, po_id)
           if external_result[:code] == 200
             break
+          else
+            sleep(5)
           end
         end
       end

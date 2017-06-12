@@ -100,7 +100,7 @@ class StoreHouse < ApplicationRecord
       return true
     else
       first = $store_houses_request[0]
-      if (first + ENV['SERVER_RATE_LIMIT_TIME'].to_f.seconds) <= current_time
+      if (first + ENV['SERVER_RATE_LIMIT_TIME'].to_i.seconds) < current_time
         for i in 0..size - 2
           $store_houses_request[i] = $store_houses_request[i + 1]
         end
