@@ -1,23 +1,21 @@
-class MoveProductToDirectionWorker < ApplicationWorker
+class MoveProductToBusinessWorker < ApplicationWorker
   sidekiq_options queue: 'low'
 
-  def perform(sku, product_id, from_store_house_id, direction, price, po_id)
+  def perform(sku, product_id, from_store_house_id, to_store_house_id, price, po_id)
     req_params = {
         :productoId => product_id,
-        :direccion => direction,
-        :precio => price,
+        :almacenId => to_store_house_id,
         :oc => po_id,
+        :precio => price,
     }
     auth_params = {
         :productoId => product_id,
-        :direccion => direction,
-        :precio => price,
-        :oc => po_id,
+        :almacenId => to_store_house_id,
     }
-    response = HTTParty.delete(
-        ENV['CENTRAL_SERVER_URL'] + '/bodega/stock',
+    response = HTTParty.post(
+        ENV['CENTRAL_SERVER_URL'] + '/bodega/moveStockBodega',
         :body => req_params,
-        :headers => { content_type: 'application/json', accept: 'application/json', authorization: self.get_auth_header('DELETE', auth_params) }
+        :headers => { content_type: 'application/json', accept: 'application/json', authorization: self.get_auth_header('POST', auth_params) }
     )
     if response.code == 200
       from_store_house = StoreHouse.find_by(_id: from_store_house_id)
