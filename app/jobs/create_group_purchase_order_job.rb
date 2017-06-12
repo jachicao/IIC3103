@@ -1,5 +1,4 @@
 class CreateGroupPurchaseOrderJob < ApplicationJob
-  queue_as :default
 
   #grupo2: ok
   #grupo3: no, {"status":404,"error":"Not Found"}

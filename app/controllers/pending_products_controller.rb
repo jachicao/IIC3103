@@ -12,7 +12,7 @@ class PendingProductsController < ApplicationController
   def destroy
     @pending_product.destroy
     respond_to do |format|
-      format.html { redirect_to :index, notice: 'Pending product was successfully destroyed.' }
+      format.html { redirect_to pending_products_path, notice: 'Pending product was successfully destroyed.' }
     end
   end
 

@@ -128,21 +128,7 @@ class Invoice < ApplicationRecord
     if self.paid
     else
       self.update(paid: true)
-      purchase_order = self.get_purchase_order
-      amount = purchase_order.quantity * purchase_order.unit_price
-      transaction = nil
-      while transaction.nil?
-        transaction = Bank.transfer_money(self.bank_id, amount)
-      end
-      server = NotifyPaymentServerInvoiceJob.perform_now(self._id)
-      group = nil
-      if purchase_order.is_b2b
-        group = NotifyPaymentGroupInvoiceJob.perform_now(self._id, get_supplier_group_number, transaction[:body][:_id])
-      end
-      return {
-          :server => server,
-          :group => group,
-      }
+      PayInvoiceWorker.perform_async(self._id)
     end
   end
 

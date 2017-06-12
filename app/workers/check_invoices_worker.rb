@@ -1,5 +1,4 @@
-class CheckInvoicesWorker
-  include Sidekiq::Worker
+class CheckInvoicesWorker < ApplicationWorker
   sidekiq_options queue: 'default'
 
   def perform(*args)

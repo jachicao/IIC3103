@@ -1,5 +1,4 @@
 class RejectServerInvoiceJob < ApplicationJob
-  queue_as :default
 
   def rechazar_factura(id, motivo)
     req_params = {

@@ -1,29 +1,8 @@
-class ProduceProductWorker
-  include Sidekiq::Worker
-  sidekiq_options queue: 'low'
-
-  def get_products(id, sku, limit)
-    products = nil
-    while products.nil?
-      products = GetProductStockJob.perform_now(id, sku, limit)
-      if products.nil?
-        puts 'ProduceProductWorker: sleeping server-rate seconds'
-        sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
-      end
-    end
-    return products
-  end
+class ProduceProductWorker < ApplicationWorker
+  sidekiq_options queue: 'default'
 
   def perform(*args)
     # Do something
-
-    if $checking_items_to_produce != nil
-      return nil
-    end
-
-    if $moving_products_to_produce != nil
-      return nil
-    end
 
     PendingProduct.all.each do |pending_product|
       if pending_product.quantity > 0
@@ -48,8 +27,6 @@ class ProduceProductWorker
       end
     end
 
-    $checking_items_to_produce = true
-
     PendingProduct.all.each do |pending_product|
       puts 'Trying to produce ' + pending_product.product.name.to_s
       if pending_product.quantity > 0
@@ -73,44 +50,42 @@ class ProduceProductWorker
           end
         end
         if ready and despacho_total_space - despacho_used_space >= space_required - total_in_despacho
+          all_in_despacho = true
           pending_product.product.ingredients.each do |ingredient|
             total = 0
+            sku = ingredient.item.sku
             ingredient.item.stocks.each do |s|
               if s.store_house.despacho
                 total += s.quantity
               end
             end
-            total_to_move = ingredient.quantity - total
-            if total_to_move > 0
-              $moving_products_to_produce = true
-              quantity_left = total_to_move
+            quantity_left = ingredient.quantity - total
+            if quantity_left > 0
+              all_in_despacho = false
               puts 'ProduceProductWorker: moving ' + ingredient.item.name.to_s + ' to despacho: ' + quantity_left.to_s
-              sku = ingredient.item.sku
               StoreHouse.all.each do |to_store_house|
                 if to_store_house.despacho
+                  to_store_house_id = to_store_house._id
                   to_total_space = to_store_house.total_space
-                  if to_total_space - to_store_house.used_space > 0
-                    while quantity_left > 0
-                      StoreHouse.all.each do |from_store_house|
-                        if from_store_house.despacho
-                        else
-                          from_store_house.stocks.each do |s|
-                            if s.product.sku == sku and to_total_space - to_store_house.used_space > 0 and s.quantity > 0 and quantity_left > 0
-                              limit = [to_total_space - to_store_house.used_space, s.quantity, quantity_left, 100].min
-                              products = get_products(from_store_house._id, sku, limit)
-                              products[:body].each do |product|
-                                result = MoveProductInternallyJob.perform_now(sku, product[:_id], from_store_house._id, to_store_house._id)
-                                if result[:code] == 200
-                                  quantity_left -= 1
-                                  puts 'ProduceProductWorker: quantity left ' + quantity_left.to_s
-                                elsif result[:code] == 429
-                                  puts 'ProduceProductWorker: sleeping server-rate seconds'
-                                  sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
-                                else
-                                  puts result
-                                end
-                              end
+                  to_used_space = to_store_house.used_space
+                  if to_total_space - to_used_space > 0
+                    ingredient.item.stocks.each do |s|
+                      if s.store_house.despacho
+                      else
+                        from_store_house_id = s.store_house._id
+                        if s.quantity > 0 and to_total_space - to_used_space > 0 and quantity_left > 0
+                          limit = [to_total_space - to_used_space, s.quantity, quantity_left, 200].min
+
+                          products = self.get_product_stock(from_store_house_id, sku, limit)
+                          if products != nil
+                            quantity_moved = 0
+                            products[:body].each do |p|
+                              product_id = p[:_id]
+                              quantity_moved += 1
+                              to_used_space += 1
+                              MoveProductToStoreHouseWorker.perform_async(sku, product_id, from_store_house_id, to_store_house_id)
                             end
+                            quantity_left -= quantity_moved
                           end
                         end
                       end
@@ -120,19 +95,16 @@ class ProduceProductWorker
               end
             end
           end
-          if pending_product.quantity > 0
-            puts 'ProduceProductWorker: producing ' + pending_product.product.name
-            pending_product.update(quantity: pending_product.quantity - 1)
-            FactoryOrder.make_product(pending_product.product.sku, pending_product.product.lote, pending_product.product.unit_cost)
-            if pending_product.quantity <= 0
-              pending_product.destroy
+          if all_in_despacho
+            if pending_product.quantity > 0
+              puts 'ProduceProductWorker: producing ' + pending_product.product.name
+              pending_product.update(quantity: pending_product.quantity - 1)
+              FactoryOrder.make_product(pending_product.product.sku, pending_product.product.lote, pending_product.product.unit_cost)
             end
           end
-          $moving_products_to_produce = nil
           break
         end
       end
     end
-    $checking_items_to_produce = nil
   end
 end

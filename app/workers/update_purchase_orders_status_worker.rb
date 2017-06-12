@@ -1,28 +1,12 @@
-class UpdatePurchaseOrdersStatusWorker
-  include Sidekiq::Worker
+class UpdatePurchaseOrdersStatusWorker < ApplicationWorker
   sidekiq_options queue: 'critical'
 
   def perform(*args)
-    if $updating_purchase_orders != nil
-      return nil
-    end
-    $updating_purchase_orders = true
     PurchaseOrder.all.each do |purchase_order|
-      server = GetPurchaseOrderJob.perform_now(purchase_order.po_id)
-      if server[:code] == 200
-        body = server[:body]
-        if body != nil
-          purchase_order.update(status: body[:estado],
-                                rejected_reason: body[:rechazo],
-                                cancelled_reason: body[:anulacion],
-          )
-        else
-          purchase_order.destroy
-        end
+      if purchase_order.is_rejected or purchase_order.is_cancelled or purchase_order.is_completed
       else
-        purchase_order.destroy
+        UpdatePurchaseOrderStatusWorker.perform_async(purchase_order.po_id)
       end
     end
-    $updating_purchase_orders = nil
   end
 end

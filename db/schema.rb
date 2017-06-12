@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170611051624) do
+ActiveRecord::Schema.define(version: 20170611225743) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -93,7 +93,7 @@ ActiveRecord::Schema.define(version: 20170611051624) do
   create_table "product_in_sales", force: :cascade do |t|
     t.integer  "producer_id"
     t.integer  "product_id"
-    t.integer  "price"
+    t.integer  "price",        default: 0
     t.decimal  "average_time"
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
@@ -118,23 +118,24 @@ ActiveRecord::Schema.define(version: 20170611051624) do
     t.string   "po_id"
     t.string   "payment_method"
     t.string   "store_reception_id"
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
     t.boolean  "own"
-    t.boolean  "dispatched",          default: false
-    t.boolean  "sending",             default: false
+    t.boolean  "dispatched",                 default: false
+    t.boolean  "sending",                    default: false
     t.integer  "quantity"
     t.string   "client_id"
     t.string   "supplier_id"
     t.integer  "unit_price"
     t.datetime "delivery_date"
     t.string   "status"
-    t.integer  "quantity_dispatched", default: 0
+    t.integer  "quantity_dispatched",        default: 0
     t.string   "rejected_reason"
     t.string   "cancelled_reason"
     t.string   "channel"
     t.integer  "product_id"
-    t.boolean  "analyzing",           default: false
+    t.boolean  "analyzing",                  default: false
+    t.integer  "server_quantity_dispatched", default: 0
     t.index ["po_id"], name: "index_purchase_orders_on_po_id", using: :btree
     t.index ["product_id"], name: "index_purchase_orders_on_product_id", using: :btree
   end

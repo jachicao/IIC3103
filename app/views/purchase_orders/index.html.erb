@@ -8,6 +8,7 @@
       <th>Po</th>
       <th>Producto</th>
       <th>Cantidad</th>
+      <th>Cantidad despachada</th>
       <th>Estado</th>
       <th colspan="2"></th>
     </tr>
@@ -19,6 +20,7 @@
         <td><%= purchase_order.po_id %></td>
         <td><%= purchase_order.product.name %></td>
         <td><%= purchase_order.quantity %></td>
+        <td><%= purchase_order.server_quantity_dispatched %></td>
         <td><%= purchase_order.status %></td>
         <td><%= link_to 'Show', purchase_order %></td>
         <td><%= link_to 'Destroy', purchase_order_path(id: purchase_order.id), method: :delete, data: { confirm: '¿Estás segur@?' } %></td>
@@ -49,7 +51,7 @@
         <td><%= purchase_order.channel %></td>
         <td><%= purchase_order.product.name %></td>
         <td><%= purchase_order.quantity %></td>
-        <td><%= purchase_order.quantity_dispatched %></td>
+        <td><%= purchase_order.server_quantity_dispatched %></td>
         <td><%= purchase_order.status %></td>
         <td><%= link_to 'Show', purchase_order %></td>
         <td><%= link_to 'Destroy', purchase_order_path(id: purchase_order.id), method: :delete, data: { confirm: '¿Estás segur@?' } %></td>
@@ -80,7 +82,7 @@
         <td><%= purchase_order.channel %></td>
         <td><%= purchase_order.product.name %></td>
         <td><%= purchase_order.quantity %></td>
-        <td><%= purchase_order.quantity_dispatched %></td>
+        <td><%= purchase_order.server_quantity_dispatched %></td>
         <td><%= purchase_order.status %></td>
         <td><%= link_to 'Show', purchase_order %></td>
         <td><%= link_to 'Destroy', purchase_order_path(id: purchase_order.id), method: :delete, data: { confirm: '¿Estás segur@?' } %></td>

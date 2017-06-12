@@ -1,5 +1,4 @@
 class GetBankAccountJob < ApplicationJob
-  queue_as :default
 
   def obtener_cuenta(id)
     req_params = {

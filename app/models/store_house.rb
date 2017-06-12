@@ -12,6 +12,15 @@ class StoreHouse < ApplicationRecord
     return 'General'
   end
 
+  def self.get_despacho
+    self.all.each do |store_house|
+      if store_house.despacho
+        return store_house
+      end
+    end
+    return nil
+  end
+
 
   def self.get_stock_total_not_despacho(sku)
     total_not_despacho = 0

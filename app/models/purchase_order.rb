@@ -75,7 +75,7 @@ class PurchaseOrder < ApplicationRecord
                                         product: Product.find_by(sku: body[:sku]),
                                         quantity: body[:cantidad],
                                         status: body[:estado],
-                                        channel: body[:canal]
+                                        channel: body[:canal],
     )
     if purchase_order.save
       return {
@@ -110,13 +110,17 @@ class PurchaseOrder < ApplicationRecord
     else
       self.update(sending: true)
       if self.is_ftp
-        self.create_invoice
-        DispatchProductsToDistributorWorker.perform_async(self.po_id)
-      elsif self.is_b2b
-        if self.payment_method == 'contra_factura'
+        invoice = self.get_invoice
+        if invoice.nil?
           self.create_invoice
         end
-        DispatchProductsToBusinessWorker.perform_async(self.store_reception_id, self.po_id)
+        DispatchProductsToDistributorWorker.perform_async(self.po_id)
+      elsif self.is_b2b
+        invoice = self.get_invoice
+        if invoice.nil?
+          self.create_invoice
+        end
+        DispatchProductsToBusinessWorker.perform_async(self.po_id)
       end
     end
   end
@@ -125,10 +129,8 @@ class PurchaseOrder < ApplicationRecord
     if self.dispatched
     else
       self.update(dispatched: true)
-      if self.is_b2b
-        if self.payment_method == 'contra_despacho'
-          self.create_invoice
-        end
+      if self.is_ftp
+      elsif self.is_b2b
         invoice = self.get_invoice
         if invoice != nil
           invoice.notify_dispatch
@@ -244,5 +246,9 @@ class PurchaseOrder < ApplicationRecord
 
   def is_cancelled
     return self.status == 'anulada'
+  end
+
+  def is_dispatched
+    return self.quantity <= self.server_quantity_dispatched
   end
 end

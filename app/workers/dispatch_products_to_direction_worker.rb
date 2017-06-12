@@ -1,6 +1,5 @@
-class DispatchProductsToDirectionWorker
-  include Sidekiq::Worker
-  sidekiq_options queue: 'low'
+class DispatchProductsToDirectionWorker < ApplicationWorker
+  sidekiq_options queue: 'default'
 
   def perform(direction, sku, quantity, po_id, price)
     puts 'starting DispatchProductsToDirectionWorker'
@@ -31,10 +30,10 @@ class DispatchProductsToDirectionWorker
                     internal_result = MoveProductInternallyJob.perform_now(sku, p[:_id], store_house._id, despacho_id)
                     if internal_result[:code] == 200
                       while true
-                        external_result = DispatchProductJob.perform_now(sku, p[:_id], despacho_id, direction, price, po_id)
+                        external_result = MoveProductToDirectionWorker.new.perform(sku, p[:_id], despacho_id, direction, price, po_id)
                         if external_result[:code] == 200
                           quantity_left -= 1
-                          puts 'quantity left: ' + quantity_left.to_s
+                          puts 'DispatchProductsToDirectionWorker: quantity left: ' + quantity_left.to_s
                           break
                         elsif external_result[:code] == 429
                           puts 'DispatchProductsToDirectionWorker: sleeping server-rate seconds'

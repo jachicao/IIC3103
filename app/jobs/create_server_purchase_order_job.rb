@@ -1,5 +1,4 @@
 class CreateServerPurchaseOrderJob < ApplicationJob
-  queue_as :default
 
   def crear_orden_de_compra(proveedor, sku, fecha_entrega, cantidad, precio_unitario, canal, notas)
     req_params = {

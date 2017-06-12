@@ -26,8 +26,6 @@ module Myapp
       end
     end
     config.cache_store = :redis_store, 'redis://' + ENV.fetch('REDIS_HOST') { 'localhost' } + ':6379/0/cache', { expires_in: 90.seconds }
-    if ENV['DOCKER_RUNNING'] != nil
-      config.active_job.queue_adapter = :sidekiq
-    end
+    config.active_job.queue_adapter = :sidekiq
   end
 end

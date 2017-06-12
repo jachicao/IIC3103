@@ -1,65 +1,42 @@
-class DispatchProductsToDistributorWorker
-  include Sidekiq::Worker
-  sidekiq_options queue: 'low'
+class DispatchProductsToDistributorWorker < ApplicationWorker
+  sidekiq_options queue: 'default'
 
   def perform(po_id)
-    puts 'starting DDispatchProductsToDistributorWorker'
-    store_houses = StoreHouse.all
-    despacho_id = nil
-
-    store_houses.each do |store_house|
-      if store_house.despacho
-        despacho_id = store_house._id
-      end
+    puts 'starting DispatchProductsToDistributorWorker'
+    if $dispatching_products == nil
+      $dispatching_products = Hash.new
     end
     purchase_order = PurchaseOrder.find_by(po_id: po_id)
-    quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
-    direction = purchase_order.client_id
-    sku = purchase_order.product.sku
-    price = purchase_order.unit_price
-
-    while quantity_left > 0
-      store_houses.each do |store_house|
-        if quantity_left > 0
-          if store_house.despacho
+    if purchase_order != nil
+      quantity_left = purchase_order.quantity - purchase_order.server_quantity_dispatched
+      if quantity_left > 0
+        puts 'DispatchProductsToDistributorWorker: quantity left ' + quantity_left.to_s
+        despacho_id = StoreHouse.get_despacho._id
+        product = purchase_order.product
+        sku = product.sku
+        product.stocks.each do |s|
+          if s.store_house.despacho
           else
-            used_space = store_house.used_space
-            if used_space > 0 and quantity_left > 0
-              limit = [quantity_left, used_space, 100].min
-              products = GetProductStockJob.perform_now(store_house._id, sku, limit)
+            if quantity_left > 0
+              from_store_house_id = s.store_house._id
+              limit = [quantity_left, s.quantity, 100].min
+              products = self.get_product_stock(from_store_house_id, sku, limit)
               if products != nil
+                quantity_moved = 0
                 products[:body].each do |p|
-                  if quantity_left > 0
-                    internal_result = MoveProductInternallyJob.perform_now(sku, p[:_id], store_house._id, despacho_id)
-                    if internal_result[:code] == 200
-                      while true
-                        external_result = DispatchProductJob.perform_now(sku, p[:_id], despacho_id, direction, price, po_id)
-                        if external_result[:code] == 200
-                          quantity_left -= 1
-                          purchase_order.update(quantity_dispatched: purchase_order.quantity - quantity_left)
-                          puts 'quantity left: ' + quantity_left.to_s
-                          break
-                        elsif external_result[:code] == 429
-                          puts 'DispatchProductsToDistributorWorker: sleeping server-rate seconds'
-                          sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
-                        end
-                      end
-                    elsif internal_result[:code] == 429
-                      puts 'DispatchProductsToDistributorWorker: sleeping server-rate seconds'
-                      sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
-                      break
-                    else
-                      break
-                    end
+                  product_id = p[:_id]
+                  quantity_moved += 1
+                  DispatchProductToDistributorWorker.perform_async(po_id, product_id, from_store_house_id, despacho_id)
+                  if $dispatching_products[product_id] == nil
+                    $dispatching_products[product_id] = true
                   end
                 end
-              else
-                puts 'DispatchProductsToDistributorWorker: sleeping server-rate seconds'
-                sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
+                quantity_left -= quantity_moved
               end
             end
           end
         end
+        DispatchProductsToDistributorWorker.perform_in(2.minutes, po_id)
       end
     end
   end

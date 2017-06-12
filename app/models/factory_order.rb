@@ -5,7 +5,7 @@ class FactoryOrder < ApplicationRecord
     if cantidad > 5000
       return false
     end
-    BuyFactoryProductsJob.perform_later(sku, cantidad, costo_unitario)
+    BuyProductToFactoryWorker.perform_async(sku, cantidad, costo_unitario)
     return true
   end
 end

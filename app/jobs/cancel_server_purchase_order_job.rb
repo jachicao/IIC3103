@@ -1,5 +1,4 @@
 class CancelServerPurchaseOrderJob < ApplicationJob
-  queue_as :default
 
   def anular_orden_de_compra(id, anulacion)
     req_params = {

@@ -1,5 +1,4 @@
 class GetBankTransactionsJob < ApplicationJob
-  queue_as :default
 
   #GetBankTransactionsJob.perform_now(DateTime.now - 1, DateTime.now)
   def obtener_cartola(id, fecha_inicio, fecha_fin)

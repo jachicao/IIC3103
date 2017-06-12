@@ -1,5 +1,4 @@
 class CancelServerInvoiceJob < ApplicationJob
-  queue_as :default
 
   def anular_factura(id, motivo)
     req_params = {

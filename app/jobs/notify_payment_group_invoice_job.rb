@@ -1,5 +1,4 @@
 class NotifyPaymentGroupInvoiceJob < ApplicationJob
-  queue_as :default
 
   def factura_pagada(id, group_number, trx_id)
     group_server_url = (ENV['GROUPS_SERVER_URL'] % [group_number]) + ENV['API_URL_GROUP_' + group_number.to_s]

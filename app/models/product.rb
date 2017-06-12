@@ -43,10 +43,10 @@ class Product < ApplicationRecord
     self.purchase_orders.each do |purchase_order|
       if purchase_order.is_made_by_me
       else
-        if purchase_order.dispatched
+        if purchase_order.is_dispatched
         else
           if purchase_order.is_accepted
-            total -= (purchase_order.quantity - purchase_order.quantity_dispatched)
+            total -= (purchase_order.quantity - purchase_order.server_quantity_dispatched)
           end
         end
       end
@@ -142,57 +142,39 @@ class Product < ApplicationRecord
           :producer_stock => 0,
       }
     else
-      time = 0
+      best_product_in_sale = nil
       producer.product_in_sales.each do |product_in_sale|
         if product_in_sale.product.sku == sku
-          time = product_in_sale.average_time
+          best_product_in_sale = product_in_sale
           break
         end
       end
-      producer_details = producer.get_product_details(sku)
 
       return {
           :quantity => quantity,
-          :time => time,
-          :producer_price => producer_details[:precio],
-          :producer_stock => producer_details[:stock],
+          :time => best_product_in_sale.average_time,
+          :producer_price => best_product_in_sale.price,
+          :producer_stock => best_product_in_sale.stock,
       }
       end
   end
 
   def get_best_producer(quantity)
     best_product_in_sale = nil
-    best_product_price = nil
-    best_product_stock = nil
     self.product_in_sales.each do |product_in_sale|
       if product_in_sale.is_mine
       else
-        producer_details = product_in_sale.producer.get_product_details(self.sku)
-        invalid_groups = [4, 6, 8] #TODO: remove this
-        if !(invalid_groups.include?(product_in_sale.producer.group_number))
-          if best_product_in_sale.nil? || best_product_in_sale.average_time > product_in_sale.average_time
-            best_product_in_sale = product_in_sale
-            best_product_price = producer_details[:precio]
-            best_product_stock = producer_details[:stock]
-          end
+        if best_product_in_sale.nil? || best_product_in_sale.average_time > product_in_sale.average_time
+          best_product_in_sale = product_in_sale
         end
-=begin
-          if producer_details[:stock] >= quantity
-            if best_product_in_sale.nil? || best_product_in_sale.average_time > product_in_sale.average_time
-              best_product_in_sale = product_in_sale
-              best_product_price = producer_details[:precio]
-              best_product_stock = producer_details[:stock]
-            end
-          end
-=end
       end
     end
     if best_product_in_sale != nil
       return {
           :success => true,
           :time => best_product_in_sale.average_time,
-          :price => best_product_price,
-          :stock => best_product_stock,
+          :price => best_product_in_sale.price,
+          :stock => best_product_in_sale.stock,
           :producer_id => best_product_in_sale.producer.producer_id,
       }
     end
@@ -215,26 +197,12 @@ class Product < ApplicationRecord
       }
     else
       best_product_in_sale = nil
-      best_product_price = nil
-      best_product_stock = nil
       self.product_in_sales.each do |product_in_sale|
         if product_in_sale.is_mine
         else
-          producer_details = product_in_sale.producer.get_product_details(self.sku)
           if best_product_in_sale.nil? || best_product_in_sale.average_time > product_in_sale.average_time
             best_product_in_sale = product_in_sale
-            best_product_price = producer_details[:precio]
-            best_product_stock = producer_details[:stock]
           end
-=begin
-          if producer_details[:stock] >= difference
-            if best_product_in_sale.nil? || best_product_in_sale.average_time > product_in_sale.average_time
-              best_product_in_sale = product_in_sale
-              best_product_price = producer_details[:precio]
-              best_product_stock = producer_details[:stock]
-            end
-          end
-=end
         end
       end
       if best_product_in_sale != nil
@@ -242,8 +210,8 @@ class Product < ApplicationRecord
             :success => true,
             :quantity => difference,
             :time => best_product_in_sale.average_time,
-            :price => best_product_price,
-            :stock => best_product_stock,
+            :price => best_product_in_sale.price,
+            :stock => best_product_in_sale.stock,
             :producer_id => best_product_in_sale.producer.producer_id,
         }
       end
@@ -325,10 +293,7 @@ class Product < ApplicationRecord
   end
 
   def produce(quantity)
-    pending_product = PendingProduct.create(product: self, quantity: (quantity.to_f / self.lote.to_f).ceil)
-    self.ingredients.each do |ingredient|
-      pending_product.purchased_products.create(product: ingredient.item)
-    end
+    PendingProduct.create(product: self, quantity: (quantity.to_f / self.lote.to_f).ceil)
   end
 
   def purchase_ingredients(ingredients)
@@ -416,18 +381,12 @@ class Product < ApplicationRecord
         end
       else
         best_product_in_sale = nil
-        best_product_in_sale_price = 0
         self.product_in_sales.each do |product_in_sale|
           if product_in_sale.is_mine
           else
-            if product_in_sale.producer.has_wrong_api
-            else
-              producer_details = product_in_sale.producer.get_product_details(self.sku)
-              if producer_details[:stock] >= difference
-                if best_product_in_sale.nil? || best_product_in_sale_price > producer_details[:precio]
-                  best_product_in_sale = product_in_sale
-                  best_product_in_sale_price = producer_details[:precio]
-                end
+            if product_in_sale.stock >= difference
+              if best_product_in_sale.nil? || best_product_in_sale.price > product_in_sale.stock
+                best_product_in_sale = product_in_sale
               end
             end
           end
@@ -439,7 +398,7 @@ class Product < ApplicationRecord
               :buy => true,
               :success => true,
               :producer_id => best_product_in_sale.producer.producer_id,
-              :price => best_product_in_sale_price,
+              :price => best_product_in_sale.price,
               :time => 0,
           }
         else
@@ -497,18 +456,12 @@ class Product < ApplicationRecord
             end
           else
             best_product_in_sale = nil
-            best_product_in_sale_price = 0
             self.product_in_sales.each do |product_in_sale|
               if product_in_sale.is_mine
               else
-                if product_in_sale.producer.has_wrong_api
-                else
-                  producer_details = product_in_sale.producer.get_product_details(self.sku)
-                  if producer_details[:stock] >= difference
-                    if best_product_in_sale.nil? || best_product_in_sale_price > producer_details[:precio]
-                      best_product_in_sale = product_in_sale
-                      best_product_in_sale_price = producer_details[:precio]
-                    end
+                if product_in_sale.stock >= difference
+                  if best_product_in_sale.nil? || best_product_in_sale.price > product_in_sale.price
+                    best_product_in_sale = product_in_sale
                   end
                 end
               end
@@ -518,7 +471,7 @@ class Product < ApplicationRecord
               self.buy_to_producer(
                   best_product_in_sale.producer.producer_id,
                   difference,
-                  best_product_in_sale_price,
+                  best_product_in_sale.price,
                   best_product_in_sale.average_time)
             end
           end

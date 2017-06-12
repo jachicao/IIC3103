@@ -16,10 +16,6 @@ class Bank < ApplicationRecord
     return GetBankTransactionJob.perform_now(id)
   end
 
-  def self.transfer_money(target, amount)
-    return MakeBankTransactionJob.perform_now(target, amount)
-  end
-
   def self.get_balance
     balance = 0
     transactions = get_transactions

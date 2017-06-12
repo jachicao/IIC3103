@@ -1,6 +1,5 @@
-class AnalyzePurchaseOrderWorker
-  include Sidekiq::Worker
-  sidekiq_options queue: 'default'
+class AnalyzePurchaseOrderWorker < ApplicationWorker
+  #sidekiq_options queue: 'default'
 
   def buy(result)
     product = Product.find_by(sku: result[:sku])
@@ -34,19 +33,23 @@ class AnalyzePurchaseOrderWorker
       my_product_in_sale = purchase_order.product.get_my_product_sale
       if my_product_in_sale != nil
         if purchase_order.unit_price >= my_product_in_sale.price
-          product = my_product_in_sale.product
-          result = product.analyze_purchase_order(purchase_order.quantity)
-          if result[:success]
-            if (DateTime.current + result[:time].to_f.hours) <= purchase_order.delivery_date
-              if result[:buy]
-                buy(result)
+          if DateTime.current <= purchase_order.delivery_date
+            product = my_product_in_sale.product
+            result = product.analyze_purchase_order(purchase_order.quantity)
+            if result[:success]
+              if (DateTime.current + result[:time].to_f.hours) <= purchase_order.delivery_date
+                if result[:buy]
+                  buy(result)
+                end
+                purchase_order.accept
+              else
+                purchase_order.reject('Tiempo insuficiente')
               end
-              purchase_order.accept
             else
-              purchase_order.reject('Tiempo insuficiente')
+              purchase_order.reject('Stock insuficiente')
             end
           else
-            purchase_order.reject('Stock insuficiente')
+            purchase_order.reject('Tiempo insuficiente')
           end
         else
           purchase_order.reject('Precio incorrecto')

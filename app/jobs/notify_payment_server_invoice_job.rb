@@ -1,5 +1,4 @@
 class NotifyPaymentServerInvoiceJob < ApplicationJob
-  queue_as :default
 
   def factura_pagada(id)
     req_params = {

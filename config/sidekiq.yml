@@ -32,18 +32,18 @@
   clean_store_houses:
     cron: '0 */5 * * * *'    # Runs every 5 minutes
     class: CleanStoreHousesWorker
-  update_purchase_orders:
-    cron: '0 * * * * *'     # Runs every minute
-    class: UpdatePurchaseOrdersStatusWorker
+  update_groups_stock:
+    cron: '0 * * * * *'    # Runs every minute
+    class: UpdateGroupsStockWorker
   check_purchase_orders:
     cron: '0 * * * * *'     # Runs every minute
     class: CheckPurchaseOrdersWorker
-  check_invoices:
-    cron: '0 * * * * *'    # Runs every minute
-    class: CheckInvoicesWorker
-  cache:
-    cron: '*/30 * * * * *'    # Runs when second = 0/30, every minute
-    class: CacheWorker
-  update_groups_stock:
-    cron: '*/30 * * * * *'    # Runs when second = 0/30, every minute
-    class: UpdateGroupsStockWorker
+  update_store_houses:
+    cron: '*/30 * * * * *'    # Runs every 30 seconds
+    class: UpdateStoreHousesWorker
+  update_purchase_orders:
+    cron: '*/30 * * * * *'     # Runs every 30 seconds
+    class: UpdatePurchaseOrdersStatusWorker
+  #check_invoices:
+  #  cron: '0 * * * * *'    # Runs every minute
+  #  class: CheckInvoicesWorker

@@ -1,4 +1,5 @@
 require 'sidekiq/web'
+require 'sidekiq-scheduler/web'
 
 Rails.application.routes.draw do
   # This line mounts Spree's routes at the root of your application.

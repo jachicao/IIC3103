@@ -1,5 +1,4 @@
 class CreateBillJob < ApplicationJob
-  queue_as :default
 
   def crear_boleta(cliente, total)
     req_params = {

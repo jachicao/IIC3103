@@ -1,5 +1,4 @@
 class RejectGroupInvoiceJob < ApplicationJob
-  queue_as :default
 
   def rechazar_factura(id, group_number, cause)
     group_server_url = (ENV['GROUPS_SERVER_URL'] % [group_number]) + ENV['API_URL_GROUP_' + group_number.to_s]

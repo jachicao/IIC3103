@@ -40,7 +40,7 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
                                               product: Product.find_by(sku: body[:sku]),
                                               quantity: body[:cantidad],
                                               status: body[:estado],
-                                              channel: body[:canal]
+                                              channel: body[:canal],
                                             })
         if @purchase_order.save
           return render :json => { :success => true }

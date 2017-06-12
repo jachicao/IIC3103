@@ -1,5 +1,4 @@
 class CreateServerInvoiceJob < ApplicationJob
-  queue_as :default
 
   def emitir_factura(id)
     req_params = {

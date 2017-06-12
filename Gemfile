@@ -77,3 +77,5 @@ gem 'spree_gateway', '~> 3.2.0.beta'
 gem 'chartkick'
 
 gem 'net-sftp'
+
+#gem 'sidekiq-unique-jobs'

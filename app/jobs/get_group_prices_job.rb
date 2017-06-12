@@ -1,5 +1,4 @@
 class GetGroupPricesJob < ApplicationJob
-  queue_as :default
 
   def obtener_precios(group_number)
     url = (ENV['GROUPS_SERVER_URL'] % [group_number]) + '/api/publico/precios'

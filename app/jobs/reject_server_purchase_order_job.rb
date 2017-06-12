@@ -1,5 +1,4 @@
 class RejectServerPurchaseOrderJob < ApplicationJob
-  queue_as :default
 
   def rechazar_orden_de_compra(id, rechazo)
     req_params = {
