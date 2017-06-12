@@ -89,4 +89,27 @@ class StoreHouse < ApplicationRecord
     return total
   end
 
+  def self.can_send_request
+    if $store_houses_request == nil
+      $store_houses_request = []
+    end
+    current_time = DateTime.current
+    size = $store_houses_request.size
+    if size < ENV['SERVER_RATE_LIMIT'].to_i
+      $store_houses_request.push(current_time)
+      return true
+    else
+      first = $store_houses_request[0]
+      if (first + ENV['SERVER_RATE_LIMIT_TIME'].to_f.seconds) <= current_time
+        for i in 0..size - 2
+          $store_houses_request[i] = $store_houses_request[i + 1]
+        end
+        $store_houses_request[size] = current_time
+        return true
+      else
+        return false
+      end
+    end
+  end
+
 end

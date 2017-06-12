@@ -224,7 +224,7 @@ class Product < ApplicationRecord
   def buy_to_producer(producer_id, quantity, price, time_to_produce)
     return PurchaseOrder.create_new_purchase_order(
         producer_id,
-        sku,
+        self.sku,
         (Time.now + (time_to_produce * 3 * 24).to_f.hours).to_i * 1000, #TODO: QUITAR ESTO
         quantity,
         price,

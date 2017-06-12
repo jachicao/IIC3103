@@ -19,13 +19,13 @@ class DispatchProductsToDistributorWorker < ApplicationWorker
               limit = [quantity_left, s.quantity, 100].min
               products = self.get_product_stock(from_store_house_id, sku, limit)
               if products != nil
-                quantity_moved = 0
                 products[:body].each do |p|
                   product_id = p[:_id]
-                  quantity_moved += 1
-                  DispatchProductToDistributorWorker.perform_async(po_id, product_id, from_store_house_id, despacho_id)
+                  if StoreHouse.can_send_request
+                    quantity_left -= 1
+                    DispatchProductToDistributorWorker.perform_async(po_id, product_id, from_store_house_id, despacho_id)
+                  end
                 end
-                quantity_left -= quantity_moved
               end
             end
           end

@@ -19,16 +19,18 @@ class CleanStoreHousesWorker < ApplicationWorker
                     to_total_space = to_store_house.total_space
                     to_used_space = to_store_house.used_space
                     if to_total_space - to_used_space > 0 and from_used_space > 0 and from_s_total > 0
-                      total_to_move = [to_total_space - to_used_space, from_s_total, 200].min
+                      total_to_move = [to_total_space - to_used_space, from_s_total, 100].min
                       puts 'CleanStoreHousesWorker: Moviendo ' + total_to_move.to_s
                       products = self.get_product_stock(from_store_house_id, from_s_sku, total_to_move)
                       if products != nil
                         products[:body].each do |p|
                           product_id = p[:_id]
-                          MoveProductToStoreHouseWorker.perform_async(from_s_sku, product_id, from_store_house_id, to_store_house_id)
-                          from_used_space -= 1
-                          from_s_total -= 1
-                          to_used_space += 1
+                          if StoreHouse.can_send_request
+                            from_used_space -= 1
+                            from_s_total -= 1
+                            to_used_space += 1
+                            MoveProductToStoreHouseWorker.perform_async(from_s_sku, product_id, from_store_house_id, to_store_house_id)
+                          end
                         end
                       end
                     end

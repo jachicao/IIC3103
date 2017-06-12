@@ -1,4 +1,4 @@
-class ProduceProductWorker < ApplicationWorker
+class ProduceProductsWorker < ApplicationWorker
   sidekiq_options queue: 'default'
 
   def perform(*args)
@@ -43,9 +43,9 @@ class ProduceProductWorker < ApplicationWorker
             end
           end
           if total >= ingredient.quantity
-            puts 'ProduceProductWorker: ' + ingredient.item.name.to_s + ' is ready'
+            puts 'ProduceProductsWorker: ' + ingredient.item.name.to_s + ' is ready'
           else
-            puts 'ProduceProductWorker: ' + ingredient.item.name.to_s + ' is left: ' + (ingredient.quantity - total).to_s
+            puts 'ProduceProductsWorker: ' + ingredient.item.name.to_s + ' is left: ' + (ingredient.quantity - total).to_s
             ready = false
           end
         end
@@ -62,7 +62,7 @@ class ProduceProductWorker < ApplicationWorker
             quantity_left = ingredient.quantity - total
             if quantity_left > 0
               all_in_despacho = false
-              puts 'ProduceProductWorker: moving ' + ingredient.item.name.to_s + ' to despacho: ' + quantity_left.to_s
+              puts 'ProduceProductsWorker: moving ' + ingredient.item.name.to_s + ' to despacho: ' + quantity_left.to_s
               StoreHouse.all.each do |to_store_house|
                 if to_store_house.despacho
                   to_store_house_id = to_store_house._id
@@ -74,18 +74,18 @@ class ProduceProductWorker < ApplicationWorker
                       else
                         from_store_house_id = s.store_house._id
                         if s.quantity > 0 and to_total_space - to_used_space > 0 and quantity_left > 0
-                          limit = [to_total_space - to_used_space, s.quantity, quantity_left, 200].min
+                          limit = [to_total_space - to_used_space, s.quantity, quantity_left, 100].min
 
                           products = self.get_product_stock(from_store_house_id, sku, limit)
                           if products != nil
-                            quantity_moved = 0
                             products[:body].each do |p|
                               product_id = p[:_id]
-                              quantity_moved += 1
-                              to_used_space += 1
-                              MoveProductToStoreHouseWorker.perform_async(sku, product_id, from_store_house_id, to_store_house_id)
+                              if StoreHouse.can_send_request
+                                quantity_left -= 1
+                                to_used_space += 1
+                                MoveProductToStoreHouseWorker.perform_async(sku, product_id, from_store_house_id, to_store_house_id)
+                              end
                             end
-                            quantity_left -= quantity_moved
                           end
                         end
                       end
@@ -97,7 +97,7 @@ class ProduceProductWorker < ApplicationWorker
           end
           if all_in_despacho
             if pending_product.quantity > 0
-              puts 'ProduceProductWorker: producing ' + pending_product.product.name
+              puts 'ProduceProductsWorker: producing ' + pending_product.product.name
               pending_product.update(quantity: pending_product.quantity - 1)
               FactoryOrder.make_product(pending_product.product.sku, pending_product.product.lote, pending_product.product.unit_cost)
             end

@@ -28,7 +28,7 @@
     class: CheckFtpPurchaseOrdersWorker
   pending_products:
     cron: '0 */5 * * * *'    # Runs every 5 minutes
-    class: ProduceProductWorker
+    class: ProduceProductsWorker
   clean_store_houses:
     cron: '0 */5 * * * *'    # Runs every 5 minutes
     class: CleanStoreHousesWorker
