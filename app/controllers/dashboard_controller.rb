@@ -7,10 +7,12 @@ class DashboardController < ApplicationController
 
     def get_products_report
       result = []
-      me = Producer.get_me
-      me.product_in_sales.each do |product_in_sale|
-        product = product_in_sale.product
-        result.push({ sku: product.sku, name: product.name, stock: product.stock, stock_available: product.stock_available })
+      Product.all.each do |product|
+        if product.produced_by_me
+          result.push({ sku: product.sku, name: product.name, stock: product.stock, stock_available: product.stock_available })
+        elsif product.stock > 0
+          result.push({ sku: product.sku, name: product.name, stock: product.stock, stock_available: product.stock_available })
+        end
       end
       return result
     end

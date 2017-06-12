@@ -12,13 +12,16 @@ class MoveProductsInternallyWorker < ApplicationWorker
           products = self.get_product_stock(from_store_house_id, sku, limit)
           if products != nil
             products[:body].each do |product|
-              result = MoveProductToStoreHouseWorker.new.perform(sku, product[:_id], from_store_house_id, to_store_house_id)
-              if result[:code] == 200
-                quantity -= 1
-                puts 'MoveProductsInternallyWorker: quantity left ' + quantity.to_s
-                #break
-              else
-                break
+              product_id = product[:_id]
+              if StoreHouse.can_send_request
+                result = MoveProductToStoreHouseWorker.new.perform(sku, product_id, from_store_house_id, to_store_house_id)
+                if result[:code] == 200
+                  quantity -= 1
+                  puts 'MoveProductsInternallyWorker: quantity left ' + quantity.to_s
+                  #break
+                else
+                  break
+                end
               end
             end
           end
