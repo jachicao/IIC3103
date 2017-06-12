@@ -27,7 +27,7 @@ class DispatchProductsToDirectionWorker < ApplicationWorker
               if products != nil
                 products[:body].each do |p|
                   if quantity_left > 0
-                    internal_result = MoveProductInternallyJob.perform_now(sku, p[:_id], store_house._id, despacho_id)
+                    internal_result = MoveProductToStoreHouseWorker.new.perform(sku, p[:_id], store_house._id, despacho_id)
                     if internal_result[:code] == 200
                       while true
                         external_result = MoveProductToDirectionWorker.new.perform(sku, p[:_id], despacho_id, direction, price, po_id)

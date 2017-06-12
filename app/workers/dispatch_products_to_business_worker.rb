@@ -3,9 +3,6 @@ class DispatchProductsToBusinessWorker < ApplicationWorker
 
   def perform(po_id)
     puts 'starting DispatchProductsToBusinessWorker'
-    if $dispatching_products == nil
-      $dispatching_products = Hash.new
-    end
     purchase_order = PurchaseOrder.find_by(po_id: po_id)
     if purchase_order != nil
       quantity_left = purchase_order.quantity - purchase_order.server_quantity_dispatched
@@ -27,9 +24,6 @@ class DispatchProductsToBusinessWorker < ApplicationWorker
                   product_id = p[:_id]
                   quantity_moved += 1
                   DispatchProductToBusinessWorker.perform_async(po_id, product_id, from_store_house_id, despacho_id)
-                  if $dispatching_products[product_id] == nil
-                    $dispatching_products[product_id] = true
-                  end
                 end
                 quantity_left -= quantity_moved
               end
