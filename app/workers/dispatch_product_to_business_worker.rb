@@ -20,6 +20,8 @@ class DispatchProductToBusinessWorker < ApplicationWorker
             break #TODO
           end
         end
+      else
+         puts internal_result
       end
     end
   end
