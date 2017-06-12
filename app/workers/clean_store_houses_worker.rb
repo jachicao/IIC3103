@@ -1,5 +1,5 @@
 class CleanStoreHousesWorker < ApplicationWorker
-  sidekiq_options queue: 'default'
+  sidekiq_options queue: 'low'
 
   def perform(*args)
     if ENV['DOCKER_RUNNING'] != nil
