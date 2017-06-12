@@ -94,7 +94,7 @@ class PurchaseOrder < ApplicationRecord
 
 
   def self.get_server_details(po_id)
-    return GetPurchaseOrderJob.perform_now(po_id)
+    return GetPurchaseOrderWorker(po_id)
   end
 
   def analyze

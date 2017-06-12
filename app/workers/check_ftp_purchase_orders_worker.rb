@@ -19,7 +19,7 @@ class CheckFtpPurchaseOrdersWorker < ApplicationWorker
               po_id = parse[:order][:id]
               purchase_order = PurchaseOrder.find_by(po_id: po_id)
               if purchase_order.nil?
-                server = GetPurchaseOrderJob.perform_now(po_id)
+                server = self.get_purchase_order(po_id)
                 if server[:code] == 200
                   body = server[:body]
                   PurchaseOrder.create(po_id: body[:_id],

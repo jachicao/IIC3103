@@ -23,7 +23,7 @@ class DispatchProductsToDirectionWorker < ApplicationWorker
             used_space = store_house.used_space
             if used_space > 0 and quantity_left > 0
               limit = [quantity_left, used_space, 100].min
-              products = GetProductStockJob.perform_now(store_house._id, sku, limit)
+              products = self.get_product_stock(store_house._id, sku, limit)
               if products != nil
                 products[:body].each do |p|
                   if quantity_left > 0
