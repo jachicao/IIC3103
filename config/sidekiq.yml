@@ -27,10 +27,10 @@
     cron: '0 */10 * * * *'    # Runs every 10 minutes
     class: CheckFtpPurchaseOrdersWorker
   pending_products:
-    cron: '0 */5 * * * *'    # Runs every 5 minutes
+    cron: '0 */2 * * * *'    # Runs every 2 minutes
     class: ProduceProductsWorker
   clean_store_houses:
-    cron: '0 */5 * * * *'    # Runs every 5 minutes
+    cron: '0 */2 * * * *'    # Runs every 2 minutes
     class: CleanStoreHousesWorker
   update_groups_stock:
     cron: '0 * * * * *'    # Runs every minute
@@ -39,7 +39,7 @@
     cron: '0 * * * * *'     # Runs every minute
     class: CheckPurchaseOrdersWorker
   update_store_houses:
-    cron: '*/30 * * * * *'    # Runs every 30 seconds
+    cron: '*/15 * * * * *'    # Runs every 15 seconds
     class: UpdateStoreHousesWorker
   update_purchase_orders:
     cron: '*/15 * * * * *'     # Runs every 15 seconds
