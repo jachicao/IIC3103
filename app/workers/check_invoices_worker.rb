@@ -1,4 +1,5 @@
 class CheckInvoicesWorker < ApplicationWorker
+  sidekiq_options queue: 'default'
 
   def perform(*args)
     Invoice.all.each do |invoice|

@@ -1,5 +1,5 @@
 class UpdateInvoiceWorker < ApplicationWorker
-  sidekiq_options queue: 'default'
+  sidekiq_options queue: 'critical'
 
   def perform(_id)
     invoice = Invoice.find_by(_id: _id)

@@ -1,5 +1,5 @@
 class UpdateInvoicesWorker < ApplicationWorker
-  sidekiq_options queue: 'default'
+  sidekiq_options queue: 'critical'
 
   def perform(*args)
     Invoice.all.each do |invoice|

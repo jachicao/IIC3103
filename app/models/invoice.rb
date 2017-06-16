@@ -158,7 +158,7 @@ class Invoice < ApplicationRecord
   end
 
   def is_made_by_me
-    return !self.get_purchase_order.is_made_by_me
+    return self.supplier_id == ENV['GROUP_ID']
   end
 
   def is_pending

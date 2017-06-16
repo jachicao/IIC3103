@@ -1,4 +1,5 @@
 class CheckPurchaseOrdersWorker < ApplicationWorker
+  sidekiq_options queue: 'default'
 
   def perform(*args)
     if ENV['DOCKER_RUNNING'] != nil
