@@ -167,13 +167,6 @@ class PurchaseOrder < ApplicationRecord
 
   def destroy_purchase_order(causa)
     self.cancel(causa)
-    self.destroy_order
-  end
-
-  def destroy_order
-    self.get_invoices.each do |invoice|
-      invoice.destroy
-    end
     self.destroy
   end
 

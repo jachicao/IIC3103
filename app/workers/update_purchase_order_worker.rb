@@ -21,10 +21,10 @@ class UpdatePurchaseOrderWorker < ApplicationWorker
                                 channel: body[:canal],
           )
         else
-          purchase_order.destroy_order
+          purchase_order.destroy
         end
       else
-        purchase_order.destroy_order
+        purchase_order.destroy
       end
     end
   end
