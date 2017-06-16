@@ -6,12 +6,12 @@
   <thead>
   <tr>
     <th>Id</th>
-    <th>Es boleta</th>
+    <th>Made by Me</th>
     <th>Proveedor</th>
     <th>Cliente</th>
     <th>Total</th>
-    <th>OC</th>
-    <th colspan="1"></th>
+    <th>Status</th>
+    <th colspan="2"></th>
   </tr>
   </thead>
 
@@ -19,12 +19,16 @@
   <% @invoices.each do |invoice| %>
       <tr>
         <td><%= invoice._id %></td>
-        <td><%= invoice.is_bill %></td>
-        <td><%= invoice.supplier_id %></td>
-        <td><%= invoice.client_id %></td>
+        <td><%= invoice.is_made_by_me %></td>
+        <td><%= invoice.get_supplier %></td>
+        <td><%= invoice.get_client %></td>
         <td><%= invoice.amount %></td>
-        <td><%= invoice.po_id %></td>
-        <td><%= link_to 'Server details', invoice_path(invoice) %></td>
+        <td><%= invoice.status %></td>
+        <% purchase_order = invoice.get_purchase_order %>
+        <% if purchase_order != nil %>
+            <td><%= link_to 'Show PO', purchase_order_path(id: purchase_order.id) %></td>
+        <% end %>
+        <td><%= link_to 'Show Invoice', invoice_path(invoice) %></td>
       </tr>
   <% end %>
   </tbody>

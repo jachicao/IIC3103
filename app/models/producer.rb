@@ -9,8 +9,8 @@ class Producer < ApplicationRecord
     return self.group_number == ENV['GROUP_NUMBER'].to_i
   end
 
-  def has_wrong_api
-    invalid_groups = [3, 6, 8] #TODO: remove this
+  def has_wrong_products_api
+    invalid_groups = [3, 4, 6, 8] #TODO: remove this
     return invalid_groups.include?(self.group_number)
   end
 end

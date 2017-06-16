@@ -17,46 +17,50 @@ class Invoice < ApplicationRecord
 
   def self.create_invoice(po_id)
     purchase_order = PurchaseOrder.find_by(po_id: po_id)
-    server = CreateServerInvoiceJob.perform_now(po_id)
-    case server[:code]
-      when 200..226
-
-      else
-        return {
-            :success => false,
-            :server => server,
-            :group => {},
-        }
-    end
-    body = server[:body]
-    group = nil
-    if purchase_order.is_b2b
-      group = CreateGroupInvoiceJob.perform_now(po_id, purchase_order.get_client_group_number, Bank.get_bank_id)
-      case group[:code]
+    if purchase_order != nil
+      server = CreateServerInvoiceJob.perform_now(po_id)
+      case server[:code]
         when 200..226
-        else
-          #self.cancel_invoice(body[:_id], 'Rejected by group')
-          #return {
-          #    :success => false,
-          #    :server => server,
-          #    :group => group,
-          #}
-      end
-    end
 
-    Invoice.create( #TODO
-        _id: body[:_id],
-        supplier_id: body[:proveedor],
-        client_id: body[:cliente],
-        po_id: body[:oc][:_id],
-        status: body[:estado],
-        amount: body[:total],
-    )
-    return {
-        :success => true,
-        :server => server,
-        :group => group,
-    }
+        else
+          return {
+              :success => false,
+              :server => server,
+              :group => {},
+          }
+      end
+      body = server[:body]
+      group = nil
+      if purchase_order.is_b2b
+        group = CreateGroupInvoiceJob.perform_now(po_id, purchase_order.get_client_group_number, Bank.get_bank_id)
+        puts 'GRUPO  ' + purchase_order.get_client_group_number.to_s
+        puts group
+        case group[:code]
+          when 200..226
+          else
+            self.cancel_invoice(body[:_id], 'Rejected by group')
+            return {
+                :success => false,
+                :server => server,
+                :group => group,
+            }
+        end
+      end
+
+      Invoice.create(
+          _id: body[:_id],
+          supplier_id: body[:proveedor],
+          client_id: body[:cliente],
+          po_id: body[:oc][:_id],
+          status: body[:estado],
+          amount: body[:total],
+      )
+      return {
+          :success => true,
+          :server => server,
+          :group => group,
+      }
+    end
   end
 
 
@@ -100,10 +104,17 @@ class Invoice < ApplicationRecord
     return self.client_id
   end
 
+  def analyze
+    if self.analyzing
+    else
+      self.update(analyzing: true)
+      AnalyzeInvoiceWorker.perform_async(self._id)
+    end
+  end
+
   def accept
-    purchase_order = self.get_purchase_order
     group = nil
-    if purchase_order != nil and purchase_order.is_b2b
+    if self.is_b2b
       group = AcceptGroupInvoiceJob.perform_now(self._id, get_supplier_group_number)
     end
     return {
@@ -114,8 +125,7 @@ class Invoice < ApplicationRecord
   def reject(reason)
     server = RejectServerInvoiceJob.perform_now(self._id, reason)
     group = nil
-    purchase_order = self.get_purchase_order
-    if purchase_order != nil and purchase_order.is_b2b
+    if self.is_b2b
       group = RejectGroupInvoiceJob.perform_now(self._id, get_supplier_group_number, reason)
     end
     return {
@@ -133,10 +143,10 @@ class Invoice < ApplicationRecord
   end
 
   def notify_dispatch
-    purchase_order = self.get_purchase_order
     group = nil
-    if purchase_order != nil and purchase_order.is_b2b
+    if self.is_b2b
       group = NotifyDispatchGroupInvoiceJob.perform_now(self._id, get_client_group_number)
+      self.get_purchase_order.confirm_invoice_notified
     end
     return {
         :group => group
@@ -165,5 +175,17 @@ class Invoice < ApplicationRecord
 
   def is_rejected
     return self.status == 'rechazada'
+  end
+
+  def is_b2b
+    purchase_order = self.get_purchase_order
+    if purchase_order != nil
+      return purchase_order.is_b2b
+    end
+    return false
+  end
+
+  def update_properties
+    UpdateInvoiceWorker.perform_async(self._id)
   end
 end

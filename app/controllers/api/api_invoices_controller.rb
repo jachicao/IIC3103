@@ -18,15 +18,10 @@ class Api::ApiInvoicesController < Api::ApiController
         body = response[:body]
         @invoice = Invoice.new(
             _id: body[:_id],
-            supplier_id: body[:proveedor],
-            client_id: body[:cliente],
-            po_id: body[:oc][:_id],
-            status: body[:estado],
-            amount: body[:total],
             bank_id: params[:bank_account],
         )
         if @invoice.save
-          AnalyzeInvoiceWorker.perform_async(body[:_id])
+          @invoice.update_properties
           return render json: { :success => true }
         else
           return render json: { :success => false, :error => @invoice.errors } , status: :unprocessable_entity
@@ -38,45 +33,14 @@ class Api::ApiInvoicesController < Api::ApiController
   def accepted
     if @invoice != nil
       return render :json => { :success => true }
-=begin
-      response = Invoice.get_server_details(params[:invoice_id])
-      case response[:code]
-        when 200
-          body = response[:body]
-          case body[:estado]
-            when 'pendiente'
-              return render :json => { :success => true }
-          end
-          return render :json => { :success => false, :error => 'Estado de factura no es \'pendiente\'' }, status: :bad_request
-      end
-      return render :json => { :success => false, :error => response[:body] }, status: response[:code]
-=end
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
     end
   end
 
   def rejected
-=begin
-    if params[:cause].nil?
-      return render :json => { :success => false, :error => 'Falta cause' }, status: :bad_request
-    end
-=end
     if @invoice != nil
       return render :json => { :success => true }
-=begin
-      response = Invoice.get_server_details(params[:invoice_id])
-      case response[:code]
-        when 200
-          body = response[:body]
-          case body[:estado]
-            when 'pendiente'
-              return render :json => { :success => true }
-          end
-          return render :json => { :success => false, :error => 'Estado de factura no es \'pendiente\'' }, status: :bad_request
-      end
-      return render :json => { :success => false, :error => response[:body] }, status: response[:code]
-=end
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
     end
@@ -120,19 +84,6 @@ class Api::ApiInvoicesController < Api::ApiController
   def delivered
     if @invoice != nil
       return render :json => { :success => true }
-=begin
-        response = PurchaseOrder.get_server_details(@invoice.po_id)
-        case response[:code]
-          when 200
-            body = response[:body]
-            if body[:cantidadDespachada] >= body[:cantidad]
-              return render :json => { :success => true }
-            else
-              return render :json => { :success => false, :error => 'Falta cantidad por despachar' }
-            end
-        end
-        return render :json => { :success => false, :error => response[:body] }, status: response[:code]
-=end
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
     end

@@ -1,4 +1,4 @@
-class UpdatePurchaseOrderStatusWorker < ApplicationWorker
+class UpdatePurchaseOrderWorker < ApplicationWorker
   sidekiq_options queue: 'critical'
 
   def perform(po_id)
@@ -12,12 +12,19 @@ class UpdatePurchaseOrderStatusWorker < ApplicationWorker
                                 rejected_reason: body[:rechazo],
                                 cancelled_reason: body[:anulacion],
                                 server_quantity_dispatched: body[:cantidadDespachada],
+                                client_id: body[:cliente],
+                                supplier_id: body[:proveedor],
+                                delivery_date: DateTime.parse(body[:fechaEntrega]),
+                                unit_price: body[:precioUnitario],
+                                product: Product.find_by(sku: body[:sku]),
+                                quantity: body[:cantidad],
+                                channel: body[:canal],
           )
         else
-          purchase_order.destroy
+          purchase_order.destroy_order
         end
       else
-        purchase_order.destroy
+        purchase_order.destroy_order
       end
     end
   end

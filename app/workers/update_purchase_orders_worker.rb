@@ -1,11 +1,11 @@
-class UpdatePurchaseOrdersStatusWorker < ApplicationWorker
+class UpdatePurchaseOrdersWorker < ApplicationWorker
   sidekiq_options queue: 'critical'
 
   def perform(*args)
     PurchaseOrder.all.each do |purchase_order|
       if purchase_order.is_rejected or purchase_order.is_cancelled or purchase_order.is_completed
       else
-        UpdatePurchaseOrderStatusWorker.perform_async(purchase_order.po_id)
+        UpdatePurchaseOrderWorker.perform_async(purchase_order.po_id)
       end
     end
   end

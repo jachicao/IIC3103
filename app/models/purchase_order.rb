@@ -63,16 +63,9 @@ class PurchaseOrder < ApplicationRecord
     purchase_order = PurchaseOrder.new(po_id: body[:_id],
                                         payment_method: payment_method,
                                         store_reception_id: id_almacen_recepcion,
-                                        client_id: body[:cliente],
-                                        supplier_id: body[:proveedor],
-                                        delivery_date: DateTime.parse(body[:fechaEntrega]),
-                                        unit_price: body[:precioUnitario],
-                                        product: Product.find_by(sku: body[:sku]),
-                                        quantity: body[:cantidad],
-                                        status: body[:estado],
-                                        channel: body[:canal],
     )
     if purchase_order.save
+      purchase_order.update_properties
       return {
           :success => true,
           :server => response_server,
@@ -105,16 +98,8 @@ class PurchaseOrder < ApplicationRecord
     else
       self.update(sending: true)
       if self.is_ftp
-        invoice = self.get_invoice
-        if invoice.nil?
-          self.create_invoice
-        end
         DispatchProductsToDistributorWorker.perform_async(self.po_id)
       elsif self.is_b2b
-        invoice = self.get_invoice
-        if invoice.nil?
-          self.create_invoice
-        end
         DispatchProductsToBusinessWorker.perform_async(self.po_id)
       end
     end
@@ -123,13 +108,10 @@ class PurchaseOrder < ApplicationRecord
   def confirm_dispatched
     if self.dispatched
     else
-      self.update(dispatched: true)
       if self.is_ftp
+        self.update(dispatched: true)
       elsif self.is_b2b
-        invoice = self.get_invoice
-        if invoice != nil
-          invoice.notify_dispatch
-        end
+        self.notify_invoice
       end
     end
   end
@@ -185,6 +167,13 @@ class PurchaseOrder < ApplicationRecord
 
   def destroy_purchase_order(causa)
     self.cancel(causa)
+    self.destroy_order
+  end
+
+  def destroy_order
+    self.get_invoices.each do |invoice|
+      invoice.destroy
+    end
     self.destroy
   end
 
@@ -192,23 +181,43 @@ class PurchaseOrder < ApplicationRecord
     return CancelServerPurchaseOrderJob.perform_now(self.po_id, causa)
   end
 
-  def create_invoice
-    return Invoice.create_invoice(self.po_id)
-  end
-
   def get_invoices
     return Invoice.where(po_id: self.po_id)
   end
 
-  def get_invoice
-    return Invoice.find_by(po_id: self.po_id)
+  def get_pending_invoice
+    invoices = self.get_invoices
+    invoices.each do |invoice|
+      if invoice.is_pending
+        return invoice
+      end
+    end
+    return nil
+  end
+
+  def create_invoice
+    invoice = self.get_pending_invoice
+    if invoice.nil?
+      Invoice.create_invoice(self.po_id)
+    end
   end
 
   def pay_invoice
-    invoice = self.get_invoice
+    invoice = self.get_pending_invoice
     if invoice != nil
       invoice.pay
     end
+  end
+
+  def notify_invoice
+    invoice = self.get_pending_invoice
+    if invoice != nil
+      invoice.notify_dispatch
+    end
+  end
+
+  def confirm_invoice_notified
+    self.update(dispatched: true)
   end
 
   def is_made_by_me
@@ -245,5 +254,9 @@ class PurchaseOrder < ApplicationRecord
 
   def is_dispatched
     return self.quantity <= self.server_quantity_dispatched
+  end
+
+  def update_properties
+    UpdatePurchaseOrderWorker.perform_async(self.po_id)
   end
 end

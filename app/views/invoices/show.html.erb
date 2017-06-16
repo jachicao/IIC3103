@@ -2,27 +2,17 @@
 
 <p>
   <strong>Estado:</strong>
-  <%= @server_body[:estado] %>
-</p>
-
-<p>
-  <strong>Bruto:</strong>
-  <%= @server_body[:bruto] %>
-</p>
-
-<p>
-  <strong>Iva:</strong>
-  <%= @server_body[:iva] %>
+  <%= @invoice.status %>
 </p>
 
 <p>
   <strong>Motivo rechazo:</strong>
-  <%= @server_body[:rechazo] %>
+  <%= @invoice.rejected_reason %>
 </p>
 
 <p>
   <strong>Motivo anulación:</strong>
-  <%= @server_body[:anulacion] %>
+  <%= @invoice.cancelled_reason %>
 </p>
 
 <%= link_to 'Back', invoices_path %>

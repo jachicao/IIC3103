@@ -18,14 +18,11 @@ class CreateBillJob < ApplicationJob
     puts response.body
     puts response.code
     body = JSON.parse(response.body, symbolize_names: true)
-    Invoice.create(
+    invoice = Invoice.create(
         _id: body[:_id],
-        supplier_id: body[:proveedor],
-        client_id: body[:cliente],
-        amount: body[:total],
-        po_id: body[:oc],
         is_bill: true,
     )
+    invoice.update_properties
     return {
         :body => body,
         :code =>  response.code,

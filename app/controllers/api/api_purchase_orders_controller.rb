@@ -30,19 +30,13 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
       when 200
         body = response[:body]
         params[:store_reception_id] = params[:id_store_reception]
-        @purchase_order = PurchaseOrder.new({ po_id: body[:_id],
-                                              store_reception_id: params[:store_reception_id],
-                                              payment_method: params[:payment_method],
-                                              client_id: body[:cliente],
-                                              supplier_id: body[:proveedor],
-                                              delivery_date: DateTime.parse(body[:fechaEntrega]),
-                                              unit_price: body[:precioUnitario],
-                                              product: Product.find_by(sku: body[:sku]),
-                                              quantity: body[:cantidad],
-                                              status: body[:estado],
-                                              channel: body[:canal],
+        @purchase_order = PurchaseOrder.new({
+                                                po_id: body[:_id],
+                                                store_reception_id: params[:store_reception_id],
+                                                payment_method: params[:payment_method],
                                             })
         if @purchase_order.save
+          @purchase_order.update_properties
           return render :json => { :success => true }
         else
           return render :json => { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity

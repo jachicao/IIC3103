@@ -28,7 +28,7 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
           elsif purchase_order.is_rejected
             #purchase_order.destroy_purchase_order('Rejected by group')
           elsif purchase_order.is_cancelled
-            purchase_order.destroy
+            purchase_order.destroy_order
           elsif purchase_order.is_completed
             purchase_order.pay_invoice
           end
@@ -36,6 +36,7 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
           if purchase_order.is_created
             purchase_order.analyze
           elsif purchase_order.is_accepted
+            purchase_order.create_invoice
             if $sending_purchase_order == nil
               if purchase_order.server_quantity_dispatched < purchase_order.quantity
                 if purchase_order.sending
@@ -48,10 +49,11 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
               end
             end
           elsif purchase_order.is_rejected
-            #purchase_order.destroy
+            purchase_order.destroy_order
           elsif purchase_order.is_cancelled
-            purchase_order.destroy
+            purchase_order.destroy_order
           elsif purchase_order.is_completed
+            purchase_order.create_invoice
             purchase_order.confirm_dispatched
           end
         end

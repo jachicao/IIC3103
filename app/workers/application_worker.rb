@@ -206,6 +206,26 @@ class ApplicationWorker
     }
   end
 
+  def get_invoice(_id)
+    req_params = {
+
+    }
+    response =HTTParty.get(
+        ENV['CENTRAL_SERVER_URL'] + '/sii/' + _id,
+        :query => req_params,
+        :headers => { content_type: 'application/json', accept: 'application/json'}
+    )
+    body = JSON.parse(response.body, symbolize_names: true)
+    if body.kind_of?(Array)
+      body = body.first
+    end
+
+    return {
+        :body => body,
+        :code =>  response.code,
+    }
+  end
+
   def get_group_prices(group_number)
     url = (ENV['GROUPS_SERVER_URL'] % [group_number]) + '/api/publico/precios'
     req_params = {

@@ -38,12 +38,15 @@
   check_purchase_orders:
     cron: '0 * * * * *'     # Runs every minute
     class: CheckPurchaseOrdersWorker
+  check_invoices:
+    cron: '0 * * * * *'     # Runs every minute
+    class: CheckInvoicesWorker
+  update_invoices:
+    cron: '*/15 * * * * *'     # Runs every 15 seconds
+    class: UpdateInvoicesWorker
   update_store_houses:
     cron: '*/15 * * * * *'    # Runs every 15 seconds
     class: UpdateStoreHousesWorker
   update_purchase_orders:
     cron: '*/15 * * * * *'     # Runs every 15 seconds
-    class: UpdatePurchaseOrdersStatusWorker
-  #check_invoices:
-  #  cron: '0 * * * * *'    # Runs every minute
-  #  class: CheckInvoicesWorker
+    class: UpdatePurchaseOrdersWorker
