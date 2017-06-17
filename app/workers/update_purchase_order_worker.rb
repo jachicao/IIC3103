@@ -8,22 +8,18 @@ class UpdatePurchaseOrderWorker < ApplicationWorker
       if server[:code] == 200
         body = server[:body]
         if body != nil
-          if body[:_id] != nil
-            purchase_order.update(status: body[:estado],
-                                  rejected_reason: body[:rechazo],
-                                  cancelled_reason: body[:anulacion],
-                                  server_quantity_dispatched: body[:cantidadDespachada],
-                                  client_id: body[:cliente],
-                                  supplier_id: body[:proveedor],
-                                  delivery_date: DateTime.parse(body[:fechaEntrega]),
-                                  unit_price: body[:precioUnitario],
-                                  product: Product.find_by(sku: body[:sku]),
-                                  quantity: body[:cantidad],
-                                  channel: body[:canal],
-            )
-          else
-            purchase_order.destroy
-          end
+          purchase_order.update(status: body[:estado],
+                                rejected_reason: body[:rechazo],
+                                cancelled_reason: body[:anulacion],
+                                server_quantity_dispatched: body[:cantidadDespachada],
+                                client_id: body[:cliente],
+                                supplier_id: body[:proveedor],
+                                delivery_date: DateTime.parse(body[:fechaEntrega]),
+                                unit_price: body[:precioUnitario],
+                                product: Product.find_by(sku: body[:sku]),
+                                quantity: body[:cantidad],
+                                channel: body[:canal],
+          )
         else
           purchase_order.destroy
         end

@@ -16,19 +16,15 @@ class UpdateInvoiceWorker < ApplicationWorker
       if server[:code] == 200
         body = server[:body]
         if body != nil
-          if body[:_id] != nil
-            invoice.update(
-                status: body[:estado],
-                rejected_reason: body[:rechazo],
-                cancelled_reason: body[:anulacion],
-                supplier_id: body[:proveedor],
-                client_id: body[:cliente],
-                po_id: body[:oc],
-                amount: body[:total],
-            )
-          else
-            invoice.destroy
-          end
+          invoice.update(
+              status: body[:estado],
+              rejected_reason: body[:rechazo],
+              cancelled_reason: body[:anulacion],
+              supplier_id: body[:proveedor],
+              client_id: body[:cliente],
+              po_id: body[:oc],
+              amount: body[:total],
+          )
         else
           invoice.destroy
         end
