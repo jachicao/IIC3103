@@ -1,56 +1,48 @@
 class CheckMinimumStockWorker < ApplicationWorker
   sidekiq_options queue: 'low'
 
+  def get_quantity_needed(arr, product)
+    if product.is_produced_by_me
+      product.ingredients.each do |ingredient|
+        arr.each do |p|
+          if p[:sku] == ingredient.item.sku
+            p[:quantity_needed] += ingredient.quantity
+            self.get_quantity_needed(arr, ingredient.item)
+          end
+        end
+      end
+    else
+      product.ingredients.each do |ingredient|
+        if ingredient.item.is_produced_by_me
+          arr.each do |p|
+            if p[:sku] == ingredient.item.sku
+              p[:quantity_needed] += ingredient.quantity
+              self.get_quantity_needed(arr, ingredient.item)
+            end
+          end
+        end
+      end
+    end
+  end
+
   def perform(*args)
-    if ENV['DOCKER_RUNNING'] != nil
+    if true#ENV['DOCKER_RUNNING'] != nil
       puts 'starting CheckMinimumStockWorker'
-      my_products = []
-      Producer.get_me.product_in_sales.each do |product_in_sale|
-        my_products.push({ sku: product_in_sale.product.sku, quantity: product_in_sale.product.lote, stock: 0 })
+
+      products = []
+      Product.all.each do |product|
+        products.push({ sku: product.sku, quantity_needed: 0, stock_available: product.stock })
       end
 
       Product.all.each do |product|
-        product.ingredients.each do |ingredient|
-          my_products.each do |p|
-            if ingredient.item.sku == p[:sku]
-              p[:quantity] += ingredient.quantity
-            end
-          end
-        end
+        self.get_quantity_needed(products, product)
       end
 
-      StoreHouse.all.each do |store_house|
-        store_house.stocks.each do |s|
-          my_products.each do |product|
-            if s.product.sku == product[:sku]
-              product[:stock] += s.quantity
-            end
-          end
-        end
-      end
-
-      #ordenes de compra
-      PurchaseOrder.all.each do |purchase_order|
-        if purchase_order.is_made_by_me
-          if purchase_order.is_created || purchase_order.is_accepted
-            sku = purchase_order.product.sku
-            quantity = purchase_order.quantity
-            my_products.each do |product|
-              if sku == product[:sku]
-                product[:stock] += quantity
-              end
-            end
-          end
-        else
-          if purchase_order.is_dispatched
-          else
-            if purchase_order.is_accepted
-              sku = purchase_order.product.sku
-              my_products.each do |product|
-                if sku == product[:sku]
-                  product[:stock] -= (purchase_order.quantity - purchase_order.server_quantity_dispatched)
-                end
-              end
+      Product.all.each do |product|
+        if product.is_produced_by_me
+          products.each do |p|
+            if p[:sku] == product.sku
+              p[:quantity_needed] = [p[:quantity_needed], product.lote].max
             end
           end
         end
@@ -59,9 +51,9 @@ class CheckMinimumStockWorker < ApplicationWorker
       #ordenes de fabricación hechas por mi
       FactoryOrder.all.each do |factory_order|
         if DateTime.current <= factory_order.available
-          my_products.each do |product|
-            if factory_order.product.sku == product[:sku]
-              product[:stock] += factory_order.quantity
+          products.each do |p|
+            if factory_order.product.sku == p[:sku]
+              p[:stock_available] += factory_order.quantity
             end
           end
         end
@@ -69,25 +61,58 @@ class CheckMinimumStockWorker < ApplicationWorker
 
       #productos pendientes a fabricar
       PendingProduct.all.each do |pending_product|
-        my_products.each do |product|
-          if pending_product.product.sku == product[:sku]
-            product[:stock] += pending_product.product.lote * pending_product.quantity
+        unit_lote = pending_product.quantity
+        pending_product.product.ingredients.each do |ingredient|
+          quantity = (ingredient.item.stock.to_f / (pending_product.quantity.to_f * ingredient.quantity.to_f)).floor
+          unit_lote = [unit_lote, quantity].min
+        end
+        products.each do |p|
+          if pending_product.product.sku == p[:sku]
+            p[:stock_available] += pending_product.product.lote * unit_lote
           end
         end
-        pending_product.product.ingredients do |ingredient|
-          my_products.each do |product|
-            if ingredient.item.sku == product[:sku]
-              product[:stock] -= ingredient.quantity * pending_product.quantity
+        pending_product.product.ingredients.each do |ingredient|
+          products.each do |p|
+            if ingredient.item.sku == p[:sku]
+              p[:stock_available] -= ingredient.quantity * unit_lote
             end
           end
         end
       end
 
-      puts my_products
 
-      my_products.each do |p|
+      #ordenes de compra
+      PurchaseOrder.all.each do |purchase_order|
+        if purchase_order.is_made_by_me
+          if purchase_order.is_created or purchase_order.is_accepted
+            sku = purchase_order.product.sku
+            products.each do |p|
+              if sku == p[:sku]
+                p[:stock_available] += (purchase_order.quantity - purchase_order.server_quantity_dispatched)
+              end
+            end
+          end
+        else
+          if purchase_order.is_dispatched
+          else
+            if purchase_order.is_accepted
+              product = purchase_order.product
+              sku = product.sku
+              products.each do |p|
+                if sku == p[:sku]
+                  p[:stock_available] -= (purchase_order.quantity - purchase_order.server_quantity_dispatched)
+                end
+              end
+            end
+          end
+        end
+      end
+
+      puts products
+
+      products.each do |p|
         product = Product.find_by(sku: p[:sku])
-        product.analyze_min_stock(my_products, p[:quantity])
+        product.analyze_min_stock(products, p[:quantity_needed])
       end
     end
   end

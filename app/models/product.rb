@@ -14,7 +14,7 @@ class Product < ApplicationRecord
     return nil
   end
 
-  def produced_by_me
+  def is_produced_by_me
     self.product_in_sales.each do |product_in_sale|
       if product_in_sale.is_mine
         return true
@@ -222,7 +222,7 @@ class Product < ApplicationRecord
   end
 
   def buy_to_producer(producer_id, quantity, price, time_to_produce)
-    return PurchaseOrder.create_new_purchase_order(
+    return BuyProductToBusinessWorker.new.perform(
         producer_id,
         self.sku,
         (Time.now + (time_to_produce * 3 * 24).to_f.hours).to_i * 1000, #TODO: QUITAR ESTO
@@ -231,6 +231,18 @@ class Product < ApplicationRecord
         'contra_factura'
     )
   end
+
+  def buy_to_producer_async(producer_id, quantity, price, time_to_produce)
+    BuyProductToBusinessWorker.perform_async(
+        producer_id,
+        self.sku,
+        (Time.now + (time_to_produce * 3 * 24).to_f.hours).to_i * 1000, #TODO: QUITAR ESTO
+        quantity,
+        price,
+        'contra_factura'
+    )
+  end
+
 
   def get_ingredients_analysis(quantity)
     purchase_ingredients = []
@@ -384,9 +396,12 @@ class Product < ApplicationRecord
         self.product_in_sales.each do |product_in_sale|
           if product_in_sale.is_mine
           else
-            if product_in_sale.stock >= difference
-              if best_product_in_sale.nil? || best_product_in_sale.price > product_in_sale.stock
-                best_product_in_sale = product_in_sale
+            if product_in_sale.producer.has_wrong_purchase_orders_api
+            else
+              if product_in_sale.stock >= difference
+                if best_product_in_sale.nil? || best_product_in_sale.price > product_in_sale.stock
+                  best_product_in_sale = product_in_sale
+                end
               end
             end
           end
@@ -421,20 +436,20 @@ class Product < ApplicationRecord
     end
   end
 
-  def analyze_min_stock(my_products, quantity)
-    my_products.each do |p|
+  def analyze_min_stock(products, quantity)
+    products.each do |p|
       if p[:sku] == self.sku
-        difference = [quantity, 5000].min - p[:stock]
+        difference = [quantity, 5000].min - p[:stock_available]
         if difference > 0
-          if self.produced_by_me
+          if self.is_produced_by_me
             if self.ingredients.size > 0
               unit_lote = (difference.to_f / self.lote.to_f).ceil
               has_enough = true
               self.ingredients.each do |ingredient|
                 stock_ingredient = 0
-                my_products.each do |p_stock|
+                products.each do |p_stock|
                   if p_stock[:sku] == ingredient.item.sku
-                    stock_ingredient = p_stock[:stock]
+                    stock_ingredient = p_stock[:stock_available]
                   end
                 end
                 ingredient_quantity = ingredient.quantity * unit_lote - stock_ingredient
@@ -446,15 +461,30 @@ class Product < ApplicationRecord
                 puts 'produciendo ' + difference.to_s + ' de ' + self.name
                 self.produce(difference)
               else
-                self.ingredients.each do |ingredient|
-                  ingredient.item.analyze_min_stock(my_products, ingredient.quantity * unit_lote)
-                end
+                #self.ingredients.each do |ingredient|
+                  #ingredient.item.analyze_min_stock(my_products, ingredient.quantity * unit_lote)
+                #end
               end
             else
               puts 'enviando a fabricar ' + difference.to_s + ' de ' + self.name
               self.buy_to_factory(difference)
             end
           else
+            self.product_in_sales.each do |product_in_sale|
+              if product_in_sale.is_mine
+              else
+                if product_in_sale.producer.has_wrong_purchase_orders_api
+                else
+                  puts 'comprando ' + difference.to_s + ' de ' + self.name
+                  self.buy_to_producer_async(
+                      product_in_sale.producer.producer_id,
+                      difference,
+                      product_in_sale.price,
+                      product_in_sale.average_time)
+                end
+              end
+            end
+=begin
             best_product_in_sale = nil
             self.product_in_sales.each do |product_in_sale|
               if product_in_sale.is_mine
@@ -467,13 +497,8 @@ class Product < ApplicationRecord
               end
             end
             if best_product_in_sale != nil
-              puts 'comprando ' + difference.to_s + ' de ' + self.name
-              self.buy_to_producer(
-                  best_product_in_sale.producer.producer_id,
-                  difference,
-                  best_product_in_sale.price,
-                  best_product_in_sale.average_time)
             end
+=end
           end
         end
       end

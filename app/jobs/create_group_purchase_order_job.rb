@@ -34,7 +34,7 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
         req_params[:payment_method] = payment_method # Método de pago (contado/cuotas)
         req_params[:payment_option] = '1' # Permite definir las condiciones del método de pago. Para crédito se quisiera poder indicar la cantidad de días del crédito. Para cuotas, la cantidad de cuotas.
       when 6
-        req_params[:payment_method] = payment_method#'entrega' # "entrega,credito,cuotas"
+        req_params[:payment_method] = payment_method #'entrega' # "entrega,credito,cuotas"
         req_params[:payment_option] = 1
       when 8
 
@@ -49,7 +49,7 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
 
   def perform(group_number, id, payment_method, id_store_reception)
     response = crear_orden_de_compra(group_number, id, payment_method, id_store_reception)
-    puts response.body
+    puts 'GRUPO: ' + group_number.to_s + ' ' + response.body
     return {
         :body => response.body,
         :code =>  response.code,

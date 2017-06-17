@@ -10,7 +10,12 @@ class Producer < ApplicationRecord
   end
 
   def has_wrong_products_api
-    invalid_groups = [3, 4, 6, 8] #TODO: remove this
+    invalid_groups = []
+    return invalid_groups.include?(self.group_number)
+  end
+
+  def has_wrong_purchase_orders_api
+    invalid_groups = [6, 8] #TODO: remove this
     return invalid_groups.include?(self.group_number)
   end
 end
