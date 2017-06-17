@@ -1,5 +1,4 @@
 class AnalyzePurchaseOrderWorker < ApplicationWorker
-  #sidekiq_options queue: 'default'
 
   def buy(result)
     product = Product.find_by(sku: result[:sku])
@@ -17,7 +16,7 @@ class AnalyzePurchaseOrderWorker < ApplicationWorker
           product.buy_to_factory(result[:quantity])
         end
       else
-        product.buy_to_producer(
+        product.buy_to_producer_async(
             result[:producer_id],
             result[:quantity],
             result[:price],

@@ -210,7 +210,7 @@ class ApplicationWorker
     req_params = {
 
     }
-    response =HTTParty.get(
+    response = HTTParty.get(
         ENV['CENTRAL_SERVER_URL'] + '/sii/' + _id,
         :query => req_params,
         :headers => { content_type: 'application/json', accept: 'application/json'}

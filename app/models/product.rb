@@ -124,7 +124,12 @@ class Product < ApplicationRecord
   end
 
   def buy_to_factory(quantity)
-    FactoryOrder.make_product(sku, self.lote * (quantity.to_f / self.lote.to_f).ceil, unit_cost)
+    quantity = self.lote * (quantity.to_f / self.lote.to_f).ceil
+    if quantity > 5000
+      return false
+    end
+    BuyProductToFactoryWorker.perform_async(self.sku, quantity, self.unit_cost)
+    return true
   end
 
   def get_max_purchase_analysis(producer, quantity)

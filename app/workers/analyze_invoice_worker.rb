@@ -1,5 +1,4 @@
 class AnalyzeInvoiceWorker < ApplicationWorker
-  #sidekiq_options queue: 'default'
 
   def perform(_id)
     invoice = Invoice.find_by(_id: _id)

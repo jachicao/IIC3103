@@ -26,6 +26,12 @@
   check_ftp:
     cron: '0 */10 * * * *'    # Runs every 10 minutes
     class: CheckFtpPurchaseOrdersWorker
+  update_all_invoices:
+    cron: '0 */10 * * * *'    # Runs every 10 minutes
+    class: UpdateAllInvoicesWorker
+  update_all_purchase_orders:
+    cron: '0 */10 * * * *'    # Runs every 10 minutes
+    class: UpdateAllPurchaseOrdersWorker
   pending_products:
     cron: '0 */2 * * * *'    # Runs every 2 minutes
     class: ProduceProductsWorker
