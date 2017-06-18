@@ -25,7 +25,7 @@ class CreateBillJob < ApplicationJob
     invoice.update_properties
     return {
         :body => body,
-        :code =>  response.code,
+        :code => response.code,
     }
   end
 end

@@ -17,8 +17,7 @@ class CreateServerInvoiceJob < ApplicationJob
     body = JSON.parse(response.body, symbolize_names: true)
     return {
         :body => body,
-        :code =>  response.code,
-        :header => response.header,
+        :code => response.code,
     }
   end
 end

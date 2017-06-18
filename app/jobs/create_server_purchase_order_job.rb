@@ -24,8 +24,7 @@ class CreateServerPurchaseOrderJob < ApplicationJob
     puts response.code
     return {
         :body => JSON.parse(response.body, symbolize_names: true),
-        :code =>  response.code,
-        :header => response.header,
+        :code => response.code,
     }
   end
 end

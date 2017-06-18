@@ -60,7 +60,7 @@ class ProductInSale < ApplicationRecord
         (Time.now + (self.average_time * 2 * unit_lote).to_f.hours).to_i * 1000, #TODO, REDUCE TIME
         quantity,
         self.price,
-        'contra_factura'
+        'contra_despacho'
     )
   end
 
@@ -89,7 +89,7 @@ class ProductInSale < ApplicationRecord
         (Time.now + (self.average_time * 2 * unit_lote).to_f.hours).to_i * 1000, #TODO, REDUCE TIME
         quantity,
         self.price,
-        'contra_factura'
+        'contra_despacho'
     )
   end
 

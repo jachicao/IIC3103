@@ -29,7 +29,7 @@ class RejectGroupInvoiceJob < ApplicationJob
     puts response.body
     return {
         :body => response.body,
-        :code =>  response.code,
+        :code => response.code,
     }
   end
 end

@@ -17,7 +17,7 @@ class GetBankTransactionJob < ApplicationJob
     body = JSON.parse(response.body, symbolize_names: true)
     return {
         :body => body,
-        :code =>  response.code,
+        :code => response.code,
     }
   end
 end

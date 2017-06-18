@@ -31,7 +31,7 @@ class RejectServerPurchaseOrderJob < ApplicationJob
 
     return {
         :body => body,
-        :code =>  response.code,
+        :code => response.code,
         :header => response.header,
     }
   end

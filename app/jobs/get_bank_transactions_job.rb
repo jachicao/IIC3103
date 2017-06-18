@@ -33,8 +33,7 @@ class GetBankTransactionsJob < ApplicationJob
 
     return {
         :body => body,
-        :code =>  response.code,
-        :header => response.header,
+        :code => response.code,
     }
   end
 
