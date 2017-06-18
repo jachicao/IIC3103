@@ -46,7 +46,7 @@ class Product < ApplicationRecord
         if purchase_order.is_dispatched
         else
           if purchase_order.is_accepted
-            total -= (purchase_order.quantity - purchase_order.server_quantity_dispatched)
+            total -= (purchase_order.quantity - purchase_order.quantity_dispatched)
           end
         end
       end

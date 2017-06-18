@@ -3,7 +3,7 @@ class DispatchProductToBusinessWorker < ApplicationWorker
 
   def perform(po_id, product_id, from_store_house_id, despacho_id)
     purchase_order = PurchaseOrder.find_by(po_id: po_id)
-    if purchase_order != nil and purchase_order.quantity > purchase_order.server_quantity_dispatched
+    if purchase_order != nil and purchase_order.quantity > purchase_order.quantity_dispatched
       sku = purchase_order.product.sku
       price = purchase_order.unit_price
       to_store_house_id = purchase_order.store_reception_id

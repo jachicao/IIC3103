@@ -31,7 +31,6 @@ class CreateInvoiceWorker < ApplicationWorker
             }
         end
       end
-      puts body[:_id]
 
       invoice = Invoice.create_new(body[:_id])
       if invoice != nil

@@ -90,7 +90,7 @@ class Invoice < ApplicationRecord
   def accept
     group = nil
     if self.is_b2b
-      group = AcceptGroupInvoiceJob.perform_now(get_supplier_group_number, self._id)
+      group = AcceptGroupInvoiceJob.perform_now(self.get_supplier_group_number, self._id)
     end
     return {
         :group => group

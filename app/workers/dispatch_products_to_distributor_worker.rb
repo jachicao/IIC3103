@@ -5,7 +5,7 @@ class DispatchProductsToDistributorWorker < ApplicationWorker
     puts 'starting DispatchProductsToDistributorWorker'
     purchase_order = PurchaseOrder.find_by(po_id: po_id)
     if purchase_order != nil
-      quantity_left = purchase_order.quantity - purchase_order.server_quantity_dispatched
+      quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
       if quantity_left > 0
         puts 'DispatchProductsToDistributorWorker: quantity left ' + quantity_left.to_s
         despacho_id = StoreHouse.get_despacho._id

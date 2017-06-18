@@ -71,7 +71,7 @@ class CheckMinimumStockWorker < ApplicationWorker
             sku = purchase_order.product.sku
             products.each do |p|
               if sku == p[:sku]
-                p[:stock_available] += (purchase_order.quantity - purchase_order.server_quantity_dispatched)
+                p[:stock_available] += (purchase_order.quantity - purchase_order.quantity_dispatched)
               end
             end
           end
@@ -125,7 +125,7 @@ class CheckMinimumStockWorker < ApplicationWorker
               sku = product.sku
               products.each do |p|
                 if sku == p[:sku]
-                  quantity_to_dispatch = (purchase_order.quantity - purchase_order.server_quantity_dispatched)
+                  quantity_to_dispatch = (purchase_order.quantity - purchase_order.quantity_dispatched)
                   self.analyze_quantity_needed(products, product, quantity_to_dispatch)
                 end
               end

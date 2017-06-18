@@ -6,7 +6,7 @@ class AnalyzeInvoiceWorker < ApplicationWorker
       if invoice.client_id == ENV['GROUP_ID']
         purchase_order = invoice.get_purchase_order
         if purchase_order != nil
-          if invoice.amount == purchase_order.unit_price * purchase_order.quantity
+          if invoice.amount >= purchase_order.unit_price * purchase_order.quantity
             invoice.accept
           else
             invoice.reject('Total de factura no equivale a precioUnitario * cantidad')

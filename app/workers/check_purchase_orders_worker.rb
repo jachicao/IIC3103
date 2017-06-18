@@ -2,11 +2,11 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
   sidekiq_options queue: 'default'
 
   def perform(*args)
-    if ENV['DOCKER_RUNNING'] != nil
+    if true
       if $sending_purchase_order != nil
         purchase_order = PurchaseOrder.find_by(po_id: $sending_purchase_order)
         if purchase_order != nil
-          if purchase_order.server_quantity_dispatched >= purchase_order.quantity
+          if purchase_order.quantity_dispatched >= purchase_order.quantity
             $sending_purchase_order = nil
           end
         else
@@ -22,7 +22,7 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
               when 'contra_factura'
                 purchase_order.pay_invoice
               when 'contra_despacho'
-                if purchase_order.server_quantity_dispatched >= purchase_order.quantity
+                if purchase_order.quantity_dispatched >= purchase_order.quantity
                   purchase_order.pay_invoice
                 end
             end
@@ -39,7 +39,7 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
           elsif purchase_order.is_accepted
             purchase_order.create_invoice
             if $sending_purchase_order == nil
-              if purchase_order.server_quantity_dispatched < purchase_order.quantity
+              if purchase_order.quantity_dispatched < purchase_order.quantity
                 if purchase_order.sending
                 else
                   if purchase_order.product.stock - purchase_order.product.stock_in_despacho >= purchase_order.quantity

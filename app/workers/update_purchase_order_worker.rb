@@ -10,6 +10,7 @@ class UpdatePurchaseOrderWorker < ApplicationWorker
         purchase_order.update(status: body[:estado],
                               rejected_reason: body[:rechazo],
                               cancelled_reason: body[:anulacion],
+                              quantity_dispatched: [body[:cantidadDespachada], purchase_order.quantity_dispatched].max,
                               server_quantity_dispatched: body[:cantidadDespachada],
                               client_id: body[:cliente],
                               supplier_id: body[:proveedor],

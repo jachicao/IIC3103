@@ -26,6 +26,10 @@ class MoveProductToDirectionWorker < ApplicationWorker
           s.update(quantity: s.quantity - 1)
         end
       end
+      purchase_order = PurchaseOrder.find_by(po_id: po_id)
+      if purchase_order != nil
+        purchase_order.update_quantity_dispatched
+      end
     end
     body = JSON.parse(response.body, symbolize_names: true)
     return {

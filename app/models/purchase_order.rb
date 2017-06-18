@@ -10,6 +10,7 @@ class PurchaseOrder < ApplicationRecord
           status: body[:estado],
           rejected_reason: body[:rechazo],
           cancelled_reason: body[:anulacion],
+          quantity_dispatched: body[:cantidadDespachada],
           server_quantity_dispatched: body[:cantidadDespachada],
           client_id: body[:cliente],
           supplier_id: body[:proveedor],
@@ -197,10 +198,15 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def is_dispatched
-    return self.quantity <= self.server_quantity_dispatched
+    return self.quantity <= self.quantity_dispatched
   end
 
   def update_properties_async
     return UpdatePurchaseOrderWorker.perform_async(self.po_id)
+  end
+
+  def update_quantity_dispatched
+    #self.update(quantity_dispatched: self.quantity_dispatched + 1)
+    PurchaseOrder.increment_counter(:quantity_dispatched, self.id)
   end
 end
