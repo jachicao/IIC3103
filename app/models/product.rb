@@ -70,8 +70,10 @@ class Product < ApplicationRecord
     if difference > 0
       my_product_in_sale = self.get_my_product_sale
       if my_product_in_sale != nil
+        id = my_product_in_sale.id
+        unit_lote = (difference.to_f / self.lote.to_f).ceil
+        time = my_product_in_sale.average_time * unit_lote
         if self.ingredients.size > 0
-          unit_lote = (difference.to_f / self.lote.to_f).ceil
           has_enough = true
           self.ingredients.each do |ingredient|
             ingredient_quantity = ingredient.quantity * unit_lote - ingredient.item.stock_available
@@ -84,8 +86,8 @@ class Product < ApplicationRecord
                 :quantity => difference,
                 :success => true,
                 :buy => true,
-                :id => my_product_in_sale.id,
-                :time => my_product_in_sale.average_time,
+                :id => id,
+                :time => time,
             }
           else
             purchase_items = []
@@ -111,8 +113,8 @@ class Product < ApplicationRecord
                 :quantity => difference,
                 :success => success,
                 :buy => buy,
-                :id => my_product_in_sale.id,
-                :time => my_product_in_sale.average_time + extra_time,
+                :id => id,
+                :time => time + extra_time,
                 :purchase_items => purchase_items,
             }
           end
@@ -121,8 +123,8 @@ class Product < ApplicationRecord
               :quantity => difference,
               :success => true,
               :buy => true,
-              :id => my_product_in_sale.id,
-              :time => my_product_in_sale.average_time,
+              :id => id,
+              :time => time,
           }
         end
       else

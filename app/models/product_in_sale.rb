@@ -29,10 +29,10 @@ class ProductInSale < ApplicationRecord
     BuyProductToFactoryWorker.perform_async(self.product.sku, quantity, self.product.unit_cost)
   end
 
-  def buy_product(quantity)
+  def buy_product(quantity)0
+  unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
     if self.is_mine
-      if self.product.ingredients.size > 0
-        unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
+      if self.product.ingredients.size >
         lotes = unit_lote
         self.product.ingredients.each do |ingredient|
           ingredient_lotes = 0
@@ -48,7 +48,7 @@ class ProductInSale < ApplicationRecord
           lotes = [lotes, ingredient_lotes].min
         end
         if lotes > 0
-          PendingProduct.create(product: self.product, quantity: (quantity.to_f / self.product.lote.to_f).ceil)
+          PendingProduct.create(product: self.product, quantity: lotes)
         end
       else
         self.buy_to_factory(quantity)
@@ -57,7 +57,7 @@ class ProductInSale < ApplicationRecord
       BuyProductToBusinessWorker.perform_async(
           self.producer.producer_id,
           self.product.sku,
-          (Time.now + (self.average_time * 3).to_f.hours).to_i * 1000, #TODO, REDUCE TIME
+          (Time.now + (self.average_time * 2 * unit_lote).to_f.hours).to_i * 1000, #TODO, REDUCE TIME
           quantity,
           self.price,
           'contra_factura'
@@ -76,6 +76,7 @@ class ProductInSale < ApplicationRecord
     elsif quantity > 0
       if self.is_mine
         unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
+        time = self.average_time * unit_lote
         quantity = self.product.lote * unit_lote
         if self.product.ingredients.size > 0
           purchase_items = []
@@ -93,7 +94,7 @@ class ProductInSale < ApplicationRecord
               end
               if found
               else
-                purchase_items.push({ :success => false, :sku => ingredient.item.sku })
+                purchase_items.push({ :success => false })
               end
             end
           end
@@ -112,7 +113,7 @@ class ProductInSale < ApplicationRecord
               :success => success,
               :id => self.id,
               :quantity => quantity,
-              :time => self.average_time + extra_time,
+              :time => time + extra_time,
               :purchase_items => purchase_items,
           }
         else
@@ -120,7 +121,7 @@ class ProductInSale < ApplicationRecord
               :success => true,
               :id => self.id,
               :quantity => quantity,
-              :time => self.average_time,
+              :time => time,
           }
         end
       else

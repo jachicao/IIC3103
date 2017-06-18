@@ -15,6 +15,7 @@ class Api::ApiInvoicesController < Api::ApiController
     response = Invoice.get_server_details(params[:invoice_id])
     case response[:code]
       when 200
+        body = response[:body]
         @invoice = Invoice.new(
             _id: body[:_id],
             bank_id: params[:bank_account],
