@@ -99,7 +99,8 @@ class ProduceProductsWorker < ApplicationWorker
             if pending_product.quantity > 0
               puts 'ProduceProductsWorker: producing ' + pending_product.product.name
               pending_product.update(quantity: pending_product.quantity - 1)
-              pending_product.product.buy_to_factory(pending_product.product.lote)
+              my_product_in_sale = pending_product.product.get_my_product_sale
+              my_product_in_sale.buy_to_factory(pending_product.product.lote)
             end
           end
           break

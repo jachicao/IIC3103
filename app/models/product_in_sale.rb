@@ -24,6 +24,11 @@ class ProductInSale < ApplicationRecord
     end
   end
 
+  def buy_to_factory(quantity)
+    quantity = self.product.lote * (quantity.to_f / self.product.lote.to_f).ceil
+    BuyProductToFactoryWorker.perform_async(self.product.sku, quantity, self.product.unit_cost)
+  end
+
   def buy(quantity)
     if self.is_mine
       if self.product.ingredients.size > 0
@@ -46,8 +51,7 @@ class ProductInSale < ApplicationRecord
           PendingProduct.create(product: self.product, quantity: (quantity.to_f / self.product.lote.to_f).ceil)
         end
       else
-        quantity = self.product.lote * (quantity.to_f / self.product.lote.to_f).ceil
-        BuyProductToFactoryWorker.perform_async(self.product.sku, quantity, self.product.unit_cost)
+        self.buy_to_factory(quantity)
       end
     else
       BuyProductToBusinessWorker.perform_async(

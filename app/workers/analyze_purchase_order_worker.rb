@@ -1,28 +1,14 @@
 class AnalyzePurchaseOrderWorker < ApplicationWorker
 
   def buy(result)
-    product = Product.find_by(sku: result[:sku])
     if result[:purchase_items] != nil
       result[:purchase_items].each do |p|
         self.buy(p)
       end
     end
     if result[:buy] and result[:success]
-      my_product_in_sale = product.get_my_product_sale
-      if my_product_in_sale != nil
-        if product.ingredients.size > 0
-          product.produce(result[:quantity])
-        else
-          product.buy_to_factory(result[:quantity])
-        end
-      else
-        product.buy_to_producer_async(
-            result[:producer_id],
-            result[:quantity],
-            result[:price],
-            result[:time]
-        )
-      end
+      product_in_sale = ProductInSale.find_by(result[:id])
+      product_in_sale.buy(result[:quantity])
     end
   end
 

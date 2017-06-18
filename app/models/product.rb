@@ -65,54 +65,7 @@ class Product < ApplicationRecord
     return total
   end
 
-  def buy_to_factory(quantity)
-    quantity = self.lote * (quantity.to_f / self.lote.to_f).ceil
-    puts 'Produciendo ' + quantity.to_s + ' de ' + self.name
-    if quantity > 5000
-      return false
-    end
-    BuyProductToFactoryWorker.perform_async(self.sku, quantity, self.unit_cost)
-    return true
-  end
-
-  def buy_to_producer(producer_id, quantity, price, time_to_produce)
-    puts 'Comprando ' + quantity.to_s + ' de ' + self.name + ' a productor ' + producer_id
-    return BuyProductToBusinessWorker.new.perform(
-        producer_id,
-        self.sku,
-        (Time.now + (time_to_produce * 3 * 24).to_f.hours).to_i * 1000, #TODO: QUITAR ESTO
-        quantity,
-        price,
-        'contra_factura'
-    )
-  end
-
-  def buy_to_producer_async(producer_id, quantity, price, time_to_produce)
-    puts 'Comprando ' + quantity.to_s + ' de ' + self.name + ' a productor ' + producer_id
-    BuyProductToBusinessWorker.perform_async(
-        producer_id,
-        self.sku,
-        (Time.now + (time_to_produce * 3 * 24).to_f.hours).to_i * 1000, #TODO: QUITAR ESTO
-        quantity,
-        price,
-        'contra_factura'
-    )
-  end
-
-  def produce(quantity)
-    puts 'Produciendo ' + quantity.to_s + ' de ' + self.name
-    PendingProduct.create(product: self, quantity: (quantity.to_f / self.lote.to_f).ceil)
-  end
-
   def analyze_purchase_order(quantity)
-    if quantity > 5000
-      return {
-          :sku => self.sku,
-          :quantity => 0,
-          :buy => false,
-          :success => false,
-      }
-    end
     difference = quantity - self.stock_available
     if difference > 0
       my_product_in_sale = self.get_my_product_sale
@@ -128,11 +81,10 @@ class Product < ApplicationRecord
           end
           if has_enough
             return {
-                :sku => self.sku,
                 :quantity => difference,
-                :buy => true,
                 :success => true,
-                :producer_id => my_product_in_sale.producer.producer_id,
+                :buy => true,
+                :id => my_product_in_sale.id,
                 :time => my_product_in_sale.average_time,
             }
           else
@@ -156,22 +108,20 @@ class Product < ApplicationRecord
               end
             end
             return {
-                :sku => self.sku,
                 :quantity => difference,
-                :buy => buy,
                 :success => success,
-                :producer_id => my_product_in_sale.producer.producer_id,
+                :buy => buy,
+                :id => my_product_in_sale.id,
                 :time => my_product_in_sale.average_time + extra_time,
                 :purchase_items => purchase_items,
             }
           end
         else
           return {
-              :sku => self.sku,
               :quantity => difference,
-              :buy => true,
               :success => true,
-              :producer_id => my_product_in_sale.producer.producer_id,
+              :buy => true,
+              :id => my_product_in_sale.id,
               :time => my_product_in_sale.average_time,
           }
         end
@@ -193,29 +143,26 @@ class Product < ApplicationRecord
         best_product_in_sale = nil #TODO: REMOVE THIS
         if best_product_in_sale != nil
           return {
-              :sku => self.sku,
               :quantity => difference,
-              :buy => true,
               :success => true,
-              :producer_id => best_product_in_sale.producer.producer_id,
-              :price => best_product_in_sale.price,
+              :buy => true,
+              :id => best_product_in_sale.id,
               :time => 0,
           }
         else
           return {
-              :sku => self.sku,
               :quantity => difference,
-              :buy => true,
               :success => false,
+              :buy => true,
+              :time => 0,
           }
         end
       end
     else
       return {
-          :sku => self.sku,
           :quantity => 0,
-          :buy => false,
           :success => true,
+          :buy => false,
           :time => 0,
       }
     end

@@ -81,6 +81,11 @@
   <%= @purchase_order.is_dispatched %>
 </p>
 
+<p>
+  <strong>Analysis:</strong>
+  <%= @purchase_order.product.analyze_purchase_order(@purchase_order.quantity) %>
+</p>
+
 <h2>
   Facturas
 </h2>
