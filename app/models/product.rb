@@ -221,7 +221,7 @@ class Product < ApplicationRecord
     end
   end
 
-  def buy(quantity)
+  def buy_min_stock(quantity)
     if self.is_produced_by_me
       if self.ingredients.size > 0
         unit_lote = (quantity.to_f / self.lote.to_f).ceil

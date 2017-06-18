@@ -141,7 +141,7 @@ class CheckMinimumStockWorker < ApplicationWorker
         difference = [p[:quantity_needed] - p[:stock_available], 5000].min
         if difference > 0
           puts product.name + ' ' + difference.to_s
-          product.buy(difference)
+          product.buy_min_stock(difference)
         end
       end
     end
