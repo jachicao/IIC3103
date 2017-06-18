@@ -1,17 +1,17 @@
 class AcceptGroupInvoiceJob < ApplicationJob
 
   def aceptar_factura(id, group_number)
-    group_server_url = (ENV['GROUPS_SERVER_URL'] % [group_number]) + ENV['API_URL_GROUP_' + group_number.to_s]
+    producer = Producer.find_by(group_number: group_number)
     req_params = {
 
     }
-    url = group_server_url + '/invoices/' + id + '/accepted'
+    url = producer.get_api_url + '/invoices/' + id + '/accepted'
     case group_number
       when 2
         begin
           return RestClient.patch(url,
                                   req_params.to_json,
-                                  { content_type: :json, accept: :json, authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN' => ENV['GROUP_ID'] })
+                                  { content_type: :json, accept: :json, 'X-ACCESS-TOKEN' => producer.get_access_token })
         rescue RestClient::ExceptionWithResponse => e
           return e.response
         end

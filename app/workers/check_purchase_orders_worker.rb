@@ -50,7 +50,7 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
               end
             end
           elsif purchase_order.is_rejected
-            purchase_order.destroy
+            #purchase_order.destroy
           elsif purchase_order.is_cancelled
             purchase_order.destroy
           elsif purchase_order.is_completed

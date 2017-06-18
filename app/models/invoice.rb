@@ -6,8 +6,9 @@ class Invoice < ApplicationRecord
   end
 
   def self.url_create(bill)
-    urlok = (ENV['GROUPS_SERVER_URL'] % [ENV['GROUP_NUMBER'].to_i]) + '/spree'
-    urlfail = (ENV['GROUPS_SERVER_URL'] % [ENV['GROUP_NUMBER'].to_i]) + '/spree/cart'
+    me = Producer.get_me
+    urlok = me.get_base_url + '/spree'
+    urlfail = me.get_base_url + '/spree/cart'
     url = ENV['CENTRAL_SERVER_URL'] + '/web/pagoenlinea'
     url += "?callbackUrl=#{URI.escape(urlok, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
     url += "&cancelUrl=#{URI.escape(urlfail, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"

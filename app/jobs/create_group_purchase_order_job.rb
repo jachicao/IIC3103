@@ -8,12 +8,12 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
   #grupo7: ok
   #grupo8: no, No route matches [PUT] /purchase_orders/592e08dfb0cb2100049756a5
   def crear_orden_de_compra(group_number, id, payment_method, id_store_reception)
-    group_server_url = (ENV['GROUPS_SERVER_URL'] % [group_number]) + ENV['API_URL_GROUP_' + group_number.to_s]
+    producer = Producer.find_by(group_number: group_number)
     req_params = {
         :payment_method => 'contra_factura',
         :id_store_reception => id_store_reception,
     }
-    url = group_server_url + '/purchase_orders/' + id
+    url = producer.get_api_url + '/purchase_orders/' + id
     puts url
     case group_number
       when 2
@@ -21,7 +21,7 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
         begin
           return RestClient.put(url,
                                 req_params.to_json,
-                                { content_type: :json, accept: :json, authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN' => ENV['GROUP_ID'] })
+                                { content_type: :json, accept: :json, authorization: producer.get_access_token, 'X-ACCESS-TOKEN' => producer.get_access_token })
         rescue RestClient::ExceptionWithResponse => e
           return e.response
         end
@@ -43,7 +43,7 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
     return HTTParty.put(
         url,
         :body => req_params,
-        :headers => { content_type: 'application/json', accept: 'application/json', authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN' => ENV['GROUP_ID'] }
+        :headers => { content_type: 'application/json', accept: 'application/json', authorization: producer.get_access_token, 'X-ACCESS-TOKEN' => producer.get_access_token }
     )
   end
 

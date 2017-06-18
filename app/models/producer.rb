@@ -18,4 +18,40 @@ class Producer < ApplicationRecord
     invalid_groups = [6, 8] #TODO: remove this
     return invalid_groups.include?(self.group_number)
   end
+
+  def get_access_token
+    return ENV['GROUP_ID']
+  end
+
+  def get_api_route
+    case self.group_number
+      when 1
+        return '/api'
+      when 2
+        return ''
+      when 3
+        return '/api'
+      when 4
+        return ''
+      when 5
+        return ''
+      when 6
+        return ''
+      when 7
+        return '/api'
+      when 8
+        return ''
+      else
+        return ''
+    end
+  end
+
+  def get_base_url
+    return (ENV['GROUPS_SERVER_URL'] % [self.group_number])
+  end
+
+  def get_api_url
+    return self.get_base_url + self.get_api_route
+  end
+
 end

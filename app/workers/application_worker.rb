@@ -228,7 +228,8 @@ class ApplicationWorker
   end
 
   def get_group_prices(group_number)
-    url = (ENV['GROUPS_SERVER_URL'] % [group_number]) + '/api/publico/precios'
+    producer = Producer.find_by(group_number: group_number)
+    url = producer.get_base_url + '/api/publico/precios'
     req_params = {
     }
     response = HTTParty.get(

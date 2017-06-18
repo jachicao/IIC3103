@@ -1,17 +1,17 @@
 class NotifyPaymentGroupInvoiceJob < ApplicationJob
 
   def factura_pagada(id, group_number, trx_id)
-    group_server_url = (ENV['GROUPS_SERVER_URL'] % [group_number]) + ENV['API_URL_GROUP_' + group_number.to_s]
+    producer = Producer.find_by(group_number: group_number)
     req_params = {
         :id_transaction => trx_id
     }
-    url = group_server_url + '/invoices/' + id + '/paid'
+    url = producer.get_api_url + '/invoices/' + id + '/paid'
     case group_number
       when 2
         begin
           return RestClient.patch(url,
                                   req_params.to_json,
-                                  { content_type: :json, accept: :json, authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN' => ENV['GROUP_ID'] })
+                                  { content_type: :json, accept: :json, authorization: producer.get_access_token, 'X-ACCESS-TOKEN' => producer.get_access_token })
         rescue RestClient::ExceptionWithResponse => e
           return e.response
         end
@@ -19,7 +19,7 @@ class NotifyPaymentGroupInvoiceJob < ApplicationJob
     return HTTParty.patch(
         url,
         :body => req_params,
-        :headers => { content_type: 'application/json', accept: 'application/json', authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN' => ENV['GROUP_ID'] }
+        :headers => { content_type: 'application/json', accept: 'application/json', authorization: producer.get_access_token, 'X-ACCESS-TOKEN' => producer.get_access_token }
     )
   end
 

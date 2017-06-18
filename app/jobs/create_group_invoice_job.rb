@@ -1,17 +1,17 @@
 class CreateGroupInvoiceJob < ApplicationJob
 
   def crear_factura(id, group_number, bank_id)
-    group_server_url = (ENV['GROUPS_SERVER_URL'] % [group_number]) + ENV['API_URL_GROUP_' + group_number.to_s]
+    producer = Producer.find_by(group_number: group_number)
     req_params = {
       :bank_account => bank_id,
     }
-    url = group_server_url + '/invoices/' + id
+    url = producer.get_api_url + '/invoices/' + id
     case group_number
       when 2
         begin
           return RestClient.put(url,
                                 req_params.to_json,
-                                { content_type: :json, accept: :json, authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN' => ENV['GROUP_ID'] })
+                                { content_type: :json, accept: :json, authorization: producer.get_access_token, 'X-ACCESS-TOKEN' => producer.get_access_token })
         rescue RestClient::ExceptionWithResponse => e
           return e.response
         end
@@ -19,7 +19,7 @@ class CreateGroupInvoiceJob < ApplicationJob
     return HTTParty.put(
         url,
         :body => req_params,
-        :headers => { content_type: 'application/json', accept: 'application/json', authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN' => ENV['GROUP_ID'] }
+        :headers => { content_type: 'application/json', accept: 'application/json', authorization: producer.get_access_token, 'X-ACCESS-TOKEN' => producer.get_access_token }
     )
   end
 

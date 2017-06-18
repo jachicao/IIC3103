@@ -114,7 +114,8 @@ class CheckMinimumStockWorker < ApplicationWorker
       end
 
       #ordenes de compra hechas por otros
-      PurchaseOrder.all.each do |purchase_order|
+      ordered = PurchaseOrder.all.order(delivery_date: :asc)
+      ordered.each do |purchase_order|
         if purchase_order.is_made_by_me
         else
           if purchase_order.is_dispatched
