@@ -6,10 +6,12 @@ class UpdateInvoiceWorker < ApplicationWorker
     if invoice != nil
       if invoice.is_bill
       else
-        purchase_order = invoice.get_purchase_order
-        if purchase_order.nil?
-          invoice.destroy
-          return nil
+        if invoice.po_id != nil
+          purchase_order = invoice.get_purchase_order
+          if purchase_order.nil?
+            invoice.destroy
+            return nil
+          end
         end
       end
       server = self.get_invoice(invoice._id)
