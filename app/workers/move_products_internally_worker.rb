@@ -8,7 +8,7 @@ class MoveProductsInternallyWorker < ApplicationWorker
     if to_available_space > 0
       from_store_house.stocks.each do |s|
         if s.product.sku == sku and s.quantity > 0 and quantity > 0
-          limit = [to_available_space, s.quantity, quantity, 100].min
+          limit = [to_available_space, s.quantity, quantity, 200].min
           products = self.get_product_stock(from_store_house_id, sku, limit)
           if products != nil
             products[:body].each do |product|

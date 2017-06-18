@@ -29,14 +29,9 @@
         <td><%= size %></td>
         <td><%= link_to 'Show', product %></td>
         <% if @my_products[product.sku.to_i] != nil %>
-            <% if size == 0 %>
-                <td><%= link_to 'Comprar a Fabrica', buy_to_factory_product_path(id: product.id) %></td>
-            <% else %>
-                <td><%= link_to 'Mandar a Producir', produce_product_path(id: product.id) %></td>
-            <% end %>
-        <% end %>
-        <% if @my_ingredients[product.sku.to_i] %>
-            <td><%= link_to 'Comprar a Proveedor ', buy_to_producer_product_path(id: product.id) %></td>
+            <td><%= link_to 'Comprar', buy_product_path(id: product.id) %></td>
+        <% elsif @my_ingredients[product.sku.to_i] %>
+            <td><%= link_to 'Comprar', buy_product_path(id: product.id) %></td>
         <% end%>
       </tr>
     <% end %>

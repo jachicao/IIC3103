@@ -1,0 +1,34 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Comprar <%= @product.name %> </h1>
+
+<%= form_tag(post_buy_product_path(id: @product.id)) do %>
+
+    <div class="field">
+      <%= label_tag :cantidad %>
+      <%= number_field_tag :quantity %>
+    </div>
+
+    <div class="field">
+      <%= label_tag :proveedor %>
+      <select name="group_number">
+        <% @product.product_in_sales.each do |product_in_sale| %>
+            <% if not product_in_sale.producer.has_wrong_purchase_orders_api %>
+                <option value="<%= product_in_sale.producer.group_number %>">
+                  <% if product_in_sale.is_mine %>
+                      <%= product_in_sale.producer.group_number.to_s + ' (precio: ' + product_in_sale.get_price.to_s + ')' %>
+                  <% else %>
+                      <%= product_in_sale.producer.group_number.to_s + ' (stock: ' + product_in_sale.stock.to_s + ', precio: ' + product_in_sale.get_price.to_s + ')' %>
+                  <% end %>
+                </option>
+            <% end %>
+        <% end %>
+      </select>
+    </div>
+
+    <div class="actions">
+      <%= submit_tag%>
+    </div>
+<% end %>
+
+<%= link_to 'Back', products_path %>

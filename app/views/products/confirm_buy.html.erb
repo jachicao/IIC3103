@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Confirmación para comprar <%= @product.name %></h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Proveedor</th>
+    <th>Producto</th>
+    <th>Cantidad</th>
+    <th>Tiempo</th>
+    <th>Precio</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @purchase_items.each do |purchase_item| %>
+      <% product_in_sale = ProductInSale.find_by(id: purchase_item[:id]) %>
+      <tr>
+        <td><%= product_in_sale.producer.group_number %></td>
+        <td><%= product_in_sale.product.name %></td>
+        <td><%= purchase_item[:quantity] %></td>
+        <td><%= purchase_item[:time] %></td>
+        <td><%= product_in_sale.get_price %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+
+
+<%= link_to 'Comprar', { :controller => :products, :action => :post_confirm_buy, :purchase_items => @purchase_items }, { :method => :post } %>
+
+<br>
+
+<%= link_to 'Back', products_path %>

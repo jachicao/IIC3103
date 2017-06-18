@@ -49,20 +49,8 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   # PATCH/PUT /purchase_orders/1/accepted.json
   def accepted
     if @purchase_order != nil
+      @purchase_order.update_properties
       return render :json => { :success => true }
-=begin
-      response = PurchaseOrder.get_server_details(params[:po_id])
-      case response[:code]
-        when 200
-          body = response[:body]
-          case body[:estado]
-            when 'creada'
-              return render :json => { :success => true }
-          end
-          return render :json => { :success => false, :error => 'Estado de orden de compra no es \'creada\'' }, status: :bad_request
-      end
-      return render :json => { :success => false, :error => response[:body] }, status: response[:code]
-=end
     else
       return render :json => { :success => false, :error => 'PurchaseOrder not found' }, status: :not_found
     end
@@ -71,26 +59,9 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
   # PATCH/PUT /purchase_orders/1/rejected
   # PATCH/PUT /purchase_orders/1/rejected.json
   def rejected
-=begin
-    if params[:cause].nil?
-      return render :json => { :success => false, :error => 'Falta cause' }, status: :bad_request
-    end
-=end
     if @purchase_order != nil
+      @purchase_order.update_properties
       return render :json => { :success => true }
-=begin
-      response = PurchaseOrder.get_server_details(params[:po_id])
-      case response[:code]
-        when 200
-          body = response[:body]
-          case body[:estado]
-            when 'creada'
-              return render :json => { :success => true }
-          end
-          return render :json => { :success => false, :error => 'Estado de orden de compra no es \'creada\'' }, status: :bad_request
-      end
-      return render :json => { :success => false, :error => response[:body] }, status: response[:code]
-=end
     else
       return render :json => { :success => false, :error => 'PurchaseOrder not found' }, status: :not_found
     end

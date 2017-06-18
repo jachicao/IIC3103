@@ -48,14 +48,10 @@ class Invoice < ApplicationRecord
         end
       end
 
-      Invoice.create(
+      invoice = Invoice.create(
           _id: body[:_id],
-          supplier_id: body[:proveedor],
-          client_id: body[:cliente],
-          po_id: body[:oc][:_id],
-          status: body[:estado],
-          amount: body[:total],
       )
+      invoice.update_properties
       return {
           :success => true,
           :server => server,

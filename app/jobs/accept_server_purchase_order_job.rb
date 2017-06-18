@@ -13,7 +13,6 @@ class AcceptServerPurchaseOrderJob < ApplicationJob
   end
 
   def perform(id)
-    $redis.del('obtener_orden_de_compra:' + id)
     response = recepcionar_orden_de_compra(id)
     body = JSON.parse(response.body, symbolize_names: true)
 
@@ -23,15 +22,12 @@ class AcceptServerPurchaseOrderJob < ApplicationJob
 
     puts body
     puts response.code
-    if response.code == 200
-      purchase_order = PurchaseOrder.find_by(po_id: id)
-      if purchase_order != nil
-        purchase_order.update(status: body[:estado],
-                              rejected_reason: body[:rechazo],
-                              cancelled_reason: body[:anulacion],
-        )
-      end
+
+    purchase_order = PurchaseOrder.find_by(po_id: id)
+    if purchase_order != nil
+      purchase_order.update_properties
     end
+
     return {
         :body => body,
         :code =>  response.code,

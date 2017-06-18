@@ -32,6 +32,7 @@ class Api::ApiInvoicesController < Api::ApiController
 
   def accepted
     if @invoice != nil
+      @invoice.update_properties
       return render :json => { :success => true }
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
@@ -40,6 +41,7 @@ class Api::ApiInvoicesController < Api::ApiController
 
   def rejected
     if @invoice != nil
+      @invoice.update_properties
       return render :json => { :success => true }
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
@@ -47,35 +49,9 @@ class Api::ApiInvoicesController < Api::ApiController
   end
 
   def paid
-=begin
-    if params[:id_transaction].nil?
-      return render :json => { :success => false, :error => 'Falta id_transaction' }, status: :bad_request
-    end
-=end
     if @invoice != nil
+      @invoice.update_properties
       return render :json => { :success => true }
-=begin
-      response = Invoice.get_server_details(params[:invoice_id])
-      case response[:code]
-        when 200
-          body = response[:body]
-          case body[:estado]
-            when 'pagado'
-              transaction = Bank.get_transaction(params[:id_transaction])
-              case transaction[:code]
-                when 200
-                  if transaction[:body][:monto] >= body[:total]
-                    return render :json => { :success => true }
-                  else
-                    return render :json => { :success => false, :error => 'Monto es menor a orden de compra' }, status: :bad_request
-                  end
-              end
-              return render :json => { :success => false, :error => 'Transacción no existe' }, status: :bad_request
-          end
-          return render :json => { :success => false, :error => 'Estado de factura no es \'pagado\'' }, status: :bad_request
-      end
-      return render :json => { :success => false, :error => response[:body] }, status: response[:code]
-=end
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
     end
@@ -83,6 +59,7 @@ class Api::ApiInvoicesController < Api::ApiController
 
   def delivered
     if @invoice != nil
+      @invoice.update_properties
       return render :json => { :success => true }
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
