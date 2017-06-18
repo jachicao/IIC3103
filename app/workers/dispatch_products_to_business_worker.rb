@@ -2,7 +2,6 @@ class DispatchProductsToBusinessWorker < ApplicationWorker
   sidekiq_options queue: 'default'
 
   def perform(po_id)
-    puts 'starting DispatchProductsToBusinessWorker'
     purchase_order = PurchaseOrder.find_by(po_id: po_id)
     if purchase_order != nil
       quantity_left = purchase_order.quantity - purchase_order.server_quantity_dispatched

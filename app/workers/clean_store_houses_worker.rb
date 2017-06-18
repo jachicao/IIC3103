@@ -53,6 +53,7 @@ class CleanStoreHousesWorker < ApplicationWorker
           end
         end
       end
+=begin
       StoreHouse.all.each do |from_store_house|
         if from_store_house.pulmon
           from_used_space = from_store_house.used_space
@@ -66,6 +67,7 @@ class CleanStoreHousesWorker < ApplicationWorker
           end
         end
       end
+=end
     end
   end
 end

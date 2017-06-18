@@ -108,9 +108,9 @@ class CheckMinimumStockWorker < ApplicationWorker
       end
 
 
-      #cantidad requeridas mi para tener minimo 2 lotes
+      #cantidad requerida para tener minimo
       Product.all.each do |product|
-        self.get_quantity_needed(products, product, product.lote * 2, false)
+        self.get_quantity_needed(products, product, 2500, false)
       end
 
       #ordenes de compra hechas por otros
