@@ -53,6 +53,7 @@ class ProductInSale < ApplicationRecord
   end
 
   def buy_to_producer_sync(quantity)
+    unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
     return BuyProductToBusinessWorker.new.perform(
         self.producer.producer_id,
         self.product.sku,
@@ -81,6 +82,7 @@ class ProductInSale < ApplicationRecord
   end
 
   def buy_to_producer_async(quantity)
+    unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
     BuyProductToBusinessWorker.perform_async(
         self.producer.producer_id,
         self.product.sku,
