@@ -142,7 +142,11 @@ class Invoice < ApplicationRecord
     return false
   end
 
-  def update_properties
+  def update_properties_sync
+    UpdateInvoiceWorker.new.perform(self._id)
+  end
+
+  def update_properties_async
     UpdateInvoiceWorker.perform_async(self._id)
   end
 end

@@ -22,7 +22,7 @@ class CreateBillJob < ApplicationJob
         _id: body[:_id],
         is_bill: true,
     )
-    invoice.update_properties
+    invoice.update_properties_sync
     return {
         :body => body,
         :code => response.code,

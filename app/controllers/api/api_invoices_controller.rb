@@ -21,7 +21,7 @@ class Api::ApiInvoicesController < Api::ApiController
             bank_id: params[:bank_account],
         )
         if @invoice.save
-          @invoice.update_properties
+          @invoice.update_properties_sync
           return render json: { :success => true }
         else
           return render json: { :success => false, :error => @invoice.errors } , status: :unprocessable_entity
@@ -32,7 +32,7 @@ class Api::ApiInvoicesController < Api::ApiController
 
   def accepted
     if @invoice != nil
-      @invoice.update_properties
+      @invoice.update_properties_async
       return render :json => { :success => true }
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
@@ -41,7 +41,7 @@ class Api::ApiInvoicesController < Api::ApiController
 
   def rejected
     if @invoice != nil
-      @invoice.update_properties
+      @invoice.update_properties_async
       return render :json => { :success => true }
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
@@ -50,7 +50,7 @@ class Api::ApiInvoicesController < Api::ApiController
 
   def paid
     if @invoice != nil
-      @invoice.update_properties
+      @invoice.update_properties_async
       return render :json => { :success => true }
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
@@ -59,7 +59,7 @@ class Api::ApiInvoicesController < Api::ApiController
 
   def delivered
     if @invoice != nil
-      @invoice.update_properties
+      @invoice.update_properties_async
       return render :json => { :success => true }
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found

@@ -54,7 +54,7 @@ class BuyProductToBusinessWorker < ApplicationWorker
                                        store_reception_id: id_almacen_recepcion,
     )
     if purchase_order.save
-      purchase_order.update_properties
+      purchase_order.update_properties_sync
       return {
           :success => true,
           :server => response_server,

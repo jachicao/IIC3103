@@ -35,8 +35,7 @@ class CreateInvoiceWorker < ApplicationWorker
       invoice = Invoice.create(
           _id: body[:_id],
       )
-      puts invoice.id
-      invoice.update_properties
+      invoice.update_properties_sync
       return {
           :success => true,
           :server => server,
