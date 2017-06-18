@@ -33,11 +33,19 @@ class DashboardController < ApplicationController
       return FailedTransaction.all
     end
 
+    def ftp_orders
+      return PurchaseOrder.where(channel: 'ftp')
+    end
+
+
     def index
       @almacenes = get_store_houses_report
       @productos = get_products_report
       @factory_orders = get_set_factory_orders
       @bills = get_bills
+      @ftp= ftp_orders
+      @complete_ftp = @ftp.where(status: 'finalizada')
+      @rejected_ftp = @ftp.where(status: 'rechazada')
       @transferencias = get_cartola
       @failed = failed_transactions
       @transactions = []
