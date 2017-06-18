@@ -62,7 +62,7 @@ class Invoice < ApplicationRecord
 
 
   def self.get_server_details(id)
-    return GetInvoiceJob.perform_now(id)
+    return GetInvoiceWorker.new.perform(id)
   end
 
   def self.cancel_invoice(id, reason)
