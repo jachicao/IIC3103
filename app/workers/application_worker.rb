@@ -196,14 +196,18 @@ class ApplicationWorker
         :headers => { content_type: 'application/json', accept: 'application/json' }
     )
     body = JSON.parse(response.body, symbolize_names: true)
-
+    code = response.code
     if body.kind_of?(Array)
       body = body.first
     end
 
+    if body.nil?
+      code = 500
+    end
+
     return {
         :body => body,
-        :code => response.code,
+        :code => code,
     }
   end
 
@@ -217,13 +221,18 @@ class ApplicationWorker
         :headers => { content_type: 'application/json', accept: 'application/json'}
     )
     body = JSON.parse(response.body, symbolize_names: true)
+    code = response.code
     if body.kind_of?(Array)
       body = body.first
     end
 
+    if body.nil?
+      code = 500
+    end
+
     return {
         :body => body,
-        :code => response.code,
+        :code => code,
     }
   end
 

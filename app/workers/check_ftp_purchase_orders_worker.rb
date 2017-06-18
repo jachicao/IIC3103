@@ -22,10 +22,8 @@ class CheckFtpPurchaseOrdersWorker < ApplicationWorker
                 server = self.get_purchase_order(po_id)
                 if server[:code] == 200
                   body = server[:body]
-                  if body != nil
-                    po = PurchaseOrder.create(po_id: body[:_id])
-                    po.update_properties
-                  end
+                  po = PurchaseOrder.create(po_id: body[:_id])
+                  po.update_properties
                 end
               end
             end
