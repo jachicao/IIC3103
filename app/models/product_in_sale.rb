@@ -29,7 +29,7 @@ class ProductInSale < ApplicationRecord
     BuyProductToFactoryWorker.perform_async(self.product.sku, quantity, self.product.unit_cost)
   end
 
-  def buy(quantity)
+  def buy_product(quantity)
     if self.is_mine
       if self.product.ingredients.size > 0
         unit_lote = (quantity.to_f / self.product.lote.to_f).ceil

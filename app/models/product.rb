@@ -34,7 +34,7 @@ class Product < ApplicationRecord
   def stock_available
     total = self.stock
     PendingProduct.all.each do |pending_product|
-      pending_product.product.ingredients do |ingredient|
+      pending_product.product.ingredients.each do |ingredient|
         if ingredient.item.sku == self.sku
           total -= ingredient.quantity * pending_product.quantity
         end
@@ -171,14 +171,14 @@ class Product < ApplicationRecord
   def buy_min_stock(quantity)
     my_product_in_sale = self.get_my_product_sale
     if my_product_in_sale != nil
-      my_product_in_sale.buy(quantity)
+      my_product_in_sale.buy_product(quantity)
     else
       self.product_in_sales.each do |product_in_sale|
         if product_in_sale.is_mine
         else
           if product_in_sale.producer.has_wrong_purchase_orders_api
           else
-            product_in_sale.buy(quantity)
+            product_in_sale.buy_product(quantity)
           end
         end
       end

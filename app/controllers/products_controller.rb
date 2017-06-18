@@ -35,7 +35,7 @@ class ProductsController < ApplicationController
     purchase_items = params[:purchase_items]
     purchase_items.each do |purchase_item|
       product_in_sale = ProductInSale.find_by(id: purchase_item[:id].to_i)
-      product_in_sale.buy(purchase_item[:quantity].to_i)
+      product_in_sale.buy_product(purchase_item[:quantity].to_i)
     end
     respond_to do |format|
       format.html { redirect_to products_path, notice: 'Productos enviados a comprar' }
