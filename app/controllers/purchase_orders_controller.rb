@@ -4,9 +4,9 @@ class PurchaseOrdersController < ApplicationController
   # GET /purchase_orders
   # GET /purchase_orders.json
   def index
-    @own_purchase_orders = PurchaseOrder.get_my_orders.select { |v| !(v.is_rejected or v.is_cancelled) }
-    @received_purchase_orders = PurchaseOrder.get_client_orders.select { |v| !(v.is_dispatched) and !(v.is_rejected or v.is_cancelled) }
-    @dispatched_purchase_orders = PurchaseOrder.get_client_orders.select { |v| v.is_dispatched and !(v.is_rejected or v.is_cancelled) }
+    @own_purchase_orders = PurchaseOrder.get_my_orders
+    @received_purchase_orders = PurchaseOrder.get_client_orders.select { |v| !(v.is_dispatched) }
+    @dispatched_purchase_orders = PurchaseOrder.get_client_orders.select { |v| v.is_dispatched }
 
   end
 
