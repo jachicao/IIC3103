@@ -1,6 +1,6 @@
 class NotifyDispatchGroupInvoiceJob < ApplicationJob
 
-  def factura_despachada(id, group_number)
+  def factura_despachada(group_number, id)
     producer = Producer.find_by(group_number: group_number)
     req_params = {
     }
@@ -22,8 +22,8 @@ class NotifyDispatchGroupInvoiceJob < ApplicationJob
     )
   end
 
-  def perform(id, group_number)
-    response = factura_despachada(id, group_number)
+  def perform(group_number, id)
+    response = factura_despachada(group_number, id)
     puts response.body
     return {
         :body => response.body,

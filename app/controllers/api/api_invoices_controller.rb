@@ -16,15 +16,19 @@ class Api::ApiInvoicesController < Api::ApiController
     case response[:code]
       when 200
         body = response[:body]
-        @invoice = Invoice.new(
-            _id: body[:_id],
-            bank_id: params[:bank_account],
-        )
-        if @invoice.save
-          @invoice.update_properties
-          return render json: { :success => true }
+        if body != nil
+          @invoice = Invoice.new(
+              _id: body[:_id],
+              bank_id: params[:bank_account],
+          )
+          if @invoice.save
+            @invoice.update_properties
+            return render json: { :success => true }
+          else
+            return render json: { :success => false, :error => @invoice.errors } , status: :unprocessable_entity
+          end
         else
-          return render json: { :success => false, :error => @invoice.errors } , status: :unprocessable_entity
+          return render :json => { :success => false, :error => 'nil body' }, status: :bad_request
         end
     end
     return render :json => { :success => false, :error => response[:body] }, status: response[:code]

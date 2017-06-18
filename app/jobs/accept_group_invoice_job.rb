@@ -1,6 +1,6 @@
 class AcceptGroupInvoiceJob < ApplicationJob
 
-  def aceptar_factura(id, group_number)
+  def aceptar_factura(group_number, id)
     producer = Producer.find_by(group_number: group_number)
     req_params = {
 
@@ -23,8 +23,8 @@ class AcceptGroupInvoiceJob < ApplicationJob
     )
   end
 
-  def perform(id, group_number)
-    response = aceptar_factura(id, group_number)
+  def perform(group_number, id)
+    response = aceptar_factura(group_number, id)
     puts response.body
     return {
         :body => response.body,

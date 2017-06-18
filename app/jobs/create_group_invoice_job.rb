@@ -1,9 +1,9 @@
 class CreateGroupInvoiceJob < ApplicationJob
 
-  def crear_factura(id, group_number, bank_id)
+  def crear_factura(group_number, id)
     producer = Producer.find_by(group_number: group_number)
     req_params = {
-      :bank_account => bank_id,
+      :bank_account => Bank.get_bank_id,
     }
     url = producer.get_api_url + '/invoices/' + id
     case group_number
@@ -23,8 +23,8 @@ class CreateGroupInvoiceJob < ApplicationJob
     )
   end
 
-  def perform(id, group_number, bank_id)
-    response = crear_factura(id, group_number, bank_id)
+  def perform(group_number, id)
+    response = crear_factura(group_number, id)
     puts response.body
     return {
         :body => response.body,

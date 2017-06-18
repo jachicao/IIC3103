@@ -7,7 +7,6 @@ class PurchaseOrdersController < ApplicationController
     @own_purchase_orders = PurchaseOrder.get_my_orders
     @received_purchase_orders = PurchaseOrder.get_client_orders.select { |v| !(v.is_dispatched) }
     @dispatched_purchase_orders = PurchaseOrder.get_client_orders.select { |v| v.is_dispatched }
-
   end
 
   # GET /purchase_orders/1

@@ -29,17 +29,21 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
     case response[:code]
       when 200
         body = response[:body]
-        params[:store_reception_id] = params[:id_store_reception]
-        @purchase_order = PurchaseOrder.new({
-                                                po_id: body[:_id],
-                                                store_reception_id: params[:store_reception_id],
-                                                payment_method: params[:payment_method],
-                                            })
-        if @purchase_order.save
-          @purchase_order.update_properties
-          return render :json => { :success => true }
+        if body != nil
+          params[:store_reception_id] = params[:id_store_reception]
+          @purchase_order = PurchaseOrder.new({
+                                                  po_id: body[:_id],
+                                                  store_reception_id: params[:store_reception_id],
+                                                  payment_method: params[:payment_method],
+                                              })
+          if @purchase_order.save
+            @purchase_order.update_properties
+            return render :json => { :success => true }
+          else
+            return render :json => { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity
+          end
         else
-          return render :json => { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity
+          return render :json => { :success => false, :error => 'nil body' }, status: :bad_request
         end
     end
     return render :json => { :success => false, :error => response[:body] }, status: response[:code]

@@ -33,7 +33,7 @@ class Invoice < ApplicationRecord
       body = server[:body]
       group = nil
       if purchase_order.is_b2b
-        group = CreateGroupInvoiceJob.perform_now(po_id, purchase_order.get_client_group_number, Bank.get_bank_id)
+        group = CreateGroupInvoiceJob.perform_now(purchase_order.get_client_group_number, body[:_id])
         puts 'GRUPO  ' + purchase_order.get_client_group_number.to_s
         puts group
         case group[:code]
@@ -112,7 +112,7 @@ class Invoice < ApplicationRecord
   def accept
     group = nil
     if self.is_b2b
-      group = AcceptGroupInvoiceJob.perform_now(self._id, get_supplier_group_number)
+      group = AcceptGroupInvoiceJob.perform_now(get_supplier_group_number, self._id)
     end
     return {
         :group => group
@@ -123,7 +123,7 @@ class Invoice < ApplicationRecord
     server = RejectServerInvoiceJob.perform_now(self._id, reason)
     group = nil
     if self.is_b2b
-      group = RejectGroupInvoiceJob.perform_now(self._id, get_supplier_group_number, reason)
+      group = RejectGroupInvoiceJob.perform_now(get_supplier_group_number, self._id, reason)
     end
     return {
         :server => server,
@@ -142,7 +142,7 @@ class Invoice < ApplicationRecord
   def notify_dispatch
     group = nil
     if self.is_b2b
-      group = NotifyDispatchGroupInvoiceJob.perform_now(self._id, get_client_group_number)
+      group = NotifyDispatchGroupInvoiceJob.perform_now(get_client_group_number, self._id)
       self.get_purchase_order.confirm_invoice_notified
     end
     return {

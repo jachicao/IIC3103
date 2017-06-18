@@ -1,6 +1,6 @@
 class RejectGroupInvoiceJob < ApplicationJob
 
-  def rechazar_factura(id, group_number, cause)
+  def rechazar_factura(group_number, id, cause)
     producer = Producer.find_by(group_number: group_number)
     req_params = {
         :cause => cause
@@ -24,8 +24,8 @@ class RejectGroupInvoiceJob < ApplicationJob
 
   end
 
-  def perform(id, group_number, cause)
-    response = rechazar_factura(id, group_number, cause)
+  def perform(group_number, id, cause)
+    response = rechazar_factura(group_number, id, cause)
     puts response.body
     return {
         :body => response.body,
