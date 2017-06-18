@@ -202,7 +202,8 @@ class ApplicationWorker
     end
 
     if body.nil?
-      code = 500
+      body = 'PurchaseOrder not found'
+      code = 404
     end
 
     return {
@@ -227,7 +228,8 @@ class ApplicationWorker
     end
 
     if body.nil?
-      code = 500
+      body = 'Invoice not found'
+      code = 404
     end
 
     return {
