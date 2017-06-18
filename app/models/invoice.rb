@@ -123,7 +123,7 @@ class Invoice < ApplicationRecord
     server = RejectServerInvoiceJob.perform_now(self._id, reason)
     group = nil
     if self.is_b2b
-      group = RejectGroupInvoiceJob.perform_now(get_supplier_group_number, self._id, reason)
+      group = RejectGroupInvoiceJob.perform_now(self.get_supplier_group_number, self._id, reason)
     end
     return {
         :server => server,
@@ -142,7 +142,7 @@ class Invoice < ApplicationRecord
   def notify_dispatch
     group = nil
     if self.is_b2b
-      group = NotifyDispatchGroupInvoiceJob.perform_now(get_client_group_number, self._id)
+      group = NotifyDispatchGroupInvoiceJob.perform_now(self.get_client_group_number, self._id)
       self.get_purchase_order.confirm_invoice_notified
     end
     return {

@@ -24,44 +24,82 @@ class ProductInSale < ApplicationRecord
     end
   end
 
-  def buy_to_factory(quantity)
+  def produce_product(quantity)
+    unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
+    lotes = unit_lote
+    self.product.ingredients.each do |ingredient|
+      ingredient_lotes = 0
+      stock_available = ingredient.item.stock_available
+      for i in 0..unit_lote - 1
+        if stock_available >= ingredient.quantity
+          ingredient_lotes += 1
+          stock_available -= ingredient.quantity
+        else
+          break
+        end
+      end
+      lotes = [lotes, ingredient_lotes].min
+    end
+    if lotes > 0
+      PendingProduct.create(product: self.product, quantity: lotes)
+      return { :success => true }
+    end
+    return { :success => false }
+  end
+
+  def buy_to_factory_sync(quantity)
+    quantity = self.product.lote * (quantity.to_f / self.product.lote.to_f).ceil
+    return BuyProductToFactoryWorker.new.perform(self.product.sku, quantity, self.product.unit_cost)
+  end
+
+  def buy_to_producer_sync(quantity)
+    return BuyProductToBusinessWorker.new.perform(
+        self.producer.producer_id,
+        self.product.sku,
+        (Time.now + (self.average_time * 2 * unit_lote).to_f.hours).to_i * 1000, #TODO, REDUCE TIME
+        quantity,
+        self.price,
+        'contra_factura'
+    )
+  end
+
+  def buy_product_sync(quantity)
+    if self.is_mine
+      if self.product.ingredients.size > 0
+        return self.produce_product(quantity)
+      else
+        return self.buy_to_factory_sync(quantity)
+      end
+    else
+      return buy_to_producer_sync(quantity)
+    end
+  end
+
+  def buy_to_factory_async(quantity)
     quantity = self.product.lote * (quantity.to_f / self.product.lote.to_f).ceil
     BuyProductToFactoryWorker.perform_async(self.product.sku, quantity, self.product.unit_cost)
   end
 
-  def buy_product(quantity)0
-  unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
+  def buy_to_producer_async(quantity)
+    BuyProductToBusinessWorker.perform_async(
+        self.producer.producer_id,
+        self.product.sku,
+        (Time.now + (self.average_time * 2 * unit_lote).to_f.hours).to_i * 1000, #TODO, REDUCE TIME
+        quantity,
+        self.price,
+        'contra_factura'
+    )
+  end
+
+  def buy_product_async(quantity)
     if self.is_mine
-      if self.product.ingredients.size >
-        lotes = unit_lote
-        self.product.ingredients.each do |ingredient|
-          ingredient_lotes = 0
-          stock_available = ingredient.item.stock_available
-          for i in 0..unit_lote - 1
-            if stock_available >= ingredient.quantity
-              ingredient_lotes += 1
-              stock_available -= ingredient.quantity
-            else
-              break
-            end
-          end
-          lotes = [lotes, ingredient_lotes].min
-        end
-        if lotes > 0
-          PendingProduct.create(product: self.product, quantity: lotes)
-        end
+      if self.product.ingredients.size > 0
+        self.produce_product(quantity)
       else
-        self.buy_to_factory(quantity)
+        self.buy_to_factory_async(quantity)
       end
     else
-      BuyProductToBusinessWorker.perform_async(
-          self.producer.producer_id,
-          self.product.sku,
-          (Time.now + (self.average_time * 2 * unit_lote).to_f.hours).to_i * 1000, #TODO, REDUCE TIME
-          quantity,
-          self.price,
-          'contra_factura'
-      )
+      buy_to_producer_async(quantity)
     end
   end
 

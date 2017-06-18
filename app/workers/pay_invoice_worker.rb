@@ -9,7 +9,7 @@ class PayInvoiceWorker < ApplicationWorker
         server = NotifyPaymentServerInvoiceJob.perform_now(invoice._id)
         group = nil
         if purchase_order.is_b2b
-          group = NotifyPaymentGroupInvoiceJob.perform_now(invoice._id, invoice.get_supplier_group_number, transaction_id)
+          group = NotifyPaymentGroupInvoiceJob.perform_now(invoice.get_supplier_group_number, invoice._id, transaction_id)
         end
         return {
             :server => server,

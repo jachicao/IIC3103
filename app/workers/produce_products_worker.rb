@@ -100,7 +100,7 @@ class ProduceProductsWorker < ApplicationWorker
               puts 'ProduceProductsWorker: producing ' + pending_product.product.name
               pending_product.update(quantity: pending_product.quantity - 1)
               my_product_in_sale = pending_product.product.get_my_product_sale
-              my_product_in_sale.buy_to_factory(pending_product.product.lote)
+              my_product_in_sale.buy_to_factory_async(pending_product.product.lote)
             end
           end
           break

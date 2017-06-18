@@ -173,14 +173,14 @@ class Product < ApplicationRecord
   def buy_min_stock(quantity)
     my_product_in_sale = self.get_my_product_sale
     if my_product_in_sale != nil
-      my_product_in_sale.buy_product(quantity)
+      my_product_in_sale.buy_product_async(quantity)
     else
       self.product_in_sales.each do |product_in_sale|
         if product_in_sale.is_mine
         else
           if product_in_sale.producer.has_wrong_purchase_orders_api
           else
-            product_in_sale.buy_product(quantity)
+            product_in_sale.buy_product_async(quantity)
           end
         end
       end

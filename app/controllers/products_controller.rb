@@ -33,12 +33,13 @@ class ProductsController < ApplicationController
 
   def post_confirm_buy
     purchase_items = params[:purchase_items]
+    result = []
     purchase_items.each do |purchase_item|
       product_in_sale = ProductInSale.find_by(id: purchase_item[:id].to_i)
-      product_in_sale.buy_product(purchase_item[:quantity].to_i)
+      result.push(product_in_sale.buy_product_sync(purchase_item[:quantity].to_i))
     end
     respond_to do |format|
-      format.html { redirect_to products_path, notice: 'Productos enviados a comprar' }
+      format.html { redirect_to products_path, notice: 'Productos enviados a comprar: ' + result.to_json }
     end
   end
 
