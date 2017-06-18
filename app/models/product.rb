@@ -222,40 +222,16 @@ class Product < ApplicationRecord
   end
 
   def buy_min_stock(quantity)
-    if self.is_produced_by_me
-      if self.ingredients.size > 0
-        unit_lote = (quantity.to_f / self.lote.to_f).ceil
-        lotes = unit_lote
-        self.ingredients.each do |ingredient|
-          ingredient_lotes = 0
-          stock_available = ingredient.item.stock_available
-          for i in 0..unit_lote - 1
-            if stock_available >= ingredient.quantity
-              ingredient_lotes += 1
-              stock_available -= ingredient.quantity
-            else
-              break
-            end
-          end
-          lotes = [lotes, ingredient_lotes].min
-        end
-        if lotes > 0
-          self.produce(self.lote * lotes)
-        end
-      else
-        self.buy_to_factory(quantity)
-      end
+    my_product_in_sale = self.get_my_product_sale
+    if my_product_in_sale != nil
+      my_product_in_sale.buy(quantity)
     else
       self.product_in_sales.each do |product_in_sale|
         if product_in_sale.is_mine
         else
           if product_in_sale.producer.has_wrong_purchase_orders_api
           else
-            self.buy_to_producer_async(
-                product_in_sale.producer.producer_id,
-                quantity,
-                product_in_sale.price,
-                product_in_sale.average_time)
+            product_in_sale.buy(quantity)
           end
         end
       end
