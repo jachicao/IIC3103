@@ -125,6 +125,7 @@ class Product < ApplicationRecord
 
   def buy_to_factory(quantity)
     quantity = self.lote * (quantity.to_f / self.lote.to_f).ceil
+    puts 'Produciendo ' + quantity.to_s + ' de ' + self.name
     if quantity > 5000
       return false
     end
@@ -227,6 +228,7 @@ class Product < ApplicationRecord
   end
 
   def buy_to_producer(producer_id, quantity, price, time_to_produce)
+    puts 'Comprando ' + quantity.to_s + ' de ' + self.name + ' a productor ' + producer_id
     return BuyProductToBusinessWorker.new.perform(
         producer_id,
         self.sku,
@@ -238,6 +240,7 @@ class Product < ApplicationRecord
   end
 
   def buy_to_producer_async(producer_id, quantity, price, time_to_produce)
+    puts 'Comprando ' + quantity.to_s + ' de ' + self.name + ' a productor ' + producer_id
     BuyProductToBusinessWorker.perform_async(
         producer_id,
         self.sku,
@@ -310,6 +313,7 @@ class Product < ApplicationRecord
   end
 
   def produce(quantity)
+    puts 'Produciendo ' + quantity.to_s + ' de ' + self.name
     PendingProduct.create(product: self, quantity: (quantity.to_f / self.lote.to_f).ceil)
   end
 
@@ -404,13 +408,14 @@ class Product < ApplicationRecord
             if product_in_sale.producer.has_wrong_purchase_orders_api
             else
               if product_in_sale.stock >= difference
-                if best_product_in_sale.nil? || best_product_in_sale.price > product_in_sale.stock
+                if best_product_in_sale.nil? || best_product_in_sale.average_time > product_in_sale.average_time
                   best_product_in_sale = product_in_sale
                 end
               end
             end
           end
         end
+        best_product_in_sale = nil #TODO: REMOVE THIS
         if best_product_in_sale != nil
           return {
               :sku => self.sku,
@@ -441,69 +446,33 @@ class Product < ApplicationRecord
     end
   end
 
-  def analyze_min_stock(products, quantity)
-    products.each do |p|
-      if p[:sku] == self.sku
-        difference = [quantity, 5000].min - p[:stock_available]
-        if difference > 0
-          if self.is_produced_by_me
-            if self.ingredients.size > 0
-              unit_lote = (difference.to_f / self.lote.to_f).ceil
-              has_enough = true
-              self.ingredients.each do |ingredient|
-                stock_ingredient = 0
-                products.each do |p_stock|
-                  if p_stock[:sku] == ingredient.item.sku
-                    stock_ingredient = p_stock[:stock_available]
-                  end
-                end
-                ingredient_quantity = ingredient.quantity * unit_lote - stock_ingredient
-                if ingredient_quantity > 0
-                  has_enough = false
-                end
-              end
-              if has_enough
-                puts 'produciendo ' + difference.to_s + ' de ' + self.name
-                self.produce(difference)
-              else
-                #self.ingredients.each do |ingredient|
-                  #ingredient.item.analyze_min_stock(my_products, ingredient.quantity * unit_lote)
-                #end
-              end
-            else
-              puts 'enviando a fabricar ' + difference.to_s + ' de ' + self.name
-              self.buy_to_factory(difference)
-            end
+  def buy(quantity)
+    if self.is_produced_by_me
+      if self.ingredients.size > 0
+        has_enough = true
+        unit_lote = (quantity.to_f / self.lote.to_f).ceil
+        self.ingredients.each do |ingredient|
+          if ingredient.quantity * unit_lote >= ingredient.item.stock_available
+            has_enough = false
+          end
+        end
+        if has_enough
+          self.produce(quantity)
+        end
+      else
+        self.buy_to_factory(quantity)
+      end
+    else
+      self.product_in_sales.each do |product_in_sale|
+        if product_in_sale.is_mine
+        else
+          if product_in_sale.producer.has_wrong_purchase_orders_api
           else
-            self.product_in_sales.each do |product_in_sale|
-              if product_in_sale.is_mine
-              else
-                if product_in_sale.producer.has_wrong_purchase_orders_api
-                else
-                  puts 'comprando ' + difference.to_s + ' de ' + self.name
-                  self.buy_to_producer_async(
-                      product_in_sale.producer.producer_id,
-                      difference,
-                      product_in_sale.price,
-                      product_in_sale.average_time)
-                end
-              end
-            end
-=begin
-            best_product_in_sale = nil
-            self.product_in_sales.each do |product_in_sale|
-              if product_in_sale.is_mine
-              else
-                if product_in_sale.stock >= difference
-                  if best_product_in_sale.nil? || best_product_in_sale.price > product_in_sale.price
-                    best_product_in_sale = product_in_sale
-                  end
-                end
-              end
-            end
-            if best_product_in_sale != nil
-            end
-=end
+            self.buy_to_producer_async(
+                product_in_sale.producer.producer_id,
+                quantity,
+                product_in_sale.price,
+                product_in_sale.average_time)
           end
         end
       end

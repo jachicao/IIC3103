@@ -28,7 +28,7 @@ class ApplicationWorker
     body = JSON.parse(response.body, symbolize_names: true)
     return {
         :body => body,
-        :code =>  response.code,
+        :code => response.code,
     }
   end
 
@@ -58,6 +58,7 @@ class ApplicationWorker
         return nil
     end
     body = JSON.parse(response.body, symbolize_names: true)
+    puts body
 
     product = Product.find_by(sku: sku)
     unit_lote = (cantidad.to_f / product.lote.to_f).ceil
@@ -77,7 +78,7 @@ class ApplicationWorker
     )
     return {
         :body => body,
-        :code =>  response.code,
+        :code => response.code,
     }
   end
 
@@ -107,7 +108,7 @@ class ApplicationWorker
     body = JSON.parse(response.body, symbolize_names: true)
     return {
         :body => body,
-        :code =>  response.code,
+        :code => response.code,
     }
   end
 
@@ -129,7 +130,7 @@ class ApplicationWorker
 
     return {
         :body => body,
-        :code =>  response.code,
+        :code => response.code,
     }
   end
 
@@ -154,7 +155,7 @@ class ApplicationWorker
 
     return {
         :body => body,
-        :code =>  response.code,
+        :code => response.code,
     }
   end
 
@@ -180,7 +181,7 @@ class ApplicationWorker
     body = JSON.parse(response.body, symbolize_names: true)
     return {
         :body => body,
-        :code =>  response.code,
+        :code => response.code,
         :header => response.header,
     }
   end
@@ -222,7 +223,7 @@ class ApplicationWorker
 
     return {
         :body => body,
-        :code =>  response.code,
+        :code => response.code,
     }
   end
 
@@ -235,11 +236,10 @@ class ApplicationWorker
         :query => req_params,
         :headers => { content_type: 'application/json', accept: 'application/json', authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN': ENV['GROUP_ID'] }
     )
-    body = JSON.parse(response.body, symbolize_names: true)
 
     return {
-        :body => body,
-        :code =>  response.code,
+        :body => response.body,
+        :code => response.code,
     }
   end
 end

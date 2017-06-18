@@ -22,16 +22,10 @@ class CheckFtpPurchaseOrdersWorker < ApplicationWorker
                 server = self.get_purchase_order(po_id)
                 if server[:code] == 200
                   body = server[:body]
-                  PurchaseOrder.create(po_id: body[:_id],
-                                       client_id: body[:cliente],
-                                       supplier_id: body[:proveedor],
-                                       delivery_date: DateTime.parse(body[:fechaEntrega]),
-                                       unit_price: body[:precioUnitario],
-                                       product: Product.find_by(sku: body[:sku]),
-                                       quantity: body[:cantidad],
-                                       status: body[:estado],
-                                       channel: body[:canal],
-                  )
+                  if body != nil
+                    po = PurchaseOrder.create(po_id: body[:_id])
+                    po.update_properties
+                  end
                 end
               end
             end
