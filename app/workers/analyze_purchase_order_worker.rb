@@ -7,7 +7,7 @@ class AnalyzePurchaseOrderWorker < ApplicationWorker
       end
     end
     if result[:buy] and result[:success]
-      product_in_sale = ProductInSale.find_by(result[:id])
+      product_in_sale = ProductInSale.find_by(id: result[:id])
       product_in_sale.buy_product_async(result[:quantity])
     end
   end

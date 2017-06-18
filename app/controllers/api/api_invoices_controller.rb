@@ -12,27 +12,19 @@ class Api::ApiInvoicesController < Api::ApiController
       return render json: { :success => true }
     end
 
-    response = Invoice.get_server_details(params[:invoice_id])
-    case response[:code]
-      when 200
-        body = response[:body]
-        @invoice = Invoice.new(
-            _id: body[:_id],
-            bank_id: params[:bank_account],
-        )
-        if @invoice.save
-          @invoice.update_properties
-          return render json: { :success => true }
-        else
-          return render json: { :success => false, :error => @invoice.errors } , status: :unprocessable_entity
-        end
+    @invoice = Invoice.create_new(params[:invoice_id])
+    if @invoice != nil
+      @invoice.update(
+          bank_id: params[:bank_account],
+      )
+    else
+      return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
     end
-    return render :json => { :success => false, :error => response[:body] }, status: response[:code]
   end
 
   def accepted
     if @invoice != nil
-      @invoice.update_properties
+      @invoice.update_properties_async
       return render :json => { :success => true }
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
@@ -41,7 +33,7 @@ class Api::ApiInvoicesController < Api::ApiController
 
   def rejected
     if @invoice != nil
-      @invoice.update_properties
+      @invoice.update_properties_async
       return render :json => { :success => true }
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
@@ -50,7 +42,7 @@ class Api::ApiInvoicesController < Api::ApiController
 
   def paid
     if @invoice != nil
-      @invoice.update_properties
+      @invoice.update_properties_async
       return render :json => { :success => true }
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
@@ -59,7 +51,7 @@ class Api::ApiInvoicesController < Api::ApiController
 
   def delivered
     if @invoice != nil
-      @invoice.update_properties
+      @invoice.update_properties_async
       return render :json => { :success => true }
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found

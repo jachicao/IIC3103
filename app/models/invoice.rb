@@ -16,53 +16,31 @@ class Invoice < ApplicationRecord
     return url
   end
 
-  def self.create_invoice(po_id)
-    purchase_order = PurchaseOrder.find_by(po_id: po_id)
-    if purchase_order != nil
-      server = CreateServerInvoiceJob.perform_now(po_id)
-      case server[:code]
-        when 200..226
-
-        else
-          return {
-              :success => false,
-              :server => server,
-              :group => {},
-          }
-      end
+  def self.create_new(_id)
+    server = self.get_server_details(_id)
+    if server[:code] == 200
       body = server[:body]
-      group = nil
-      if purchase_order.is_b2b
-        group = CreateGroupInvoiceJob.perform_now(purchase_order.get_client_group_number, body[:_id])
-        puts 'GRUPO  ' + purchase_order.get_client_group_number.to_s
-        puts group
-        case group[:code]
-          when 200..226
-          else
-            self.cancel_invoice(body[:_id], 'Rejected by group')
-            return {
-                :success => false,
-                :server => server,
-                :group => group,
-            }
-        end
-      end
-
-      invoice = Invoice.create(
+      return Invoice.create(
           _id: body[:_id],
+          status: body[:estado],
+          rejected_reason: body[:rechazo],
+          cancelled_reason: body[:anulacion],
+          supplier_id: body[:proveedor],
+          client_id: body[:cliente],
+          po_id: body[:oc],
+          amount: body[:total],
       )
-      invoice.update_properties
-      return {
-          :success => true,
-          :server => server,
-          :group => group,
-      }
+    else
+      return nil
     end
   end
 
+  def self.create_invoice(po_id)
+    return CreateInvoiceWorker.perform_async(po_id)
+  end
 
-  def self.get_server_details(id)
-    return GetInvoiceWorker.new.perform(id)
+  def self.get_server_details(_id)
+    return GetInvoiceWorker.new.perform(_id)
   end
 
   def self.cancel_invoice(id, reason)
@@ -182,7 +160,7 @@ class Invoice < ApplicationRecord
     return false
   end
 
-  def update_properties
+  def update_properties_async
     UpdateInvoiceWorker.perform_async(self._id)
   end
 end

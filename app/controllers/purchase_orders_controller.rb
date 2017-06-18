@@ -44,13 +44,9 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def create_invoice
-    result = @purchase_order.create_invoice
+    @purchase_order.create_invoice
     respond_to do |format|
-      if result[:success]
-        format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Invoice was successfully created.' }
-      else
-        format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Failed to create: ' + result.to_json }
-      end
+      format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Invoice was successfully created.' }
     end
   end
 

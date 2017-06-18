@@ -26,7 +26,7 @@ class RejectServerPurchaseOrderJob < ApplicationJob
 
     purchase_order = PurchaseOrder.find_by(po_id: id)
     if purchase_order != nil
-      purchase_order.update_properties
+      purchase_order.update_properties_async
     end
 
     return {
