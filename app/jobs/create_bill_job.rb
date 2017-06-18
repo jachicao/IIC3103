@@ -18,11 +18,10 @@ class CreateBillJob < ApplicationJob
     puts response.body
     puts response.code
     body = JSON.parse(response.body, symbolize_names: true)
-    invoice = Invoice.create(
-        _id: body[:_id],
-        is_bill: true,
-    )
-    invoice.update_properties_sync
+    invoice = Invoice.create_new(body[:_id])
+    if invoice != nil
+      invoice.update(is_bill: true)
+    end
     return {
         :body => body,
         :code => response.code,

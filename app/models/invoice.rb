@@ -16,13 +16,31 @@ class Invoice < ApplicationRecord
     return url
   end
 
+  def self.create_new(_id)
+    server = self.get_server_details(_id)
+    if server[:code] == 200
+      body = server[:body]
+      return Invoice.create(
+          _id: body[:_id],
+          status: body[:estado],
+          rejected_reason: body[:rechazo],
+          cancelled_reason: body[:anulacion],
+          supplier_id: body[:proveedor],
+          client_id: body[:cliente],
+          po_id: body[:oc],
+          amount: body[:total],
+      )
+    else
+      return nil
+    end
+  end
+
   def self.create_invoice(po_id)
     return CreateInvoiceWorker.perform_async(po_id)
   end
 
-
-  def self.get_server_details(id)
-    return GetInvoiceWorker.new.perform(id)
+  def self.get_server_details(_id)
+    return GetInvoiceWorker.new.perform(_id)
   end
 
   def self.cancel_invoice(id, reason)
@@ -140,10 +158,6 @@ class Invoice < ApplicationRecord
       return purchase_order.is_b2b
     end
     return false
-  end
-
-  def update_properties_sync
-    UpdateInvoiceWorker.new.perform(self._id)
   end
 
   def update_properties_async

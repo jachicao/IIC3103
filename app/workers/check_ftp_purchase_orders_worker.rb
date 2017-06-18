@@ -19,12 +19,7 @@ class CheckFtpPurchaseOrdersWorker < ApplicationWorker
               po_id = parse[:order][:id]
               purchase_order = PurchaseOrder.find_by(po_id: po_id)
               if purchase_order.nil?
-                server = self.get_purchase_order(po_id)
-                if server[:code] == 200
-                  body = server[:body]
-                  po = PurchaseOrder.create(po_id: body[:_id])
-                  po.update_properties_sync
-                end
+                PurchaseOrder.create_new(po_id)
               end
             end
             if ENV['DOCKER_RUNNING'] != nil

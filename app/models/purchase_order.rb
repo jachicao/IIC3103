@@ -1,6 +1,29 @@
 class PurchaseOrder < ApplicationRecord
   belongs_to :product
 
+  def self.create_new(_id)
+    server = self.get_server_details(_id)
+    if server[:code] == 200
+      body = server[:body]
+      return PurchaseOrder.create(
+          po_id: body[:_id],
+          status: body[:estado],
+          rejected_reason: body[:rechazo],
+          cancelled_reason: body[:anulacion],
+          server_quantity_dispatched: body[:cantidadDespachada],
+          client_id: body[:cliente],
+          supplier_id: body[:proveedor],
+          delivery_date: DateTime.parse(body[:fechaEntrega]),
+          unit_price: body[:precioUnitario],
+          product: Product.find_by(sku: body[:sku]),
+          quantity: body[:cantidad],
+          channel: body[:canal],
+      )
+    else
+      return nil
+    end
+  end
+
   def self.get_my_orders
     return PurchaseOrder.all.select { |v| v.is_made_by_me }
   end
@@ -9,8 +32,8 @@ class PurchaseOrder < ApplicationRecord
     return PurchaseOrder.all.select { |v| !v.is_made_by_me }
   end
 
-  def self.get_server_details(po_id)
-    return GetPurchaseOrderWorker.new.perform(po_id)
+  def self.get_server_details(_id)
+    return GetPurchaseOrderWorker.new.perform(_id)
   end
 
   def analyze
@@ -175,10 +198,6 @@ class PurchaseOrder < ApplicationRecord
 
   def is_dispatched
     return self.quantity <= self.server_quantity_dispatched
-  end
-
-  def update_properties_sync
-    return UpdatePurchaseOrderWorker.new.perform(self.po_id)
   end
 
   def update_properties_async

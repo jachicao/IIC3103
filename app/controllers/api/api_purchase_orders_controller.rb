@@ -25,24 +25,15 @@ class Api::ApiPurchaseOrdersController < Api::ApiController
       return render :json => { :success => true }
     end
 
-    response = PurchaseOrder.get_server_details(params[:po_id])
-    case response[:code]
-      when 200
-        body = response[:body]
-        params[:store_reception_id] = params[:id_store_reception]
-        @purchase_order = PurchaseOrder.new({
-                                                po_id: body[:_id],
-                                                store_reception_id: params[:store_reception_id],
-                                                payment_method: params[:payment_method],
-                                            })
-        if @purchase_order.save
-          @purchase_order.update_properties_sync
-          return render :json => { :success => true }
-        else
-          return render :json => { :success => false, :error => @purchase_order.errors } , status: :unprocessable_entity
-        end
+    @purchase_order = PurchaseOrder.create_new(params[:po_id])
+    if @purchase_order != nil
+      @purchase_order.update(
+          store_reception_id: params[:id_store_reception],
+          payment_method: params[:payment_method])
+      return render :json => { :success => true }
+    else
+      return render :json => { :success => false, :error => 'PurchaseOrder not found' }, status: :not_found
     end
-    return render :json => { :success => false, :error => response[:body] }, status: response[:code]
   end
 
   # PATCH/PUT /purchase_orders/1/accepted

@@ -49,12 +49,11 @@ class BuyProductToBusinessWorker < ApplicationWorker
         }
     end
     body = response_server[:body]
-    purchase_order = PurchaseOrder.new(po_id: body[:_id],
-                                       payment_method: payment_method,
-                                       store_reception_id: id_almacen_recepcion,
-    )
-    if purchase_order.save
-      purchase_order.update_properties_sync
+    purchase_order = PurchaseOrder.create_new(body[:_id])
+    if purchase_order != nil
+      purchase_order.update(
+          payment_method: payment_method,
+          store_reception_id: id_almacen_recepcion)
       return {
           :success => true,
           :server => response_server,

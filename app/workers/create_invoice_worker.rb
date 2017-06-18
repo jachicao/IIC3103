@@ -23,7 +23,7 @@ class CreateInvoiceWorker < ApplicationWorker
         case group[:code]
           when 200..226
           else
-            self.cancel_invoice(body[:_id], 'Rejected by group')
+              Invoice.cancel_invoice(body[:_id], 'Rejected by group')
             return {
                 :success => false,
                 :server => server,
@@ -31,16 +31,22 @@ class CreateInvoiceWorker < ApplicationWorker
             }
         end
       end
+      puts body[:_id]
 
-      invoice = Invoice.create(
-          _id: body[:_id],
-      )
-      invoice.update_properties_sync
-      return {
-          :success => true,
-          :server => server,
-          :group => group,
-      }
+      invoice = Invoice.create_new(body[:_id])
+      if invoice != nil
+        return {
+            :success => true,
+            :server => server,
+            :group => group,
+        }
+      else
+        return {
+            :success => false,
+            :server => server,
+            :group => group,
+        }
+      end
     else
       return {
           :success => false,
