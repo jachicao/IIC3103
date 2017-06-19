@@ -15,7 +15,7 @@ class Producer < ApplicationRecord
   end
 
   def has_wrong_purchase_orders_api
-    invalid_groups = [8] #TODO: remove this
+    invalid_groups = [] #TODO: remove this
     return invalid_groups.include?(self.group_number)
   end
 
@@ -52,6 +52,15 @@ class Producer < ApplicationRecord
 
   def get_api_url
     return self.get_base_url + self.get_api_route
+  end
+
+  def use_rest_client
+    case self.group_number
+      when 2
+        return true
+      else
+        return false
+    end
   end
 
 end

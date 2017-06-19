@@ -5,21 +5,21 @@ class NotifyDispatchGroupInvoiceJob < ApplicationJob
     req_params = {
     }
     url = producer.get_api_url + '/invoices/' + id + '/delivered'
-    case group_number
-      when 2
-        begin
-          return RestClient.patch(url,
-                                  req_params.to_json,
-                                  { content_type: :json, accept: :json, authorization: producer.get_access_token, 'X-ACCESS-TOKEN' => producer.get_access_token })
-        rescue RestClient::ExceptionWithResponse => e
-          return e.response
-        end
+    if producer.use_rest_client
+      begin
+        return RestClient.patch(url,
+                                req_params.to_json,
+                                { content_type: :json, accept: :json, authorization: producer.get_access_token, 'X-ACCESS-TOKEN' => producer.get_access_token })
+      rescue RestClient::ExceptionWithResponse => e
+        return e.response
+      end
+    else
+      return HTTParty.patch(
+          url,
+          :body => req_params,
+          :headers => { content_type: 'application/json', accept: 'application/json', authorization: producer.get_access_token, 'X-ACCESS-TOKEN' => producer.get_access_token }
+      )
     end
-    return HTTParty.patch(
-        url,
-        :body => req_params,
-        :headers => { content_type: 'application/json', accept: 'application/json', authorization: producer.get_access_token, 'X-ACCESS-TOKEN' => producer.get_access_token }
-    )
   end
 
   def perform(group_number, id)

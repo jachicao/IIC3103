@@ -88,6 +88,7 @@ class Invoice < ApplicationRecord
   end
 
   def accept
+    self.update(accepted: true)
     group = nil
     if self.is_b2b
       group = AcceptGroupInvoiceJob.perform_now(self.get_supplier_group_number, self._id)
