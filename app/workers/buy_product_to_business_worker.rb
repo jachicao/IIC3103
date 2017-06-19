@@ -41,7 +41,7 @@ class BuyProductToBusinessWorker < ApplicationWorker
       when 200..226
 
       else
-        #CancelServerPurchaseOrderJob.perform_later(response_server[:body][:_id], 'Rejected by group')
+        CancelServerPurchaseOrderJob.perform_later(response_server[:body][:_id], 'Rejected by group')
         return {
             :success => false,
             :server => response_server,

@@ -30,7 +30,7 @@ class Producer < ApplicationRecord
       when 2
         return ''
       when 3
-        return '/api'
+        return ''
       when 4
         return ''
       when 5

@@ -39,7 +39,7 @@ class ProductsController < ApplicationController
       result.push(product_in_sale.buy_product_sync(purchase_item[:quantity].to_i))
     end
     respond_to do |format|
-      format.html { redirect_to products_path, notice: 'Productos enviados a comprar: ' + result.to_json }
+      format.html { redirect_to products_path, notice: 'Productos enviados a comprar: ' + result.to_json.force_encoding('UTF-8') }
     end
   end
 

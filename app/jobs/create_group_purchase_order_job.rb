@@ -1,9 +1,9 @@
 class CreateGroupPurchaseOrderJob < ApplicationJob
 
   #grupo2: ok
-  #grupo3: no, {"status":404,"error":"Not Found"}
+  #grupo3: no, {"status":404,"error":"id de la Orden de Compra no existe "}
   #grupo4: ok
-  #grupo5: no, {"status":500,"error":"Internal Server Error"}
+  #grupo5: no, {"error":"Orden de compra invalida"}
   #grupo6: no, {"status":400,"error":"Bad Request"}
   #grupo7: ok
   #grupo8: ok
@@ -49,9 +49,10 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
 
   def perform(group_number, id, payment_method, id_store_reception)
     response = crear_orden_de_compra(group_number, id, payment_method, id_store_reception)
-    puts 'GRUPO: ' + group_number.to_s + ' ' + response.body
+    body = response.body.force_encoding('UTF-8')
+    puts 'GRUPO: ' + group_number.to_s + ' ' + body
     return {
-        :body => response.body,
+        :body => body,
         :code => response.code,
     }
   end
