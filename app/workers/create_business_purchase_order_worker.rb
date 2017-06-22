@@ -1,4 +1,4 @@
-class BuyProductToBusinessWorker < ApplicationWorker
+class CreateBusinessPurchaseOrderWorker < ApplicationWorker
 
   def perform(producer_id, sku, delivery_date, quantity, unit_price, payment_method)
     if quantity > 5000

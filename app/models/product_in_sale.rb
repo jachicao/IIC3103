@@ -54,7 +54,7 @@ class ProductInSale < ApplicationRecord
 
   def buy_to_producer_sync(quantity)
     unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
-    return BuyProductToBusinessWorker.new.perform(
+    return CreateBusinessPurchaseOrderWorker.new.perform(
         self.producer.producer_id,
         self.product.sku,
         (Time.now + [(self.average_time * unit_lote), 5].max.to_f.hours).to_i * 1000, #TODO, REDUCE TIME
@@ -83,7 +83,7 @@ class ProductInSale < ApplicationRecord
 
   def buy_to_producer_async(quantity)
     unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
-    BuyProductToBusinessWorker.perform_async(
+    CreateBusinessPurchaseOrderWorker.perform_async(
         self.producer.producer_id,
         self.product.sku,
         (Time.now + [(self.average_time * unit_lote), 5].max.to_f.hours).to_i * 1000, #TODO, REDUCE TIME

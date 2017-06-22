@@ -23,7 +23,7 @@ class CreateInvoiceWorker < ApplicationWorker
         case group[:code]
           when 200..226
           else
-              Invoice.cancel_invoice(body[:_id], 'Rejected by group')
+            Invoice.cancel_invoice(body[:_id], 'Rejected by group')
             return {
                 :success => false,
                 :server => server,

@@ -27,20 +27,8 @@ class Producer < ApplicationRecord
     case self.group_number
       when 1
         return '/api'
-      when 2
-        return ''
-      when 3
-        return ''
-      when 4
-        return ''
-      when 5
-        return ''
-      when 6
-        return ''
       when 7
         return '/api'
-      when 8
-        return ''
       else
         return ''
     end

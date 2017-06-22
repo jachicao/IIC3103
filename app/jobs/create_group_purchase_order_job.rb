@@ -1,7 +1,7 @@
 class CreateGroupPurchaseOrderJob < ApplicationJob
 
   #grupo2: ok
-  #grupo3: no, {"status":404,"error":"id de la Orden de Compra no existe "}
+  #grupo3: no, {"status":404,"error":"id de la Orden de Compra no existe"}
   #grupo4: ok
   #grupo5: no, {"error":"Orden de compra invalida"}
   #grupo6: no, {"status":400,"error":"Bad Request"}
@@ -20,9 +20,6 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
       when 3
         req_params[:payment] = payment_method #Indica si el pago será al contado, cuotas o crédito.
         req_params[:payment_option] = 0 #depende del payment elegido: 0 si es contado, n° de cuotas si es en cuotas y n° de días del crédito si es crédito.
-      when 5
-        req_params[:payment_method] = payment_method # Método de pago (contado/cuotas)
-        req_params[:payment_option] = '1' # Permite definir las condiciones del método de pago. Para crédito se quisiera poder indicar la cantidad de días del crédito. Para cuotas, la cantidad de cuotas.
       when 6
         req_params[:payment_method] = payment_method #'entrega' # "entrega,credito,cuotas"
         req_params[:payment_option] = 1

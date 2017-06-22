@@ -7,8 +7,9 @@ class Invoice < ApplicationRecord
 
   def self.url_create(bill)
     me = Producer.get_me
-    urlok = me.get_base_url + '/spree'
-    urlfail = me.get_base_url + '/spree/cart'
+    base_url = Producer.get_me.get_base_url
+    urlok = base_url + '/spree'
+    urlfail = base_url + '/spree/cart'
     url = ENV['CENTRAL_SERVER_URL'] + '/web/pagoenlinea'
     url += "?callbackUrl=#{URI.escape(urlok, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
     url += "&cancelUrl=#{URI.escape(urlfail, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
@@ -122,7 +123,10 @@ class Invoice < ApplicationRecord
     group = nil
     if self.is_b2b
       group = NotifyDispatchGroupInvoiceJob.perform_now(self.get_client_group_number, self._id)
-      self.get_purchase_order.confirm_invoice_notified
+      purchase_order = self.get_purchase_order
+      if purchase_order != nil
+        purchase_order.confirm_invoice_notified
+      end
     end
     return {
         :group => group

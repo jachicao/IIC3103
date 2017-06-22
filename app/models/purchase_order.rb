@@ -202,7 +202,7 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def update_properties_async
-    return UpdatePurchaseOrderWorker.perform_async(self.po_id)
+    return UpdatePurchaseOrderWorker.perform_async(self.po_id, false)
   end
 
   def update_quantity_dispatched

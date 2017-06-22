@@ -7,23 +7,25 @@ class MoveProductsInternallyWorker < ApplicationWorker
     to_available_space = to_store_house.available_space
     if to_available_space > 0
       from_store_house.stocks.each do |s|
-        if s.quantity <= 0
-          quantity = 0
-        end
-        if s.product.sku == sku and s.quantity > 0 and quantity > 0
-          limit = [to_available_space, s.quantity, quantity, 200].min
-          products = self.get_product_stock(from_store_house_id, sku, limit)
-          if products != nil
-            products[:body].each do |product|
-              product_id = product[:_id]
-              if StoreHouse.can_send_request
-                result = MoveProductToStoreHouseWorker.new.perform(sku, product_id, from_store_house_id, to_store_house_id)
-                if result[:code] == 200
-                  quantity -= 1
-                  puts 'MoveProductsInternallyWorker: quantity left ' + quantity.to_s
-                  #break
-                else
-                  break
+        if s.product.sku == sku
+          if s.quantity <= 0
+            quantity = 0
+          end
+          if s.quantity > 0 and quantity > 0
+            limit = [to_available_space, s.quantity, quantity, 200].min
+            products = self.get_product_stock(from_store_house_id, sku, limit)
+            if products != nil
+              products[:body].each do |product|
+                product_id = product[:_id]
+                if StoreHouse.can_send_request
+                  result = MoveProductToStoreHouseWorker.new.perform(sku, product_id, from_store_house_id, to_store_house_id)
+                  if result[:code] == 200
+                    quantity -= 1
+                    puts 'MoveProductsInternallyWorker: quantity left ' + quantity.to_s
+                    #break
+                  else
+                    break
+                  end
                 end
               end
             end
