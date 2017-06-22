@@ -2,7 +2,7 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
   sidekiq_options queue: 'default'
 
   def perform(*args)
-    if true
+    if true#ENV['DOCKER_RUNNING'] != nil
       sending = false
       ordered = PurchaseOrder.all.order(delivery_date: :asc)
       ordered.each do |purchase_order|
@@ -13,7 +13,7 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
               when 'contra_factura'
                 purchase_order.pay_invoice
               when 'contra_despacho'
-                if purchase_order.quantity_dispatched >= purchase_order.quantity
+                if purchase_order.is_dispatched
                   purchase_order.pay_invoice
                 end
             end

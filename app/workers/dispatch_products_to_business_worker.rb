@@ -4,6 +4,7 @@ class DispatchProductsToBusinessWorker < ApplicationWorker
   def perform(po_id)
     purchase_order = PurchaseOrder.find_by(po_id: po_id)
     if purchase_order != nil
+      purchase_order.update_properties_sync
       quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
       if quantity_left > 0
         puts 'DispatchProductsToBusinessWorker (' + po_id + '): quantity left ' + quantity_left.to_s

@@ -197,6 +197,11 @@ class PurchaseOrder < ApplicationRecord
     return self.quantity <= self.quantity_dispatched
   end
 
+  def update_properties_sync
+    return UpdatePurchaseOrderWorker.new.perform(self.po_id, false)
+  end
+
+
   def update_properties_async
     return UpdatePurchaseOrderWorker.perform_async(self.po_id, false)
   end

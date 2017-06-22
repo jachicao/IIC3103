@@ -6,7 +6,6 @@ class Invoice < ApplicationRecord
   end
 
   def self.url_create(bill)
-    me = Producer.get_me
     base_url = Producer.get_me.get_base_url
     urlok = base_url + '/spree'
     urlfail = base_url + '/spree/cart'
