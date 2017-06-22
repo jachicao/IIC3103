@@ -100,6 +100,9 @@ class StoreHouse < ApplicationRecord
   end
 
   def self.can_send_request
+    if true
+      return true
+    end
     if $store_houses_request == nil
       $store_houses_request = []
     end
@@ -122,4 +125,34 @@ class StoreHouse < ApplicationRecord
     end
   end
 
+  def self.dispatching_products
+    PurchaseOrder.all.each do |purchase_order|
+      if purchase_order.is_made_by_me
+
+      else
+        if purchase_order.is_accepted
+          quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
+          if quantity_left > 0
+            if purchase_order.product.stock - purchase_order.product.stock_in_despacho >= quantity_left
+              return true
+            end
+          end
+        end
+      end
+    end
+    return false
+  end
+
+  def self.producing_products
+    PendingProduct.all.each do |pending_product|
+      if pending_product.has_stock
+        return true
+      end
+    end
+    return false
+  end
+
+  def self.despacho_being_used
+    return self.dispatching_products || self.producing_products
+  end
 end

@@ -40,34 +40,60 @@ class CleanStoreHousesWorker < ApplicationWorker
   def perform(*args)
     if ENV['DOCKER_RUNNING'] != nil
       puts 'Starting CleanStoreHousesWorker'
-      StoreHouse.all.each do |from_store_house|
-        if from_store_house.recepcion
-          from_used_space = from_store_house.used_space
-          if from_used_space > 0
-            StoreHouse.all.each do |to_store_house|
-              if to_store_house.otro and to_store_house.available_space > 0
-                self.clean(from_store_house._id, to_store_house._id)
-                return
+      if StoreHouse.despacho_being_used
+      else
+        StoreHouse.all.each do |from_store_house|
+          if from_store_house.despacho
+            from_used_space = from_store_house.used_space
+            if from_used_space > 0
+              StoreHouse.all.each do |to_store_house|
+                if to_store_house.otro
+                  if to_store_house.available_space > 0
+                    puts 'Limpiando despacho'
+                    self.clean(from_store_house._id, to_store_house._id)
+                    return
+                  end
+                end
               end
             end
           end
         end
       end
-=begin
-      StoreHouse.all.each do |from_store_house|
-        if from_store_house.pulmon
-          from_used_space = from_store_house.used_space
-          if from_used_space > 0
-            StoreHouse.all.each do |to_store_house|
-              if to_store_house.recepcion and to_store_house.available_space > 0
-                self.clean(from_store_house._id, to_store_house._id)
-                return
+      if StoreHouse.dispatching_products
+      else
+        StoreHouse.all.each do |from_store_house|
+          if from_store_house.recepcion
+            from_used_space = from_store_house.used_space
+            if from_used_space > 0
+              StoreHouse.all.each do |to_store_house|
+                if to_store_house.otro
+                  if to_store_house.available_space > 0
+                    puts 'Limpiando recepcion'
+                    self.clean(from_store_house._id, to_store_house._id)
+                    return
+                  end
+                end
+              end
+            end
+          end
+        end
+        StoreHouse.all.each do |from_store_house|
+          if from_store_house.pulmon
+            from_used_space = from_store_house.used_space
+            if from_used_space > 0
+              StoreHouse.all.each do |to_store_house|
+                if to_store_house.recepcion
+                  if to_store_house.available_space > 0
+                    puts 'Limpiando pulmon'
+                    self.clean(from_store_house._id, to_store_house._id)
+                    return
+                  end
+                end
               end
             end
           end
         end
       end
-=end
     end
   end
 end
