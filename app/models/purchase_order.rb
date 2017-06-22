@@ -46,14 +46,10 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def dispatch_order
-    if self.sending
-    else
-      self.update(sending: true)
-      if self.is_ftp
-        DispatchProductsToDistributorWorker.perform_async(self.po_id)
-      elsif self.is_b2b
-        DispatchProductsToBusinessWorker.perform_async(self.po_id)
-      end
+    if self.is_ftp
+      DispatchProductsToDistributorWorker.perform_async(self.po_id)
+    elsif self.is_b2b
+      DispatchProductsToBusinessWorker.perform_async(self.po_id)
     end
   end
 

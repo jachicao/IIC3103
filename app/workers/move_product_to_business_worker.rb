@@ -18,6 +18,7 @@ class MoveProductToBusinessWorker < ApplicationWorker
         :headers => { content_type: 'application/json', accept: 'application/json', authorization: self.get_auth_header('POST', auth_params) }
     )
     if response.code == 200
+      puts response.body
       from_store_house = StoreHouse.find_by(_id: from_store_house_id)
       from_store_house.stocks.each do |s|
         if s.product.sku == sku

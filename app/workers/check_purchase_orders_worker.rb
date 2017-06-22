@@ -3,16 +3,7 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
 
   def perform(*args)
     if true
-      if $sending_purchase_order != nil
-        purchase_order = PurchaseOrder.find_by(po_id: $sending_purchase_order)
-        if purchase_order != nil
-          if purchase_order.quantity_dispatched >= purchase_order.quantity
-            $sending_purchase_order = nil
-          end
-        else
-          $sending_purchase_order = nil
-        end
-      end
+      sending = false
       ordered = PurchaseOrder.all.order(delivery_date: :asc)
       ordered.each do |purchase_order|
         if purchase_order.is_made_by_me
@@ -38,14 +29,12 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
             purchase_order.analyze
           elsif purchase_order.is_accepted
             purchase_order.create_invoice
-            if $sending_purchase_order == nil
-              if purchase_order.quantity_dispatched < purchase_order.quantity
-                if purchase_order.sending
-                else
-                  if purchase_order.product.stock - purchase_order.product.stock_in_despacho >= purchase_order.quantity
-                    $sending_purchase_order = purchase_order.po_id
-                    purchase_order.dispatch_order
-                  end
+            if sending == false
+              quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
+              if quantity_left > 0
+                if purchase_order.product.stock - purchase_order.product.stock_in_despacho >= quantity_left
+                  sending = true
+                  purchase_order.dispatch_order
                 end
               end
             end

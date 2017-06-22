@@ -6,7 +6,7 @@ class DispatchProductsToBusinessWorker < ApplicationWorker
     if purchase_order != nil
       quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
       if quantity_left > 0
-        puts 'DispatchProductsToBusinessWorker: quantity left ' + quantity_left.to_s
+        puts 'DispatchProductsToBusinessWorker (' + po_id + '): quantity left ' + quantity_left.to_s
         despacho_id = StoreHouse.get_despacho._id
         product = purchase_order.product
         sku = product.sku
@@ -29,7 +29,6 @@ class DispatchProductsToBusinessWorker < ApplicationWorker
             end
           end
         end
-        DispatchProductsToBusinessWorker.perform_in((ENV['SERVER_RATE_LIMIT_TIME'].to_i * 1).seconds, po_id)
       end
     end
   end
