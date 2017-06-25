@@ -10,7 +10,7 @@ class Producer < ApplicationRecord
   end
 
   def has_wrong_products_api
-    invalid_groups = []
+    invalid_groups = [8]
     return invalid_groups.include?(self.group_number)
   end
 
