@@ -1,16 +1,16 @@
-class MoveProductToDirectionWorker < ApplicationWorker
+class MoveProductToAddressWorker < ApplicationWorker
   sidekiq_options queue: 'low'
 
-  def perform(sku, product_id, from_store_house_id, direction, price, po_id)
+  def perform(sku, product_id, from_store_house_id, address, price, po_id)
     req_params = {
         :productoId => product_id,
-        :direccion => direction,
+        :direccion => address,
         :precio => price,
         :oc => po_id,
     }
     auth_params = {
         :productoId => product_id,
-        :direccion => direction,
+        :direccion => address,
         :precio => price,
         :oc => po_id,
     }

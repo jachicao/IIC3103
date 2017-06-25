@@ -11,14 +11,14 @@ class InvoicesController < ApplicationController
   def paid
     @invoice.bill_paid
     respond_to do |format|
-      format.html { redirect_to spree_path }
+      format.html { redirect_to spree_path, notice: 'Transacción exitosa' }
     end
   end
 
   def failed
     @invoice.bill_failed
     respond_to do |format|
-      format.html { redirect_to spree_path }
+      format.html { redirect_to spree_path, notice: 'Falló la transacción' }
     end
   end
 

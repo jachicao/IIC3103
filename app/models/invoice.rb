@@ -65,7 +65,7 @@ class Invoice < ApplicationRecord
   end
 
   def bill_failed
-    Spree::Order.delete_all
+    #Spree::Order.delete_all
   end
 
   def get_supplier_group_number

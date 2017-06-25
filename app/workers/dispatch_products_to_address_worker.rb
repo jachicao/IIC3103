@@ -7,7 +7,7 @@ class DispatchProductsToAddressWorker < ApplicationWorker
       purchase_order.update_properties_sync
       quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
       if quantity_left > 0
-        puts 'DispatchProductsToDirectionWorker (' + po_id + '): quantity left ' + quantity_left.to_s
+        puts 'DispatchProductsToAddressWorker (' + po_id + '): quantity left ' + quantity_left.to_s
         despacho_id = StoreHouse.get_despacho._id
         product = purchase_order.product
         sku = product.sku
