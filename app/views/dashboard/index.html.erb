@@ -88,10 +88,10 @@
 
 <div class="container">
   <h2> Unidades</h2>
-  <%= column_chart [['Boletas', @bills.count]],
+  <%= column_chart [['Boletas', @bills.size]],
                    title: 'Cantidad de Boletas Generadas', width: '500px'%>
   <h2> Monto</h2>
-  <%= column_chart [['Boletas', @bills.sum(:amount)]],
+  <%= column_chart [['Boletas', @bills_sum]],
                    title: 'Monto total ventas con boleta', width: '500px'%>
 </div>
 

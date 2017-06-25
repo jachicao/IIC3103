@@ -23,10 +23,13 @@ Rails.application.routes.draw do
   resources :producers, only: [:index]
   resources :pending_products, only: [:index, :destroy]
 
-  get 'create_bill_web/:id', to: 'invoices#create_bill_web', as: :create_bill_web
+
+  get 'spree_orders/:id', to: 'spree_orders#create_bill', as: :create_bill
 
   resources :invoices, only: [:index, :show]
   post '/invoices/:id/pay', to: 'invoices#pay', :as => :pay
+  get '/bills/:id/paid', to: 'invoices#paid', :as => :bill_paid
+  get '/bills/:id/failed', to: 'invoices#failed', :as => :bill_failed
 
   resources :factory_orders, only: [:index]
 

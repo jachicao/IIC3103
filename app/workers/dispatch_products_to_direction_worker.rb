@@ -1,57 +1,31 @@
 class DispatchProductsToDirectionWorker < ApplicationWorker
   sidekiq_options queue: 'default'
 
-  def perform(direction, sku, quantity, po_id, price)
-    puts 'starting DispatchProductsToDirectionWorker'
-
-    quantity_left = quantity
-
-    store_houses = StoreHouse.all
-    despacho_id = nil
-
-    store_houses.each do |store_house|
-      if store_house.despacho
-        despacho_id = store_house._id
-      end
-    end
-
-    while quantity_left > 0
-      store_houses.each do |store_house|
-        if quantity_left > 0
-          if store_house.despacho
+  def perform(po_id)
+    purchase_order = PurchaseOrder.find_by(po_id: po_id)
+    if purchase_order != nil
+      purchase_order.update_properties_sync
+      quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
+      if quantity_left > 0
+        puts 'DispatchProductsToDirectionWorker (' + po_id + '): quantity left ' + quantity_left.to_s
+        despacho_id = StoreHouse.get_despacho._id
+        product = purchase_order.product
+        sku = product.sku
+        product.stocks.each do |s|
+          if s.store_house.despacho
           else
-            used_space = store_house.used_space
-            if used_space > 0 and quantity_left > 0
-              limit = [quantity_left, used_space, 100].min
-              products = self.get_product_stock(store_house._id, sku, limit)
+            if quantity_left > 0
+              from_store_house_id = s.store_house._id
+              limit = [quantity_left, s.quantity, 100].min
+              products = self.get_product_stock(from_store_house_id, sku, limit)
               if products != nil
                 products[:body].each do |p|
-                  if quantity_left > 0
-                    internal_result = MoveProductToStoreHouseWorker.new.perform(sku, p[:_id], store_house._id, despacho_id)
-                    if internal_result[:code] == 200
-                      while true
-                        external_result = MoveProductToDirectionWorker.new.perform(sku, p[:_id], despacho_id, direction, price, po_id)
-                        if external_result[:code] == 200
-                          quantity_left -= 1
-                          puts 'DispatchProductsToDirectionWorker: quantity left: ' + quantity_left.to_s
-                          break
-                        elsif external_result[:code] == 429
-                          puts 'DispatchProductsToDirectionWorker: sleeping server-rate seconds'
-                          sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
-                        end
-                      end
-                    elsif internal_result[:code] == 429
-                      puts 'DispatchProductsToDirectionWorker: sleeping server-rate seconds'
-                      sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
-                      break
-                    else
-                      break
-                    end
+                  product_id = p[:_id]
+                  if StoreHouse.can_send_request
+                    quantity_left -= 1
+                    DispatchProductToDirectionWorker.perform_async(po_id, product_id, from_store_house_id, despacho_id)
                   end
                 end
-              else
-                puts 'DispatchProductsToDirectionWorker: sleeping server-rate seconds'
-                sleep(ENV['SERVER_RATE_LIMIT_TIME'].to_i)
               end
             end
           end

@@ -59,7 +59,7 @@ class CleanStoreHousesWorker < ApplicationWorker
           end
         end
       end
-      if StoreHouse.dispatching_products
+      if StoreHouse.is_dispatching_products
       else
         StoreHouse.all.each do |from_store_house|
           if from_store_house.recepcion

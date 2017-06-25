@@ -1,7 +1,7 @@
 require 'net/sftp'
 require 'json'
 
-class CheckFtpPurchaseOrdersWorker < ApplicationWorker
+class CreateDistributorPurchaseOrdersWorker < ApplicationWorker
   sidekiq_options queue: 'default'
 
   def perform(*args)

@@ -11,44 +11,44 @@ class CreateBusinessPurchaseOrderWorker < ApplicationWorker
 
     id_almacen_recepcion = StoreHouse.get_recepcion._id
 
-    response_server = CreateServerPurchaseOrderJob.perform_now(
+    server = CreateServerPurchaseOrderJob.perform_now(
+        ENV['GROUP_ID'],
         producer_id,
         sku,
         delivery_date,
         quantity,
         unit_price,
         'b2b',
-        'sin notas',
     )
-    case response_server[:code]
+    case server[:code]
       when 200
       else
         return {
             :success => false,
-            :server => response_server,
+            :server => server,
             :group => {},
         }
     end
 
     group_number = Producer.find_by(producer_id: producer_id).group_number
-    response_group = CreateGroupPurchaseOrderJob.perform_now(
+    group = CreateGroupPurchaseOrderJob.perform_now(
         group_number,
-        response_server[:body][:_id],
+        server[:body][:_id],
         payment_method,
         id_almacen_recepcion,
     )
-    case response_group[:code]
+    case group[:code]
       when 200..226
 
       else
-        CancelServerPurchaseOrderJob.perform_later(response_server[:body][:_id], 'Rejected by group')
+        CancelServerPurchaseOrderJob.perform_later(server[:body][:_id], 'Rejected by group')
         return {
             :success => false,
-            :server => response_server,
-            :group => response_group,
+            :server => server,
+            :group => group,
         }
     end
-    body = response_server[:body]
+    body = server[:body]
     purchase_order = PurchaseOrder.create_new(body[:_id])
     if purchase_order != nil
       purchase_order.update(
@@ -56,14 +56,14 @@ class CreateBusinessPurchaseOrderWorker < ApplicationWorker
           store_reception_id: id_almacen_recepcion)
       return {
           :success => true,
-          :server => response_server,
-          :group => response_group,
+          :server => server,
+          :group => group,
       }
     else
       return {
           :success => false,
-          :server => response_server,
-          :group => response_group,
+          :server => server,
+          :group => group,
       }
     end
   end

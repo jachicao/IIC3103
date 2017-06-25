@@ -16,32 +16,36 @@ class AnalyzePurchaseOrderWorker < ApplicationWorker
     purchase_order = PurchaseOrder.find_by(po_id: po_id)
     if purchase_order != nil
       if purchase_order.supplier_id == ENV['GROUP_ID']
-        my_product_in_sale = purchase_order.product.get_my_product_sale
-        if my_product_in_sale != nil
-          if purchase_order.unit_price >= my_product_in_sale.price
-            if DateTime.current <= purchase_order.delivery_date
-              product = my_product_in_sale.product
-              result = product.analyze_purchase_order(purchase_order.quantity)
-              if result[:success]
-                if (DateTime.current + result[:time].to_f.hours) <= purchase_order.delivery_date
-                  if result[:buy]
-                    buy(result)
+        if purchase_order.is_b2c
+
+        else
+          my_product_in_sale = purchase_order.product.get_my_product_sale
+          if my_product_in_sale != nil
+            if purchase_order.unit_price >= my_product_in_sale.price
+              if DateTime.current <= purchase_order.delivery_date
+                product = my_product_in_sale.product
+                result = product.analyze_purchase_order(purchase_order.quantity)
+                if result[:success]
+                  if (DateTime.current + result[:time].to_f.hours) <= purchase_order.delivery_date
+                    if result[:buy]
+                      buy(result)
+                    end
+                    purchase_order.accept
+                  else
+                    purchase_order.reject('Tiempo insuficiente')
                   end
-                  purchase_order.accept
                 else
-                  purchase_order.reject('Tiempo insuficiente')
+                  purchase_order.reject('Stock insuficiente')
                 end
               else
-                purchase_order.reject('Stock insuficiente')
+                purchase_order.reject('Tiempo insuficiente')
               end
             else
-              purchase_order.reject('Tiempo insuficiente')
+              purchase_order.reject('Precio incorrecto')
             end
           else
-            purchase_order.reject('Precio incorrecto')
+            purchase_order.reject('SKU incorrecto')
           end
-        else
-          purchase_order.reject('SKU incorrecto')
         end
       else
         purchase_order.reject('Proveedor incorrecto')

@@ -16,6 +16,10 @@ class ProduceProductsWorker < ApplicationWorker
       return nil
     end
 
+    if StoreHouse.is_dispatching_products
+      return nil
+    end
+
     puts 'Checking items to produce'
 
     despacho_total_space = 0

@@ -1,8 +1,8 @@
 class CreateServerPurchaseOrderJob < ApplicationJob
 
-  def crear_orden_de_compra(proveedor, sku, fecha_entrega, cantidad, precio_unitario, canal, notas)
+  def crear_orden_de_compra(cliente, proveedor, sku, fecha_entrega, cantidad, precio_unitario, canal)
     req_params = {
-        :cliente => ENV['GROUP_ID'],
+        :cliente => cliente,
         :proveedor => proveedor,
         :sku => sku,
         :fechaEntrega => fecha_entrega,
@@ -18,8 +18,8 @@ class CreateServerPurchaseOrderJob < ApplicationJob
       )
   end
 
-  def perform(proveedor, sku, fecha_entrega, cantidad, precio_unitario, canal, notas)
-    response = crear_orden_de_compra(proveedor, sku, fecha_entrega, cantidad, precio_unitario, canal, notas)
+  def perform(cliente, proveedor, sku, fecha_entrega, cantidad, precio_unitario, canal)
+    response = crear_orden_de_compra(cliente, proveedor, sku, fecha_entrega, cantidad, precio_unitario, canal)
     puts response.body
     puts response.code
     return {

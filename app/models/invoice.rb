@@ -1,18 +1,17 @@
 class Invoice < ApplicationRecord
   belongs_to :spree_order, class_name: 'Spree::Order'
+  has_many :bill_items
 
-  def self.bill_create(client, amount)
-    return CreateBillJob.perform_now(client, amount)[:body]
-  end
-
-  def self.url_create(bill)
-    base_url = Producer.get_me.get_base_url
-    urlok = base_url + '/spree'
-    urlfail = base_url + '/spree/cart'
+  def get_bill_url
+    if ENV['DOCKER_RUNNING'] != nil
+      base_url = Producer.get_me.get_base_url
+    else
+      base_url = 'http://localhost:3000'
+    end
     url = ENV['CENTRAL_SERVER_URL'] + '/web/pagoenlinea'
-    url += "?callbackUrl=#{URI.escape(urlok, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
-    url += "&cancelUrl=#{URI.escape(urlfail, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
-    url += "&boletaId=#{bill[:_id]}"
+    url += "?callbackUrl=#{URI.escape(base_url + '/bills/' + self.id.to_s + '/paid', Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
+    url += "&cancelUrl=#{URI.escape(base_url + '/bills/' + self.id.to_s + '/failed', Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
+    url += "&boletaId=#{self._id}"
     return url
   end
 
@@ -35,6 +34,10 @@ class Invoice < ApplicationRecord
     end
   end
 
+  def self.create_bill(client, amount)
+    return CreateBillWorker.new.perform(client, amount)
+  end
+
   def self.create_invoice(po_id)
     return CreateInvoiceWorker.perform_async(po_id)
   end
@@ -45,6 +48,24 @@ class Invoice < ApplicationRecord
 
   def self.cancel_invoice(id, reason)
     return CancelServerInvoiceJob.perform_now(id, reason)
+  end
+
+  def bill_paid
+    Spree::Order.delete_all
+    self.bill_items.each do |bill_item|
+      CreateConsumerPurchaseOrderWorker.perform_async(
+          self._id,
+          self.client_id,
+          bill_item.product.sku,
+          (Time.now + 5.to_f.hours).to_i * 1000,
+          bill_item.quantity,
+          bill_item.unit_price
+      )
+    end
+  end
+
+  def bill_failed
+    Spree::Order.delete_all
   end
 
   def get_supplier_group_number
@@ -166,5 +187,9 @@ class Invoice < ApplicationRecord
 
   def update_properties_async
     UpdateInvoiceWorker.perform_async(self._id)
+  end
+
+  def is_bill
+    return self.po_id == '000000000000000000000000'
   end
 end

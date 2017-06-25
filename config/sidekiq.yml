@@ -25,7 +25,7 @@
     class: CheckMinimumStockWorker
   check_ftp:
     cron: '0 */10 * * * *'    # Runs every 10 minutes
-    class: CheckFtpPurchaseOrdersWorker
+    class: CreateDistributorPurchaseOrdersWorker
   update_all_invoices:
     cron: '0 */10 * * * *'    # Runs every 10 minutes
     class: UpdateAllInvoicesWorker
@@ -33,10 +33,10 @@
     cron: '0 */10 * * * *'    # Runs every 10 minutes
     class: UpdateAllPurchaseOrdersWorker
   pending_products:
-    cron: '0 */2 * * * *'    # Runs every 2 minutes
+    cron: '0 * * * * *'    # Runs every minute
     class: ProduceProductsWorker
   clean_store_houses:
-    cron: '0 */2 * * * *'    # Runs every 2 minutes
+    cron: '0 * * * * *'    # Runs every minute
     class: CleanStoreHousesWorker
   update_groups_stock:
     cron: '0 * * * * *'    # Runs every minute

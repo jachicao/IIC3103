@@ -10,10 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170618230449) do
+ActiveRecord::Schema.define(version: 20170624232151) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "bill_items", force: :cascade do |t|
+    t.integer  "invoice_id"
+    t.integer  "product_id"
+    t.integer  "quantity"
+    t.integer  "unit_price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_bill_items_on_invoice_id", using: :btree
+    t.index ["product_id"], name: "index_bill_items_on_product_id", using: :btree
+  end
 
   create_table "factory_orders", force: :cascade do |t|
     t.string   "fo_id"
@@ -63,7 +74,6 @@ ActiveRecord::Schema.define(version: 20170618230449) do
     t.integer  "amount"
     t.string   "po_id"
     t.datetime "payment_date"
-    t.boolean  "is_bill",          default: false
     t.integer  "spree_order_id"
     t.string   "bank_id"
     t.boolean  "paid",             default: false
@@ -138,6 +148,7 @@ ActiveRecord::Schema.define(version: 20170618230449) do
     t.integer  "product_id"
     t.boolean  "analyzing",                  default: false
     t.integer  "server_quantity_dispatched", default: 0
+    t.string   "bill_id"
     t.index ["po_id"], name: "index_purchase_orders_on_po_id", using: :btree
     t.index ["product_id"], name: "index_purchase_orders_on_product_id", using: :btree
   end
@@ -1184,6 +1195,8 @@ ActiveRecord::Schema.define(version: 20170618230449) do
     t.index ["_id"], name: "index_store_houses_on__id", using: :btree
   end
 
+  add_foreign_key "bill_items", "invoices"
+  add_foreign_key "bill_items", "products"
   add_foreign_key "factory_orders", "products"
   add_foreign_key "ingredients", "products"
   add_foreign_key "pending_products", "products"

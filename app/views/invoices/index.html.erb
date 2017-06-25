@@ -6,7 +6,7 @@
   <thead>
   <tr>
     <th>Id</th>
-    <th>Made by Me</th>
+    <th>IsBill</th>
     <th>Proveedor</th>
     <th>Cliente</th>
     <th>Total</th>
@@ -19,7 +19,7 @@
   <% @invoices.each do |invoice| %>
       <tr>
         <td><%= invoice._id %></td>
-        <td><%= invoice.is_made_by_me %></td>
+        <td><%= invoice.is_bill %></td>
         <td><%= invoice.get_supplier %></td>
         <td><%= invoice.get_client %></td>
         <td><%= invoice.amount %></td>

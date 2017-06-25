@@ -47,9 +47,11 @@ class PurchaseOrder < ApplicationRecord
 
   def dispatch_order
     if self.is_ftp
-      DispatchProductsToDistributorWorker.perform_async(self.po_id)
+      DispatchProductsToDirectionWorker.perform_async(self.po_id)
+    elsif self.is_b2c
+      DispatchProductsToDirectionWorker.perform_async(self.po_id)
     elsif self.is_b2b
-      DispatchProductsToBusinessWorker.perform_async(self.po_id)
+      DispatchProductsToStoreHouseWorker.perform_async(self.po_id)
     end
   end
 
@@ -57,6 +59,8 @@ class PurchaseOrder < ApplicationRecord
     if self.dispatched
     else
       if self.is_ftp
+        self.update(dispatched: true)
+      elsif self.is_b2c
         self.update(dispatched: true)
       elsif self.is_b2b
         self.notify_invoice
@@ -126,33 +130,30 @@ class PurchaseOrder < ApplicationRecord
     return Invoice.where(po_id: self.po_id)
   end
 
-  def get_pending_invoice
-    invoices = self.get_invoices
-    invoices.each do |invoice|
-      if invoice.is_pending
-        return invoice
+  def create_invoice
+    if self.is_b2c
+      return nil
+    end
+    self.get_invoices.each do |invoice|
+      if invoice.is_paid
+        return nil
+      elsif invoice.is_pending
+        return nil
       end
     end
-    return nil
-  end
-
-  def create_invoice
-    invoice = self.get_pending_invoice
-    if invoice.nil?
-      Invoice.create_invoice(self.po_id)
-    end
+    Invoice.create_invoice(self.po_id)
   end
 
   def pay_invoice
-    invoice = self.get_pending_invoice
-    if invoice != nil
-      invoice.pay
+    self.get_invoices.each do |invoice|
+      if invoice.is_pending
+        invoice.pay
+      end
     end
   end
 
   def notify_invoice
-    invoice = self.get_pending_invoice
-    if invoice != nil
+    self.get_invoices.each do |invoice|
       invoice.notify_dispatch
     end
   end
@@ -171,6 +172,10 @@ class PurchaseOrder < ApplicationRecord
 
   def is_ftp
     return self.channel == 'ftp'
+  end
+
+  def is_b2c
+    return self.channel == 'b2c'
   end
 
   def is_created
@@ -209,5 +214,21 @@ class PurchaseOrder < ApplicationRecord
   def update_quantity_dispatched
     #self.update(quantity_dispatched: self.quantity_dispatched + 1)
     PurchaseOrder.increment_counter(:quantity_dispatched, self.id)
+  end
+
+  def is_dispatching
+    if self.is_made_by_me
+
+    else
+      if self.is_accepted
+        quantity_left = self.quantity - self.quantity_dispatched
+        if quantity_left > 0
+          if self.product.stock - self.product.stock_in_despacho >= quantity_left
+            return true
+          end
+        end
+      end
+    end
+    return false
   end
 end

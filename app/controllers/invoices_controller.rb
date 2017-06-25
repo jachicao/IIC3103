@@ -1,5 +1,5 @@
 class InvoicesController < ApplicationController
-  before_action :set_invoice, only: [:show]
+  before_action :set_invoice, only: [:show, :paid, :failed]
 
   def index
     @invoices = Invoice.all
@@ -8,28 +8,19 @@ class InvoicesController < ApplicationController
   def show
   end
 
-  def create_bill_web
-    if params[:id].present?
-      order = Spree::Order.find(params[:id])
-      if order == nil
-        redirect_to 'spree/', alert: 'se produjo un error'
-      end
-      if order.invoice.present?
-        bill = order.invoice
-      else
-        cliente = order.email.present? ? order.email : 'unknown'
-        monto = order.total.to_i
-        bill = Invoice.bill_create(cliente, monto)
-      end
-      if bill == nil
-        redirect_to 'spree/cart', alert: 'Hubo un problema generando la boleta, por favor intente de nuevo'
-      else
-        url = Invoice.url_create(bill)
-        redirect_to url
-      end
+  def paid
+    @invoice.bill_paid
+    respond_to do |format|
+      format.html { redirect_to spree_path }
     end
   end
 
+  def failed
+    @invoice.bill_failed
+    respond_to do |format|
+      format.html { redirect_to spree_path }
+    end
+  end
 
   private
     def set_invoice

@@ -1,11 +1,12 @@
 <p id="notice"><%= notice %></p>
 
-<h1>Own Purchase Orders</h1>
+<h1>B2B Purchase Orders</h1>
 
 <table class="table table-striped">
   <thead>
     <tr>
       <th>Po</th>
+      <th>Cliente</th>
       <th>Proveedor</th>
       <th>Producto</th>
       <th>Cantidad</th>
@@ -16,9 +17,10 @@
   </thead>
 
   <tbody>
-    <% @own_purchase_orders.each do |purchase_order| %>
+    <% @b2b_purchase_orders.each do |purchase_order| %>
       <tr>
         <td><%= purchase_order.po_id %></td>
+        <td><%= purchase_order.get_client %></td>
         <td><%= purchase_order.get_supplier %></td>
         <td><%= purchase_order.product.name %></td>
         <td><%= purchase_order.quantity %></td>
@@ -31,26 +33,28 @@
   </tbody>
 </table>
 
-<h1>Received Purchase Orders</h1>
+<h1>B2C Purchase Orders</h1>
 
 <table class="table table-striped">
   <thead>
-    <tr>
-      <th>Po</th>
-      <th>Canal</th>
-      <th>Producto</th>
-      <th>Cantidad</th>
-      <th>Cantidad despachada</th>
-      <th>Estado</th>
-      <th colspan="2"></th>
-    </tr>
+  <tr>
+    <th>Po</th>
+    <th>Cliente</th>
+    <th>Proveedor</th>
+    <th>Producto</th>
+    <th>Cantidad</th>
+    <th>Cantidad despachada</th>
+    <th>Estado</th>
+    <th colspan="2"></th>
+  </tr>
   </thead>
 
   <tbody>
-    <% @received_purchase_orders.each do |purchase_order| %>
+  <% @b2c_purchase_orders.each do |purchase_order| %>
       <tr>
         <td><%= purchase_order.po_id %></td>
-        <td><%= purchase_order.channel %></td>
+        <td><%= purchase_order.get_client %></td>
+        <td><%= purchase_order.get_supplier %></td>
         <td><%= purchase_order.product.name %></td>
         <td><%= purchase_order.quantity %></td>
         <td><%= purchase_order.quantity_dispatched %></td>
@@ -58,30 +62,32 @@
         <td><%= link_to 'Show', purchase_order %></td>
         <td><%= link_to 'Destroy', purchase_order_path(id: purchase_order.id), method: :delete, data: { confirm: '¿Estás segur@?' } %></td>
       </tr>
-    <% end %>
+  <% end %>
   </tbody>
 </table>
 
-<h1>Dispatched Purchase Orders</h1>
+<h1>FTP Purchase Orders</h1>
 
 <table class="table table-striped">
   <thead>
-    <tr>
-      <th>Po</th>
-      <th>Canal</th>
-      <th>Producto</th>
-      <th>Cantidad</th>
-      <th>Cantidad despachada</th>
-      <th>Estado</th>
-      <th colspan="2"></th>
-    </tr>
+  <tr>
+    <th>Po</th>
+    <th>Cliente</th>
+    <th>Proveedor</th>
+    <th>Producto</th>
+    <th>Cantidad</th>
+    <th>Cantidad despachada</th>
+    <th>Estado</th>
+    <th colspan="2"></th>
+  </tr>
   </thead>
 
   <tbody>
-    <% @dispatched_purchase_orders.each do |purchase_order| %>
+  <% @ftp_purchase_orders.each do |purchase_order| %>
       <tr>
         <td><%= purchase_order.po_id %></td>
-        <td><%= purchase_order.channel %></td>
+        <td><%= purchase_order.get_client %></td>
+        <td><%= purchase_order.get_supplier %></td>
         <td><%= purchase_order.product.name %></td>
         <td><%= purchase_order.quantity %></td>
         <td><%= purchase_order.quantity_dispatched %></td>
@@ -89,6 +95,6 @@
         <td><%= link_to 'Show', purchase_order %></td>
         <td><%= link_to 'Destroy', purchase_order_path(id: purchase_order.id), method: :delete, data: { confirm: '¿Estás segur@?' } %></td>
       </tr>
-    <% end %>
+  <% end %>
   </tbody>
 </table>

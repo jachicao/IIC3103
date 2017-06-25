@@ -1,4 +1,4 @@
-class DispatchProductsToBusinessWorker < ApplicationWorker
+class DispatchProductsToStoreHouseWorker < ApplicationWorker
   sidekiq_options queue: 'default'
 
   def perform(po_id)
@@ -7,7 +7,7 @@ class DispatchProductsToBusinessWorker < ApplicationWorker
       purchase_order.update_properties_sync
       quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
       if quantity_left > 0
-        puts 'DispatchProductsToBusinessWorker (' + po_id + '): quantity left ' + quantity_left.to_s
+        puts 'DispatchProductsToStoreHouseWorker (' + po_id + '): quantity left ' + quantity_left.to_s
         despacho_id = StoreHouse.get_despacho._id
         product = purchase_order.product
         sku = product.sku
@@ -23,7 +23,7 @@ class DispatchProductsToBusinessWorker < ApplicationWorker
                   product_id = p[:_id]
                   if StoreHouse.can_send_request
                     quantity_left -= 1
-                    DispatchProductToBusinessWorker.perform_async(po_id, product_id, from_store_house_id, despacho_id)
+                    DispatchProductToStoreHouseWorker.perform_async(po_id, product_id, from_store_house_id, despacho_id)
                   end
                 end
               end

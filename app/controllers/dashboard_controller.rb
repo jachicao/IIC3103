@@ -22,7 +22,7 @@ class DashboardController < ApplicationController
     end
 
     def get_bills
-      return Invoice.where(is_bill: true)
+      return Invoice.all.select { |v| v.is_bill }
     end
 
     def get_cartola
@@ -43,6 +43,10 @@ class DashboardController < ApplicationController
       @productos = get_products_report
       @factory_orders = get_set_factory_orders
       @bills = get_bills
+      @bills_sum = 0
+      @bills.each do |bill|
+        @bills_sum += bill.amount
+      end
       @ftp= ftp_orders
       @complete_ftp = @ftp.where(status: 'finalizada')
       @rejected_ftp = @ftp.where(status: 'rechazada')

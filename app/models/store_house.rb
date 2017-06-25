@@ -125,25 +125,16 @@ class StoreHouse < ApplicationRecord
     end
   end
 
-  def self.dispatching_products
+  def self.is_dispatching_products
     PurchaseOrder.all.each do |purchase_order|
-      if purchase_order.is_made_by_me
-
-      else
-        if purchase_order.is_accepted
-          quantity_left = purchase_order.quantity - purchase_order.quantity_dispatched
-          if quantity_left > 0
-            if purchase_order.product.stock - purchase_order.product.stock_in_despacho >= quantity_left
-              return true
-            end
-          end
-        end
+      if purchase_order.is_dispatching
+        return true
       end
     end
     return false
   end
 
-  def self.producing_products
+  def self.is_producing_products
     PendingProduct.all.each do |pending_product|
       if pending_product.has_stock
         return true
@@ -153,6 +144,6 @@ class StoreHouse < ApplicationRecord
   end
 
   def self.despacho_being_used
-    return self.dispatching_products || self.producing_products
+    return self.is_dispatching_products || self.is_producing_products
   end
 end
