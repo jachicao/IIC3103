@@ -1,4 +1,4 @@
-class DispatchProductsToDirectionWorker < ApplicationWorker
+class DispatchProductsToAddressWorker < ApplicationWorker
   sidekiq_options queue: 'default'
 
   def perform(po_id)
@@ -23,7 +23,7 @@ class DispatchProductsToDirectionWorker < ApplicationWorker
                   product_id = p[:_id]
                   if StoreHouse.can_send_request
                     quantity_left -= 1
-                    DispatchProductToDirectionWorker.perform_async(po_id, product_id, from_store_house_id, despacho_id)
+                    DispatchProductToAddressWorker.perform_async(po_id, product_id, from_store_house_id, despacho_id)
                   end
                 end
               end

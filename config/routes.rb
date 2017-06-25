@@ -24,7 +24,7 @@ Rails.application.routes.draw do
   resources :pending_products, only: [:index, :destroy]
 
 
-  get 'spree_orders/:id', to: 'spree_orders#create_bill', as: :create_bill
+  post 'spree_orders/:id', to: 'spree_orders#create_bill', as: :create_bill
 
   resources :invoices, only: [:index, :show]
   post '/invoices/:id/pay', to: 'invoices#pay', :as => :pay

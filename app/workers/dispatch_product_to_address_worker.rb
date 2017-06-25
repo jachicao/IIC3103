@@ -1,4 +1,4 @@
-class DispatchProductToDirectionWorker < ApplicationWorker
+class DispatchProductToAddressWorker < ApplicationWorker
   sidekiq_options queue: 'low'
 
   def perform(po_id, product_id, from_store_house_id, despacho_id)

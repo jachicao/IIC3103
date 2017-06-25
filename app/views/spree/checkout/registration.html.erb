@@ -1,0 +1,21 @@
+<%= render :partial => 'spree/shared/error_messages', :locals => { :target => @user } %>
+<h1><%= Spree.t(:checkout) %></h1>
+<div id="registration" class="row" data-hook>
+  <% if Spree::Config[:allow_guest_checkout] %>
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Address</h3>
+          </div>
+          <div id="guest_checkout" class="panel-body" data-hook>
+            <%= form_for @order, :url => '/spree_orders/' + @order.id.to_s, :method => :post, :html => { :id => 'checkout_form_registration' } do |f| %>
+                <p>
+                  <%= f.text_field :email, :class => 'form-control title', :placeholder => 'Insert here' %>
+                </p>
+                <p><%= f.submit Spree.t(:continue), :class => 'btn btn-lg btn-success btn-block' %></p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+  <% end %>
+</div>

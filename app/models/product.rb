@@ -15,12 +15,7 @@ class Product < ApplicationRecord
   end
 
   def is_produced_by_me
-    self.product_in_sales.each do |product_in_sale|
-      if product_in_sale.is_mine
-        return true
-      end
-    end
-    return false
+    return self.get_my_product_sale != nil
   end
 
   def stock
