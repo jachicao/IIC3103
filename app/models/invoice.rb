@@ -141,11 +141,9 @@ class Invoice < ApplicationRecord
 
   def get_bank_account
     group_number = self.get_supplier_group_number
-    if group_number > 0
-      producer = Producer.find_by(group_number: group_number)
-      if producer.bank_account != nil and producer.bank_account != ''
-        return producer.bank_account
-      end
+    producer = Producer.find_by(group_number: group_number)
+    if producer != nil && producer.bank_account != nil && producer.bank_account != ''
+      return producer.bank_account
     end
     return self.bank_id
   end
@@ -177,7 +175,7 @@ class Invoice < ApplicationRecord
   end
 
   def is_paid
-    return self.status == 'pagado'
+    return self.status == 'pagada'
   end
 
   def is_cancelled

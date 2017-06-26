@@ -41,7 +41,12 @@ class Api::ApiInvoicesController < Api::ApiController
   end
 
   def paid
+    if params[:id_transaction].nil?
+      return render :json => { :success => false, :error => 'Falta id_transaction' }, status: :bad_request
+    end
+
     if @invoice != nil
+      @invoice.update(trx_id: params[:id_transaction])
       @invoice.update_properties_async
       return render :json => { :success => true }
     else

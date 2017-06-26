@@ -9,6 +9,7 @@ class PayInvoiceWorker < ApplicationWorker
         if invoice_bank_account != nil && invoice_bank_account != ''
           transaction_response = self.transfer_money(invoice_bank_account, purchase_order.quantity * purchase_order.unit_price)
           transaction_id = transaction_response[:body][:_id]
+          invoice.update(trx_id: transaction_id)
         end
         server = NotifyPaymentServerInvoiceJob.perform_now(invoice._id)
         group = nil
