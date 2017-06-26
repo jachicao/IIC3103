@@ -31,6 +31,13 @@
   <%= @invoice.accepted %>
 </p>
 
+<p>
+  <strong>Paid:</strong>
+  <%= @invoice.paid %>
+</p>
+
 <%= link_to 'Pay', pay_invoice_path(id: @invoice.id), method: :post %>
+
+<br>
 
 <%= link_to 'Back', invoices_path %>

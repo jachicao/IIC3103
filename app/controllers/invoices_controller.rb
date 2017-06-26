@@ -26,7 +26,7 @@ class InvoicesController < ApplicationController
   def pay
     @invoice.pay
     respond_to do |format|
-      format.html { render :show }
+      format.html { redirect_to invoice_path(id: @invoice.id) }
     end
   end
 
