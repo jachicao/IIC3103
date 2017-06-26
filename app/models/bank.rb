@@ -12,13 +12,17 @@ class Bank < ApplicationRecord
     return GetBankTransactionsJob.perform_now(self.get_bank_id, DateTime.now - 365, DateTime.now)[:body][:data]
   end
 
+  def self.get_transactions_from_id(id)
+    return GetBankTransactionsJob.perform_now(id, DateTime.now - 365, DateTime.now)[:body][:data]
+  end
+
   def self.get_transaction(id)
     return GetBankTransactionJob.perform_now(id)
   end
 
   def self.get_balance
     balance = 0
-    transactions = get_transactions
+    transactions = self.get_transactions
     transactions.each do |transaction|
       balance += transaction[:monto]
     end

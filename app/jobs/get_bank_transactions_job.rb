@@ -16,7 +16,7 @@ class GetBankTransactionsJob < ApplicationJob
   end
 
   def perform(id, fecha_inicio, fecha_fin)
-    key = 'obtener_cartola'
+    key = 'obtener_cartola:' + id
     cache_response = $redis.get(key)
     if cache_response != nil
       return {

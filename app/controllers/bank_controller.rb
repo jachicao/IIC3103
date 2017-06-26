@@ -6,6 +6,6 @@ class BankController < ApplicationController
 
   def show
     @id = params[:id]
-    @transactions = Bank.get_transactions
+    @transactions = Bank.get_transactions_from_id(@id)
   end
 end
