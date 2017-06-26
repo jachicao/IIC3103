@@ -10,7 +10,7 @@ class CreateGroupInvoiceJob < ApplicationJob
       begin
         return RestClient.put(url,
                               req_params.to_json,
-                              { content_type: :json, accept: :json, authorization: producer.get_access_token, 'X-ACCESS-TOKEN' => producer.get_access_token })
+                              producer.get_headers)
       rescue RestClient::ExceptionWithResponse => e
         return e.response
       end
@@ -18,7 +18,7 @@ class CreateGroupInvoiceJob < ApplicationJob
       return HTTParty.put(
           url,
           :body => req_params,
-          :headers => { content_type: 'application/json', accept: 'application/json', authorization: producer.get_access_token, 'X-ACCESS-TOKEN' => producer.get_access_token }
+          :headers => producer.get_headers
       )
     end
   end

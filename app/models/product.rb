@@ -6,8 +6,6 @@ class Product < ApplicationRecord
   has_many :factory_orders
 
   def self.get_api_result
-
-
     result = []
     me = Producer.get_me
     me.product_in_sales.each do |product_in_sale|

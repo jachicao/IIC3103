@@ -95,12 +95,6 @@
   Facturas
 </h2>
 
-<% if !@purchase_order.is_made_by_me %>
-<% end %>
-<% if Invoice.find_by(po_id: @purchase_order.po_id).nil? %>
-    <%= link_to 'Crear factura', create_invoice_purchase_order_path(id: @purchase_order.id), method: :patch %>
-<% end %>
-
 <table>
   <thead>
   <tr>

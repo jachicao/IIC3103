@@ -55,7 +55,10 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
             end
           when 6
             if body[:factura_id] != nil
-              #invoice = Invoice.create_new(body[:factura_id])
+              invoice = Invoice.create_new(body[:factura_id])
+              if invoice != nil
+                invoice.update(bank_id: '')
+              end
             end
         end
     end
