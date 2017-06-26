@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Promotions</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Codigo</th>
+    <th>Producto</th>
+    <th>Precio</th>
+    <th>Inicio</th>
+    <th>Fin</th>
+    <th>Publicar</th>
+    <th colspan="1"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @promotions.each do |promotion| %>
+      <tr>
+        <td><%= promotion.code %></td>
+        <td><%= promotion.product.name %></td>
+        <td><%= promotion.price %></td>
+        <td><%= promotion.starts_at %></td>
+        <td><%= promotion.expires_at %></td>
+        <td><%= promotion.publish %></td>
+        <td><%= link_to 'Destroy', promotion_path(id: promotion.id), method: :delete, data: { confirm: '¿Estás segur@?' } %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
