@@ -4,7 +4,7 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
   #grupo3: ok, {\"status\":\"accepted\",\"bank_account\":\"5910c0910e42840004f6e68e\",\"id_invoice\":\"5950c5c4b326790004c61d67\"}","code":201}
   #grupo4: ok
   #grupo5: ok, {\"success\":\"Orden recibida exitosamente. Se procederá a despacho al momento de aceptar y notificar factura por enviar\"
-  #grupo6: no, {"status":400,"error":"Bad Request"}
+  #grupo6: ok, {"message":"OC recivida correctamente.","factura_id":"5950cf25b326790004c623e4"}
   #grupo7: ok
   #grupo8: ok
   def crear_orden_de_compra(group_number, id, payment_method, id_store_reception)

@@ -11,12 +11,14 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
           elsif purchase_order.is_accepted
             case purchase_order.payment_method
               when 'contra_factura'
-                purchase_order.pay_invoice
+                if true
+
+                end
               when 'contra_despacho'
                 if purchase_order.is_dispatched
-                  purchase_order.pay_invoice
                 end
             end
+            purchase_order.pay_invoice
           elsif purchase_order.is_rejected
             #purchase_order.destroy_purchase_order('Rejected by group')
           elsif purchase_order.is_cancelled

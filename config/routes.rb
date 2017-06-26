@@ -28,7 +28,7 @@ Rails.application.routes.draw do
   resources :invoices, only: [:index, :show]
   put '/invoices/:invoice_id', to: 'invoices#api_create'
 
-  post '/invoices/:id/pay', to: 'invoices#pay', :as => :pay
+  post '/invoices/:id/pay', to: 'invoices#pay', :as => :pay_invoice
 
   get '/bills/:id/paid', to: 'invoices#paid', :as => :bill_paid
   get '/bills/:id/failed', to: 'invoices#failed', :as => :bill_failed

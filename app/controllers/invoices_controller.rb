@@ -1,5 +1,5 @@
 class InvoicesController < ApplicationController
-  before_action :set_invoice, only: [:show, :paid, :failed]
+  before_action :set_invoice, only: [:show, :pay, :paid, :failed]
 
   def index
     @invoices = Invoice.all
@@ -20,6 +20,13 @@ class InvoicesController < ApplicationController
       )
     else
       return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
+    end
+  end
+
+  def pay
+    @invoice.pay
+    respond_to do |format|
+      format.html { render :show }
     end
   end
 
