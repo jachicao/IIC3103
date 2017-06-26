@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170624232151) do
+ActiveRecord::Schema.define(version: 20170626174756) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -82,6 +82,7 @@ ActiveRecord::Schema.define(version: 20170624232151) do
     t.string   "cancelled_reason"
     t.boolean  "analyzing",        default: false
     t.boolean  "accepted",         default: false
+    t.string   "trx_id"
     t.index ["_id"], name: "index_invoices_on__id", using: :btree
   end
 
@@ -96,7 +97,7 @@ ActiveRecord::Schema.define(version: 20170624232151) do
   create_table "producers", force: :cascade do |t|
     t.string   "producer_id"
     t.integer  "group_number"
-    t.string   "account"
+    t.string   "bank_account"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
     t.index ["producer_id"], name: "index_producers_on_producer_id", using: :btree
@@ -124,6 +125,19 @@ ActiveRecord::Schema.define(version: 20170624232151) do
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
     t.index ["sku"], name: "index_products_on_sku", using: :btree
+  end
+
+  create_table "promotions", force: :cascade do |t|
+    t.integer  "product_id"
+    t.integer  "price"
+    t.datetime "starts_at"
+    t.datetime "expires_at"
+    t.string   "code"
+    t.boolean  "publish"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.integer  "spree_promotion_id"
+    t.index ["product_id"], name: "index_promotions_on_product_id", using: :btree
   end
 
   create_table "purchase_orders", force: :cascade do |t|
@@ -1202,6 +1216,7 @@ ActiveRecord::Schema.define(version: 20170624232151) do
   add_foreign_key "pending_products", "products"
   add_foreign_key "product_in_sales", "producers"
   add_foreign_key "product_in_sales", "products"
+  add_foreign_key "promotions", "products"
   add_foreign_key "purchase_orders", "products"
   add_foreign_key "purchased_products", "pending_products"
   add_foreign_key "purchased_products", "producers"

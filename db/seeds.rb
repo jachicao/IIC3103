@@ -32,24 +32,61 @@ end
 =end
 
 if Rails.env.production?
-  Producer.create(producer_id: '5910c0910e42840004f6e680', group_number: 1, account:'')
-  Producer.create(producer_id: '5910c0910e42840004f6e681', group_number: 2, account:'')
-  Producer.create(producer_id: '5910c0910e42840004f6e682', group_number: 3, account:'')
-  Producer.create(producer_id: '5910c0910e42840004f6e683', group_number: 4, account:'')
-  Producer.create(producer_id: '5910c0910e42840004f6e684', group_number: 5, account:'')
-  Producer.create(producer_id: '5910c0910e42840004f6e685', group_number: 6, account:'')
-  Producer.create(producer_id: '5910c0910e42840004f6e686', group_number: 7, account:'')
-  Producer.create(producer_id: '5910c0910e42840004f6e687', group_number: 8, account:'')
+  Producer.create(group_number: 1)
+  Producer.create(group_number: 2)
+  Producer.create(group_number: 3)
+  Producer.create(group_number: 4)
+  Producer.create(group_number: 5)
+  Producer.create(group_number: 6)
+  Producer.create(group_number: 7)
+  Producer.create(group_number: 8)
+
+  Producer.find_by(group_number: 1).update(producer_id: '5910c0910e42840004f6e680')
+  Producer.find_by(group_number: 2).update(producer_id: '5910c0910e42840004f6e681')
+  Producer.find_by(group_number: 3).update(producer_id: '5910c0910e42840004f6e682')
+  Producer.find_by(group_number: 4).update(producer_id: '5910c0910e42840004f6e683')
+  Producer.find_by(group_number: 5).update(producer_id: '5910c0910e42840004f6e684')
+  Producer.find_by(group_number: 6).update(producer_id: '5910c0910e42840004f6e685')
+  Producer.find_by(group_number: 7).update(producer_id: '5910c0910e42840004f6e686')
+  Producer.find_by(group_number: 8).update(producer_id: '5910c0910e42840004f6e687')
+
+  Producer.find_by(group_number: 1).update(bank_account: '5910c0910e42840004f6e688')
+  Producer.find_by(group_number: 2).update(bank_account: '5910c0910e42840004f6e689')
+  Producer.find_by(group_number: 3).update(bank_account: '5910c0910e42840004f6e68e')
+  Producer.find_by(group_number: 4).update(bank_account: '5910c0910e42840004f6e68c')
+  Producer.find_by(group_number: 5).update(bank_account: '5910c0910e42840004f6e68a')
+  Producer.find_by(group_number: 6).update(bank_account: '5910c0910e42840004f6e68f')
+  Producer.find_by(group_number: 7).update(bank_account: '5910c0910e42840004f6e68b')
+  Producer.find_by(group_number: 8).update(bank_account: '5910c0910e42840004f6e68d')
 else
-  Producer.create(producer_id: '590baa00d6b4ec0004902462', group_number: 1, account:'')
-  Producer.create(producer_id: '590baa00d6b4ec0004902463', group_number: 2, account:'')
-  Producer.create(producer_id: '590baa00d6b4ec0004902464', group_number: 3, account:'')
-  Producer.create(producer_id: '590baa00d6b4ec0004902465', group_number: 4, account:'')
-  Producer.create(producer_id: '590baa00d6b4ec0004902466', group_number: 5, account:'')
-  Producer.create(producer_id: '590baa00d6b4ec0004902467', group_number: 6, account:'')
-  Producer.create(producer_id: '590baa00d6b4ec0004902468', group_number: 7, account:'')
-  Producer.create(producer_id: '590baa00d6b4ec0004902469', group_number: 8, account:'')
+  Producer.create(group_number: 1)
+  Producer.create(group_number: 2)
+  Producer.create(group_number: 3)
+  Producer.create(group_number: 4)
+  Producer.create(group_number: 5)
+  Producer.create(group_number: 6)
+  Producer.create(group_number: 7)
+  Producer.create(group_number: 8)
+
+  Producer.find_by(group_number: 1).update(producer_id: '590baa00d6b4ec0004902462')
+  Producer.find_by(group_number: 2).update(producer_id: '590baa00d6b4ec0004902463')
+  Producer.find_by(group_number: 3).update(producer_id: '590baa00d6b4ec0004902464')
+  Producer.find_by(group_number: 4).update(producer_id: '590baa00d6b4ec0004902465')
+  Producer.find_by(group_number: 5).update(producer_id: '590baa00d6b4ec0004902466')
+  Producer.find_by(group_number: 6).update(producer_id: '590baa00d6b4ec0004902467')
+  Producer.find_by(group_number: 7).update(producer_id: '590baa00d6b4ec0004902468')
+  Producer.find_by(group_number: 8).update(producer_id: '590baa00d6b4ec0004902469')
+
+  Producer.find_by(group_number: 1).update(bank_account: '590baa00d6b4ec000490246a')
+  Producer.find_by(group_number: 2).update(bank_account: '')
+  Producer.find_by(group_number: 3).update(bank_account: '590baa00d6b4ec000490246f')
+  Producer.find_by(group_number: 4).update(bank_account: '590baa00d6b4ec000490246e')
+  Producer.find_by(group_number: 5).update(bank_account: '590baa00d6b4ec0004902471')
+  Producer.find_by(group_number: 6).update(bank_account: '')
+  Producer.find_by(group_number: 7).update(bank_account: '')
+  Producer.find_by(group_number: 8).update(bank_account: '590baa00d6b4ec0004902470')
 end
+
 
 #Product
 #rails g scaffold Product sku:string name:string product_type:string unit:string unit_cost:integer lote:integer
@@ -301,31 +338,31 @@ Spree::Product.destroy_all
 
 
 Spree::Product.create(name:'Pollo', description:'Desplumado', shipping_category_id: 1, sku: 1, price: 377, cost_price: 290, available_on: DateTime.now)
-Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Pollo.png'), :viewable => Spree::Product.find_by(name: 'Pollo').master)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/13.png'), :viewable => Spree::Product.find_by(name: 'Pollo').master)
 
 Spree::Product.create( name: 'Leche', description:'Leche Entera', shipping_category_id: 1, sku: 7, price: 363, cost_price: 290, available_on: DateTime.now)
-Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Leche.png'), :viewable => Spree::Product.find_by(name: 'Leche').master)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/7.png'), :viewable => Spree::Product.find_by(name: 'Leche').master)
 
 Spree::Product.create( name: 'Arroz', description:'Rico y Natural', shipping_category_id: 1, sku: 13, price: 394, cost_price: 358, available_on: DateTime.now)
-Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Arroz.png'), :viewable => Spree::Product.find_by(name: 'Arroz').master)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/13.png'), :viewable => Spree::Product.find_by(name: 'Arroz').master)
 
 Spree::Product.create( name: 'Mantequilla', description:'No es Margarina', shipping_category_id: 1, sku: 22, price: 437, cost_price: 336, available_on: DateTime.now)
-Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Mantequilla.png'), :viewable => Spree::Product.find_by(name: 'Mantequilla').master)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/22.png'), :viewable => Spree::Product.find_by(name: 'Mantequilla').master)
 
 Spree::Product.create( name: 'Harina', description:'Con Polvos de Hornear', shipping_category_id: 1, sku: 23, price: 400, cost_price: 364, available_on: DateTime.now)
-Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Harina.png'), :viewable => Spree::Product.find_by(name: 'Harina').master)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/23.png'), :viewable => Spree::Product.find_by(name: 'Harina').master)
 
 Spree::Product.create( name: 'Azúcar', description:'Dulce y no light', shipping_category_id: 1, sku: 25, price: 121, cost_price: 93, available_on: DateTime.now)
-Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Azucar.png'), :viewable => Spree::Product.find_by(name: 'Azúcar').master)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/25.png'), :viewable => Spree::Product.find_by(name: 'Azúcar').master)
 
 Spree::Product.create( name: 'Cerveza', description:'Con Polvos de Hornear', shipping_category_id: 1, sku: 34, price: 780, cost_price: 557, available_on: DateTime.now)
-Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Cerveza.png'), :viewable => Spree::Product.find_by(name: 'Cerveza').master)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/34.png'), :viewable => Spree::Product.find_by(name: 'Cerveza').master)
 
 Spree::Product.create( name: 'Uva', description:'Con Polvos de Hornear', shipping_category_id: 1, sku: 39, price: 256, cost_price: 233, available_on: DateTime.now)
-Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Uva.png'), :viewable => Spree::Product.find_by(name: 'Uva').master)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/39.png'), :viewable => Spree::Product.find_by(name: 'Uva').master)
 
 Spree::Product.create( name: 'Chocolate', description:'Con Polvos de Hornear', shipping_category_id: 1, sku: 46, price: 594, cost_price: 424, available_on: DateTime.now)
-Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Chocolate.png'), :viewable => Spree::Product.find_by(name: 'Chocolate').master)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/46.png'), :viewable => Spree::Product.find_by(name: 'Chocolate').master)
 
 Spree::Product.create( name: 'Leche Descremada', description:'Con Polvos de Hornear', shipping_category_id: 1, sku: 49, price: 348, cost_price: 268, available_on: DateTime.now)
-Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/Leche_descremada.png'), :viewable => Spree::Product.find_by(name: 'Leche Descremada').master)
+Spree::Image.create(:attachment => File.open(Rails.root + 'app/assets/images/49.png'), :viewable => Spree::Product.find_by(name: 'Leche Descremada').master)
