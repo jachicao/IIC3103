@@ -57,7 +57,7 @@ class Invoice < ApplicationRecord
           self._id,
           self.client_id,
           bill_item.product.sku,
-          (Time.now + 5.to_f.hours).to_i * 1000,
+          (Time.now + 1.to_f.hours).to_i * 1000,
           bill_item.quantity,
           bill_item.unit_price
       )

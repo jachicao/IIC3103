@@ -5,7 +5,20 @@ class Product < ApplicationRecord
   has_many :purchase_orders
   has_many :factory_orders
 
-  def get_my_product_sale
+  def self.get_api_result
+
+
+    result = []
+    me = Producer.get_me
+    me.product_in_sales.each do |product_in_sale|
+      product = product_in_sale.product
+      result.push({ sku: product.sku, name: product.name, price: product_in_sale.price, stock: product.stock_available })
+    end
+
+    return result
+  end
+
+  def get_my_product_in_sale
     self.product_in_sales.each do |product_in_sale|
       if product_in_sale.is_mine
         return product_in_sale
@@ -15,7 +28,7 @@ class Product < ApplicationRecord
   end
 
   def is_produced_by_me
-    return self.get_my_product_sale != nil
+    return self.get_my_product_in_sale != nil
   end
 
   def stock
@@ -63,7 +76,7 @@ class Product < ApplicationRecord
   def analyze_purchase_order(quantity)
     difference = quantity - self.stock_available
     if difference > 0
-      my_product_in_sale = self.get_my_product_sale
+      my_product_in_sale = self.get_my_product_in_sale
       if my_product_in_sale != nil
         id = my_product_in_sale.id
         unit_lote = (difference.to_f / self.lote.to_f).ceil
@@ -166,7 +179,7 @@ class Product < ApplicationRecord
   end
 
   def buy_min_stock(quantity)
-    my_product_in_sale = self.get_my_product_sale
+    my_product_in_sale = self.get_my_product_in_sale
     if my_product_in_sale != nil
       my_product_in_sale.buy_product_async(quantity)
     else

@@ -165,7 +165,7 @@ class ProductInSale < ApplicationRecord
           }
         end
       else
-        if self.stock >= quantity and not self.producer.has_wrong_purchase_orders_api
+        if true#self.stock >= quantity and not self.producer.has_wrong_purchase_orders_api
           return {
               :success => true,
               :id => self.id,

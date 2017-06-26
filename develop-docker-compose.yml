@@ -29,6 +29,7 @@ services:
       - develop-db
       - develop-redis
     restart: always
+    env_file: .env
     environment:
       RAILS_ENV: 'development'
       RACK_ENV: 'development'

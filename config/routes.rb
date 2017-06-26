@@ -11,9 +11,7 @@ Rails.application.routes.draw do
   mount Spree::Core::Engine, at: '/spree/'
 
   resources :purchase_orders, only: [:index, :show, :destroy]
-  patch '/purchase_orders/:id/accept', to: 'purchase_orders#accept', :as => :accept
-  patch '/purchase_orders/:id/reject', to: 'purchase_orders#reject', :as => :reject
-  patch '/purchase_orders/:id/create_invoice', to: 'purchase_orders#create_invoice', :as => :create_invoice_purchase_order
+  put '/purchase_orders/:po_id', to: 'purchase_orders#api_create'
 
   get '/store_houses/move_internally', to: 'store_houses#move_internally', :as => :move_internally_store_house
   post '/store_houses/move_internally', to: 'store_houses#submit_move_internally', :as => :post_move_internally_store_house
@@ -22,12 +20,16 @@ Rails.application.routes.draw do
   resources :product_in_sales, only: [:index]
   resources :producers, only: [:index]
   resources :pending_products, only: [:index, :destroy]
+  resources :promotions, only: [:index, :destroy]
 
 
   post 'spree_orders/:id', to: 'spree_orders#create_bill', as: :create_bill
 
   resources :invoices, only: [:index, :show]
+  put '/invoices/:invoice_id', to: 'invoices#api_create'
+
   post '/invoices/:id/pay', to: 'invoices#pay', :as => :pay
+
   get '/bills/:id/paid', to: 'invoices#paid', :as => :bill_paid
   get '/bills/:id/failed', to: 'invoices#failed', :as => :bill_failed
 
@@ -49,14 +51,15 @@ Rails.application.routes.draw do
     get '/products', to: 'api_products#index'
     get '/publico/precios', to: 'api_products#get_stock'
     put '/invoices/:invoice_id', to: 'api_invoices#create'
-    patch '/invoices/:invoice_id/accepted', to: 'api_invoices#accepted'
-    patch '/invoices/:invoice_id/rejected', to: 'api_invoices#rejected'
-    patch '/invoices/:invoice_id/paid', to: 'api_invoices#paid'
-    patch '/invoices/:invoice_id/delivered', to: 'api_invoices#delivered'
 
     put '/purchase_orders/:po_id', to: 'api_purchase_orders#create'
     patch '/purchase_orders/:po_id/accepted', to: 'api_purchase_orders#accepted'
     patch '/purchase_orders/:po_id/rejected', to: 'api_purchase_orders#rejected'
+
+    patch '/invoices/:invoice_id/accepted', to: 'api_invoices#accepted'
+    patch '/invoices/:invoice_id/rejected', to: 'api_invoices#rejected'
+    patch '/invoices/:invoice_id/paid', to: 'api_invoices#paid'
+    patch '/invoices/:invoice_id/delivered', to: 'api_invoices#delivered'
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

@@ -38,13 +38,35 @@ class Producer < ApplicationRecord
     return (ENV['GROUPS_SERVER_URL'] % [self.group_number])
   end
 
+  def get_spree_url
+    return (ENV['GROUPS_SERVER_URL'] % [self.group_number]) + '/spree'
+  end
+
   def get_api_url
     return self.get_base_url + self.get_api_route
+  end
+
+  def get_headers
+    case self.group_number
+      when 6
+        return {
+            content_type: 'application/json',
+            accept: 'application/json',
+        }
+    end
+    return {
+        content_type: 'application/json',
+        accept: 'application/json',
+        authorization: self.get_access_token,
+        'X-ACCESS-TOKEN' => self.get_access_token,
+    }
   end
 
   def use_rest_client
     case self.group_number
       when 2
+        return true
+      when 6
         return true
       else
         return false

@@ -3,6 +3,7 @@ require 'base64'
 
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
+  protect_from_forgery with: :null_session
 
   # e.g. get_auth_header("GET", { almacenId: "534960ccc88ee69029cd3fb2" })
   def get_auth_header(request_type, auth_params)

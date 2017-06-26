@@ -1,10 +1,10 @@
 class PurchaseOrdersController < ApplicationController
-  before_action :set_purchase_order, only: [:show, :accept, :reject, :destroy, :create_invoice]
+  before_action :set_purchase_order, only: [:show, :destroy]
 
   # GET /purchase_orders
   # GET /purchase_orders.json
   def index
-    @b2b_purchase_orders = PurchaseOrder.all.select { |v| v.is_b2b }
+    @b2b_purchase_orders = PurchaseOrder.all.select { |v| v.is_b2b && !(v.is_rejected || v.is_cancelled) }
     @b2c_purchase_orders = PurchaseOrder.all.select { |v| v.is_b2c }
     @ftp_purchase_orders = PurchaseOrder.all.select { |v| v.is_ftp }
   end
@@ -14,28 +14,6 @@ class PurchaseOrdersController < ApplicationController
   def show
   end
 
-  def accept
-    result = @purchase_order.accept
-    respond_to do |format|
-      if result[:server][:code] == 200
-        format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Purchase order was successfully accepted.' }
-      else
-        format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Failed to accept: ' + result.to_json }
-      end
-    end
-  end
-
-  def reject
-    result = @purchase_order.reject('causa')
-    respond_to do |format|
-      if result[:server][:code] == 200
-        format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Purchase order was successfully rejected.' }
-      else
-        format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Failed to reject: ' + result.to_json }
-      end
-    end
-  end
-
   def destroy
     @purchase_order.destroy_purchase_order('Cancelada vía botón')
     respond_to do |format|
@@ -43,10 +21,30 @@ class PurchaseOrdersController < ApplicationController
     end
   end
 
-  def create_invoice
-    @purchase_order.create_invoice
-    respond_to do |format|
-      format.html { redirect_to purchase_order_url(@purchase_order), notice: 'Invoice was successfully created.' }
+  def api_create
+    if params[:po_id].nil?
+      return render :json => { :success => false, :error => 'Falta po_id' }, status: :bad_request
+    end
+    if params[:id_store_reception].nil?
+      return render :json => { :success => false, :error => 'Falta id_store_reception' }, status: :bad_request
+    end
+    if params[:payment_method].nil?
+      return render :json => { :success => false, :error => 'Falta payment_method' }, status: :bad_request
+    else
+      if ['contra_despacho', 'contra_factura'].include?(params[:payment_method])
+      else
+        return render :json => { :success => false, :error => 'payment_method debe ser contra_despacho o contra_factura' }, status: :bad_request
+      end
+    end
+
+    @purchase_order = PurchaseOrder.create_new(params[:po_id])
+    if @purchase_order != nil
+      @purchase_order.update(
+          store_reception_id: params[:id_store_reception],
+          payment_method: params[:payment_method])
+      return render :json => { :success => true }
+    else
+      return render :json => { :success => false, :error => 'PurchaseOrder not found' }, status: :not_found
     end
   end
 

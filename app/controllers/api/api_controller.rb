@@ -1,5 +1,4 @@
-class Api::ApiController < ActionController::Base
-  protect_from_forgery with: :null_session
+class Api::ApiController < ApplicationController
   before_action :check_header
 
   def check_header

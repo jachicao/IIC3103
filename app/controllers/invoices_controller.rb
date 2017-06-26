@@ -8,6 +8,21 @@ class InvoicesController < ApplicationController
   def show
   end
 
+  def api_create
+    if params[:bank_account].nil?
+      return render :json => { :success => false, :error => 'Falta bank_account' }, status: :bad_request
+    end
+
+    @invoice = Invoice.create_new(params[:invoice_id])
+    if @invoice != nil
+      @invoice.update(
+          bank_id: params[:bank_account],
+      )
+    else
+      return render :json => { :success => false, :error => 'Invoice not found' }, status: :not_found
+    end
+  end
+
   def paid
     @invoice.bill_paid
     respond_to do |format|

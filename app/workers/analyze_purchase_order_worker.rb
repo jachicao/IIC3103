@@ -19,7 +19,7 @@ class AnalyzePurchaseOrderWorker < ApplicationWorker
         if purchase_order.is_b2c
 
         else
-          my_product_in_sale = purchase_order.product.get_my_product_sale
+          my_product_in_sale = purchase_order.product.get_my_product_in_sale
           if my_product_in_sale != nil
             if purchase_order.unit_price >= my_product_in_sale.price
               if DateTime.current <= purchase_order.delivery_date

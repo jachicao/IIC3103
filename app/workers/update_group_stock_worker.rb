@@ -29,6 +29,10 @@ class UpdateGroupStockWorker < ApplicationWorker
               product_in_sale.update(price: product_in_sale.product.unit_cost, stock: 0)
             end
           end
+        else
+          producer.product_in_sales.each do |product_in_sale|
+            product_in_sale.update(price: product_in_sale.product.unit_cost, stock: 0)
+          end
         end
       end
     end

@@ -100,9 +100,6 @@ class StoreHouse < ApplicationRecord
   end
 
   def self.can_send_request
-    if true
-      return true
-    end
     if $store_houses_request == nil
       $store_houses_request = []
     end

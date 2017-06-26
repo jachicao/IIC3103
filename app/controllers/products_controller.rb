@@ -56,6 +56,11 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.json
   def index
+
+    if request.headers['Content-Type'] == 'application/json'
+      return render json: Product.get_api_result
+    end
+
     @products = Product.all
     @me = Producer.get_me
     @my_products = []
@@ -65,6 +70,11 @@ class ProductsController < ApplicationController
       product_in_sale.product.ingredients.each do |ingredient|
         @my_ingredients[ingredient.item.sku.to_i] = ingredient.item
       end
+    end
+
+    respond_to do |format|
+      format.html { render :index }
+      format.json { render json: Product.get_api_result }
     end
   end
 
