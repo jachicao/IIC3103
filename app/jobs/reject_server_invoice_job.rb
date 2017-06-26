@@ -17,6 +17,10 @@ class RejectServerInvoiceJob < ApplicationJob
     response = rechazar_factura(id, motivo)
     puts response.body
     body = JSON.parse(response.body, symbolize_names: true)
+    invoice = Invoice.find_by(_id: id)
+    if invoice != nil
+      invoice.update_properties_async
+    end
     return {
         :body => body,
         :code => response.code,

@@ -5,8 +5,9 @@ class PayInvoiceWorker < ApplicationWorker
       purchase_order = invoice.get_purchase_order
       if purchase_order != nil
         transaction_id = nil
-        if invoice.bank_id != nil && invoice.bank_id != ''
-          transaction_response = self.transfer_money(invoice.bank_id, purchase_order.quantity * purchase_order.unit_price)
+        invoice_bank_account = invoice.get_bank_account
+        if invoice_bank_account != nil && invoice_bank_account != ''
+          transaction_response = self.transfer_money(invoice_bank_account, purchase_order.quantity * purchase_order.unit_price)
           transaction_id = transaction_response[:body][:_id]
         end
         server = NotifyPaymentServerInvoiceJob.perform_now(invoice._id)

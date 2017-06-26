@@ -139,6 +139,17 @@ class Invoice < ApplicationRecord
     end
   end
 
+  def get_bank_account
+    group_number = self.get_supplier_group_number
+    if group_number > 0
+      producer = Producer.find_by(group_number: group_number)
+      if producer.bank_account != nil and producer.bank_account != ''
+        return producer.bank_account
+      end
+    end
+    return self.bank_id
+  end
+
   def notify_dispatch
     group = nil
     if self.is_b2b

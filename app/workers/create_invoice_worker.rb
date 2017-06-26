@@ -34,6 +34,7 @@ class CreateInvoiceWorker < ApplicationWorker
 
       invoice = Invoice.create_new(body[:_id])
       if invoice != nil
+        invoice.update(bank_id: Bank.get_bank_id)
         return {
             :success => true,
             :server => server,
