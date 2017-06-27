@@ -16,22 +16,27 @@ class Invoice < ApplicationRecord
   end
 
   def self.create_new(_id)
-    server = self.get_server_details(_id)
-    if server[:code] == 200
-      body = server[:body]
-      puts body
-      return Invoice.create(
-          _id: body[:_id],
-          status: body[:estado],
-          rejected_reason: body[:rechazo],
-          cancelled_reason: body[:anulacion],
-          supplier_id: body[:proveedor],
-          client_id: body[:cliente],
-          po_id: body[:oc],
-          amount: body[:total],
-      )
+    invoice = Invoice.find_by(_id: _id)
+    if invoice != nil
+      return invoice
     else
-      return nil
+      server = self.get_server_details(_id)
+      if server[:code] == 200
+        body = server[:body]
+        puts body
+        return Invoice.create(
+            _id: body[:_id],
+            status: body[:estado],
+            rejected_reason: body[:rechazo],
+            cancelled_reason: body[:anulacion],
+            supplier_id: body[:proveedor],
+            client_id: body[:cliente],
+            po_id: body[:oc],
+            amount: body[:total],
+        )
+      else
+        return nil
+      end
     end
   end
 

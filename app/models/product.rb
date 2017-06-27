@@ -4,6 +4,7 @@ class Product < ApplicationRecord
   has_many :stocks
   has_many :purchase_orders
   has_many :factory_orders
+  has_many :producers, through: :product_in_sales
 
   def self.get_api_result
     result = []

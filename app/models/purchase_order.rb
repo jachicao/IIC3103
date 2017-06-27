@@ -2,27 +2,32 @@ class PurchaseOrder < ApplicationRecord
   belongs_to :product
 
   def self.create_new(_id)
-    server = self.get_server_details(_id)
-    if server[:code] == 200
-      body = server[:body]
-      puts body
-      return PurchaseOrder.create(
-          po_id: body[:_id],
-          status: body[:estado],
-          rejected_reason: body[:rechazo],
-          cancelled_reason: body[:anulacion],
-          quantity_dispatched: body[:cantidadDespachada],
-          server_quantity_dispatched: body[:cantidadDespachada],
-          client_id: body[:cliente],
-          supplier_id: body[:proveedor],
-          delivery_date: DateTime.parse(body[:fechaEntrega]),
-          unit_price: body[:precioUnitario],
-          product: Product.find_by(sku: body[:sku]),
-          quantity: body[:cantidad],
-          channel: body[:canal],
-      )
+    purchase_order = PurchaseOrder.find_by(po_id: _id)
+    if purchase_order != nil
+      return purchase_order
     else
-      return nil
+      server = self.get_server_details(_id)
+      if server[:code] == 200
+        body = server[:body]
+        puts body
+        return PurchaseOrder.create(
+            po_id: body[:_id],
+            status: body[:estado],
+            rejected_reason: body[:rechazo],
+            cancelled_reason: body[:anulacion],
+            quantity_dispatched: body[:cantidadDespachada],
+            server_quantity_dispatched: body[:cantidadDespachada],
+            client_id: body[:cliente],
+            supplier_id: body[:proveedor],
+            delivery_date: DateTime.parse(body[:fechaEntrega]),
+            unit_price: body[:precioUnitario],
+            product: Product.find_by(sku: body[:sku]),
+            quantity: body[:cantidad],
+            channel: body[:canal],
+        )
+      else
+        return nil
+      end
     end
   end
 

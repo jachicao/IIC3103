@@ -138,10 +138,12 @@ class CheckMinimumStockWorker < ApplicationWorker
 
       products.each do |p|
         product = Product.find_by(sku: p[:sku])
-        difference = [p[:quantity_needed] - p[:stock_available], 5000].min
-        if difference > 0
-          puts product.name + ' ' + difference.to_s
-          product.buy_min_stock(difference)
+        if p[:stock_available] < 6000
+          difference = [p[:quantity_needed] - p[:stock_available], 5000].min
+          if difference > 0
+            puts product.name + ' ' + difference.to_s
+            product.buy_min_stock(difference)
+          end
         end
       end
     end
