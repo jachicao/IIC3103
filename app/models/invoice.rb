@@ -47,7 +47,7 @@ class Invoice < ApplicationRecord
   end
 
   def self.cancel_invoice(id, reason)
-    return CancelServerInvoiceJob.perform_now(id, reason)
+    #return CancelServerInvoiceJob.perform_now(id, reason)
   end
 
   def bill_paid
