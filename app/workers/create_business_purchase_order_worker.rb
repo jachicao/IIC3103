@@ -29,11 +29,14 @@ class CreateBusinessPurchaseOrderWorker < ApplicationWorker
             :group => {},
         }
     end
+    body = server[:body]
+    po_id = body[:_id]
+    purchase_order = PurchaseOrder.create_new(po_id)
 
     group_number = Producer.find_by(producer_id: producer_id).group_number
     group = CreateGroupPurchaseOrderJob.perform_now(
         group_number,
-        server[:body][:_id],
+        po_id,
         payment_method,
         id_almacen_recepcion,
     )
@@ -41,15 +44,13 @@ class CreateBusinessPurchaseOrderWorker < ApplicationWorker
       when 200..226
 
       else
-        CancelServerPurchaseOrderJob.perform_later(server[:body][:_id], 'Rejected by group')
+        CancelServerPurchaseOrderJob.perform_later(po_id, 'Rejected by group')
         return {
             :success => false,
             :server => server,
             :group => group,
         }
     end
-    body = server[:body]
-    purchase_order = PurchaseOrder.create_new(body[:_id])
     if purchase_order != nil
       purchase_order.update(
           payment_method: payment_method,

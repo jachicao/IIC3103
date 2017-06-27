@@ -21,13 +21,6 @@ class UpdatePurchaseOrderWorker < ApplicationWorker
                               cancelled_reason: body[:anulacion],
                               quantity_dispatched: quantity_dispatched,
                               server_quantity_dispatched: server_quantity_dispatched,
-                              client_id: body[:cliente],
-                              supplier_id: body[:proveedor],
-                              delivery_date: DateTime.parse(body[:fechaEntrega]),
-                              unit_price: body[:precioUnitario],
-                              product: Product.find_by(sku: body[:sku]),
-                              quantity: body[:cantidad],
-                              channel: body[:canal],
         )
       else
         #purchase_order.destroy

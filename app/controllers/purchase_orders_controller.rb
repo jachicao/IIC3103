@@ -7,6 +7,10 @@ class PurchaseOrdersController < ApplicationController
     @b2b_purchase_orders = PurchaseOrder.all.select { |v| v.is_b2b && !(v.is_rejected || v.is_cancelled) }
     @b2c_purchase_orders = PurchaseOrder.all.select { |v| v.is_b2c }
     @ftp_purchase_orders = PurchaseOrder.all.select { |v| v.is_ftp }
+    respond_to do |format|
+      format.html { render :index }
+      format.json { render json: PurchaseOrder.all }
+    end
   end
 
   # GET /purchase_orders/1

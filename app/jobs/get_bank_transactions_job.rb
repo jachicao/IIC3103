@@ -7,6 +7,7 @@ class GetBankTransactionsJob < ApplicationJob
       _id: id,
       fechaInicio: (fecha_inicio.to_f * 1000).to_i,
       fechaFin: (fecha_fin.to_f * 1000).to_i,
+      limit: 99999,
     }
     return HTTParty.post(
         ENV['CENTRAL_SERVER_URL'] + '/banco/cartola/',

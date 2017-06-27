@@ -19,6 +19,7 @@ class Invoice < ApplicationRecord
     server = self.get_server_details(_id)
     if server[:code] == 200
       body = server[:body]
+      puts body
       return Invoice.create(
           _id: body[:_id],
           status: body[:estado],
@@ -38,16 +39,12 @@ class Invoice < ApplicationRecord
     return CreateBillWorker.new.perform(client, amount)
   end
 
-  def self.create_invoice(po_id)
-    #return CreateInvoiceWorker.perform_async(po_id)
-  end
-
   def self.get_server_details(_id)
     return GetInvoiceWorker.new.perform(_id)
   end
 
   def self.cancel_invoice(id, reason)
-    #return CancelServerInvoiceJob.perform_now(id, reason)
+    return CancelServerInvoiceJob.perform_now(id, reason)
   end
 
   def bill_paid
