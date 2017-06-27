@@ -117,11 +117,6 @@ class PurchaseOrder < ApplicationRecord
     }
   end
 
-  def destroy_purchase_order(causa)
-    self.cancel(causa)
-    self.destroy
-  end
-
   def cancel(causa)
     return CancelServerPurchaseOrderJob.perform_now(self.po_id, causa)
   end
@@ -135,6 +130,7 @@ class PurchaseOrder < ApplicationRecord
       return nil
     end
     self.get_invoices.each do |invoice|
+      return nil
       if invoice.is_paid
         return nil
       elsif invoice.is_pending
@@ -144,7 +140,20 @@ class PurchaseOrder < ApplicationRecord
     Invoice.create_invoice(self.po_id)
   end
 
+  def is_paid
+    self.get_invoices.each do |invoice|
+      if invoice.is_paid
+        return true
+      end
+    end
+    return false
+  end
+
+
   def pay_invoice
+    if self.is_paid
+      return nil
+    end
     self.get_invoices.each do |invoice|
       if invoice.is_pending
         invoice.pay

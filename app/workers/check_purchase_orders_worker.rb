@@ -20,9 +20,7 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
             end
             purchase_order.pay_invoice
           elsif purchase_order.is_rejected
-            #purchase_order.destroy_purchase_order('Rejected by group')
           elsif purchase_order.is_cancelled
-            purchase_order.destroy
           elsif purchase_order.is_completed
             purchase_order.pay_invoice
           end
@@ -41,9 +39,7 @@ class CheckPurchaseOrdersWorker < ApplicationWorker
               end
             end
           elsif purchase_order.is_rejected
-            #purchase_order.destroy
           elsif purchase_order.is_cancelled
-            purchase_order.destroy
           elsif purchase_order.is_completed
             purchase_order.create_invoice
             purchase_order.confirm_dispatched

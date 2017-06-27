@@ -25,7 +25,7 @@ class UpdateInvoiceWorker < ApplicationWorker
             amount: body[:total],
         )
       else
-        invoice.destroy
+        #invoice.destroy
       end
     end
   end

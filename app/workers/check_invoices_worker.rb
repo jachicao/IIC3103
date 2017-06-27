@@ -8,18 +8,14 @@ class CheckInvoicesWorker < ApplicationWorker
         if invoice.is_made_by_me
           if invoice.is_pending
           elsif invoice.is_rejected
-            #invoice.destroy
           elsif invoice.is_cancelled
-            #invoice.destroy
           elsif invoice.is_paid
           end
         else
           if invoice.is_pending
             invoice.analyze
           elsif invoice.is_rejected
-            #invoice.destroy
           elsif invoice.is_cancelled
-            #invoice.destroy
           elsif invoice.is_paid
           end
         end

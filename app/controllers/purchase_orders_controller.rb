@@ -15,7 +15,7 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def destroy
-    @purchase_order.destroy_purchase_order('Cancelada vía botón')
+    @purchase_order.cancel('Cancelada vía botón')
     respond_to do |format|
       format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully destroyed.' }
     end

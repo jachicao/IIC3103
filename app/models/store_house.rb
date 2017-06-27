@@ -9,7 +9,11 @@ class StoreHouse < ApplicationRecord
     elsif self.recepcion
       return 'Recepción'
     end
-    return 'General'
+    if self.total_space >= 20000
+      return 'General'
+    else
+      return 'Pre-General'
+    end
   end
 
   def self.get_despacho

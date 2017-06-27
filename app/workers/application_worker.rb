@@ -239,13 +239,13 @@ class ApplicationWorker
 
   def get_group_prices(group_number)
     producer = Producer.find_by(group_number: group_number)
-    url = producer.get_base_url + '/api/publico/precios'
+    url = producer.get_base_url + producer.get_prices_route
     req_params = {
     }
     response = HTTParty.get(
         url,
         :query => req_params,
-        :headers => { content_type: 'application/json', accept: 'application/json', authorization: ENV['GROUP_ID'], 'X-ACCESS-TOKEN': ENV['GROUP_ID'] }
+        :headers => producer.get_headers
     )
 
     return {
