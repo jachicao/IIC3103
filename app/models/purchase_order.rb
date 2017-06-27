@@ -137,7 +137,9 @@ class PurchaseOrder < ApplicationRecord
         return nil
       end
     end
-    #CreateInvoiceWorker.perform_async(po_id)
+    puts self.get_invoices.size
+    puts 'Creating invoice'
+    CreateInvoiceWorker.perform_async(self.po_id)
   end
 
   def is_paid
