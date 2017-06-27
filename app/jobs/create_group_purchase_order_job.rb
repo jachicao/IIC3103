@@ -16,7 +16,10 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
     url = producer.get_api_url + '/purchase_orders/' + id
     puts url
     use_rest_client = producer.use_rest_client
+    headers = producer.get_headers
     case group_number
+      when 6
+        headers = producer.get_headers_without_token
       when 8
         req_params = [req_params]
         use_rest_client = true
@@ -25,7 +28,7 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
       begin
         return RestClient.put(url,
                               req_params.to_json,
-                              producer.get_headers)
+                              headers)
       rescue RestClient::ExceptionWithResponse => e
         return e.response
       end
@@ -33,7 +36,7 @@ class CreateGroupPurchaseOrderJob < ApplicationJob
       return HTTParty.put(
           url,
           :body => req_params,
-          :headers => producer.get_headers
+          :headers => headers
       )
     end
   end
