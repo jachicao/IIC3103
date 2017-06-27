@@ -39,7 +39,7 @@ class Invoice < ApplicationRecord
   end
 
   def self.create_invoice(po_id)
-    return CreateInvoiceWorker.perform_async(po_id)
+    #return CreateInvoiceWorker.perform_async(po_id)
   end
 
   def self.get_server_details(_id)
