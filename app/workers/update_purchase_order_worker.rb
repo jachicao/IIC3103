@@ -10,8 +10,10 @@ class UpdatePurchaseOrderWorker < ApplicationWorker
         server_quantity_dispatched = body[:cantidadDespachada]
         quantity_dispatched = purchase_order.quantity_dispatched
         if purchase_order.is_b2b
-          if purchase_order.server_quantity_dispatched < server_quantity_dispatched
-            quantity_dispatched = server_quantity_dispatched
+          if quantity_dispatched >= purchase_order.quantity
+            if purchase_order.server_quantity_dispatched < server_quantity_dispatched
+              quantity_dispatched = server_quantity_dispatched
+            end
           end
         else
           quantity_dispatched = server_quantity_dispatched
