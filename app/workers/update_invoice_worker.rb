@@ -8,7 +8,7 @@ class UpdateInvoiceWorker < ApplicationWorker
       else
         purchase_order = invoice.get_purchase_order
         if purchase_order.nil?
-          invoice.destroy
+          #invoice.destroy
           return nil
         end
       end
@@ -25,7 +25,7 @@ class UpdateInvoiceWorker < ApplicationWorker
             amount: body[:total],
         )
       else
-        invoice.destroy
+        #invoice.destroy
       end
     end
   end
