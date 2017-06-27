@@ -119,7 +119,6 @@ class PurchaseOrder < ApplicationRecord
 
   def destroy_purchase_order(causa)
     self.cancel(causa)
-    self.destroy
   end
 
   def cancel(causa)
@@ -135,13 +134,14 @@ class PurchaseOrder < ApplicationRecord
       return nil
     end
     self.get_invoices.each do |invoice|
+      return nil
       if invoice.is_paid
         return nil
       elsif invoice.is_pending
         return nil
       end
     end
-    #Invoice.create_invoice(self.po_id)
+    Invoice.create_invoice(self.po_id)
   end
 
   def is_paid
