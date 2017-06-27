@@ -44,6 +44,8 @@ class Producer < ApplicationRecord
 
   def get_prices_route
     case self.group_number
+      when 4
+        return '/api/publico/precios'
       when 8
         return '/api/publico/precios'
     end

@@ -1,6 +1,6 @@
 class Invoice < ApplicationRecord
   belongs_to :spree_order, class_name: 'Spree::Order'
-  has_many :bill_items
+  has_many :bill_items, dependent: :destroy
 
   def get_bill_url
     if ENV['DOCKER_RUNNING'] != nil

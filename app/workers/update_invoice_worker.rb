@@ -8,7 +8,7 @@ class UpdateInvoiceWorker < ApplicationWorker
       else
         purchase_order = invoice.get_purchase_order
         if purchase_order.nil?
-          #invoice.destroy
+          invoice.destroy
           return nil
         end
       end

@@ -57,7 +57,7 @@ class ProductInSale < ApplicationRecord
     return CreateBusinessPurchaseOrderWorker.new.perform(
         self.producer.producer_id,
         self.product.sku,
-        (Time.now + [(self.average_time * unit_lote), 5].max.to_f.hours).to_i * 1000, #TODO, REDUCE TIME
+        (Time.now + [(self.average_time * unit_lote), 9].max.to_f.hours).to_i * 1000, #TODO, REDUCE TIME
         quantity,
         self.price,
         'contra_despacho'
@@ -86,7 +86,7 @@ class ProductInSale < ApplicationRecord
     CreateBusinessPurchaseOrderWorker.perform_async(
         self.producer.producer_id,
         self.product.sku,
-        (Time.now + [(self.average_time * unit_lote), 5].max.to_f.hours).to_i * 1000, #TODO, REDUCE TIME
+        (Time.now + [(self.average_time * unit_lote), 9].max.to_f.hours).to_i * 1000, #TODO, REDUCE TIME
         quantity,
         self.price,
         'contra_despacho'
