@@ -5,6 +5,7 @@ class NotifyDispatchGroupInvoiceJob < ApplicationJob
     req_params = {
     }
     url = producer.get_api_url + '/invoices/' + id + '/delivered'
+    puts url
     if producer.use_rest_client
       begin
         return RestClient.patch(url,

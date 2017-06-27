@@ -16,6 +16,7 @@ class CreateInvoiceWorker < ApplicationWorker
       end
       body = server[:body]
       invoice_id = body[:_id]
+      invoice = Invoice.create_new(invoice_id)
       group = nil
       if purchase_order.is_b2b
         group = CreateGroupInvoiceJob.perform_now(purchase_order.get_client_group_number, invoice_id)
@@ -24,7 +25,7 @@ class CreateInvoiceWorker < ApplicationWorker
         case group[:code]
           when 200..226
           else
-            #Invoice.cancel_invoice(invoice_id, 'Rejected by group')
+            #CancelServerInvoiceJob.perform_now(invoice_id, 'Rejected by group')
             #return {
             #    :success => false,
             #    :server => server,
@@ -32,8 +33,6 @@ class CreateInvoiceWorker < ApplicationWorker
             #}
         end
       end
-
-      invoice = Invoice.create_new(invoice_id)
       if invoice != nil
         invoice.update(bank_id: Bank.get_bank_id)
         return {

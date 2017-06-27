@@ -5,6 +5,7 @@ class PurchaseOrder < ApplicationRecord
     server = self.get_server_details(_id)
     if server[:code] == 200
       body = server[:body]
+      puts body
       return PurchaseOrder.create(
           po_id: body[:_id],
           status: body[:estado],
@@ -130,14 +131,15 @@ class PurchaseOrder < ApplicationRecord
       return nil
     end
     self.get_invoices.each do |invoice|
-      return nil
       if invoice.is_paid
         return nil
       elsif invoice.is_pending
         return nil
       end
     end
-    Invoice.create_invoice(self.po_id)
+    puts self.get_invoices.size
+    puts 'Creating invoice'
+    CreateInvoiceWorker.perform_async(self.po_id)
   end
 
   def is_paid

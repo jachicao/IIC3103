@@ -11,7 +11,7 @@
     <th>Cliente</th>
     <th>Total</th>
     <th>Status</th>
-    <th colspan="2"></th>
+    <th colspan="4"></th>
   </tr>
   </thead>
 
@@ -29,6 +29,8 @@
             <td><%= link_to 'Show PO', purchase_order_path(id: purchase_order.id) %></td>
         <% end %>
         <td><%= link_to 'Show Invoice', invoice_path(invoice) %></td>
+        <td><%= link_to 'Cancel', cancel_invoice_path(id: invoice.id), method: :patch, data: { confirm: '¿Estás segur@?' } %></td>
+        <td><%= link_to 'Destroy', invoice_path(id: invoice.id), method: :delete, data: { confirm: '¿Estás segur@?' } %></td>
       </tr>
   <% end %>
   </tbody>

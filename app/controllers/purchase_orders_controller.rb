@@ -1,5 +1,5 @@
 class PurchaseOrdersController < ApplicationController
-  before_action :set_purchase_order, only: [:show, :destroy]
+  before_action :set_purchase_order, only: [:show, :cancel, :destroy]
 
   # GET /purchase_orders
   # GET /purchase_orders.json
@@ -7,6 +7,10 @@ class PurchaseOrdersController < ApplicationController
     @b2b_purchase_orders = PurchaseOrder.all.select { |v| v.is_b2b && !(v.is_rejected || v.is_cancelled) }
     @b2c_purchase_orders = PurchaseOrder.all.select { |v| v.is_b2c }
     @ftp_purchase_orders = PurchaseOrder.all.select { |v| v.is_ftp }
+    respond_to do |format|
+      format.html { render :index }
+      format.json { render json: PurchaseOrder.all }
+    end
   end
 
   # GET /purchase_orders/1
@@ -14,8 +18,16 @@ class PurchaseOrdersController < ApplicationController
   def show
   end
 
+  def cancel
+    @purchase_order.cancel('Cancelada vía botón')
+    respond_to do |format|
+      format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully destroyed.' }
+    end
+  end
+
   def destroy
     @purchase_order.cancel('Cancelada vía botón')
+    @purchase_order.destroy
     respond_to do |format|
       format.html { redirect_to purchase_orders_url, notice: 'Purchase order was successfully destroyed.' }
     end

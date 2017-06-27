@@ -1,18 +1,17 @@
 class CreateServerInvoiceJob < ApplicationJob
 
-  def emitir_factura(id)
+
+  def perform(id)
     req_params = {
         :oc => id,
     }
-    return HTTParty.put(
-        ENV['CENTRAL_SERVER_URL'] + '/sii/',
+    url = ENV['CENTRAL_SERVER_URL'] + '/sii/'
+    response = HTTParty.put(
+        url,
         :body => req_params,
         :headers => { content_type: 'application/json', accept: 'application/json'}
     )
-  end
-
-  def perform(id)
-    response = emitir_factura(id)
+    puts url
     puts response.body
     body = JSON.parse(response.body, symbolize_names: true)
     return {

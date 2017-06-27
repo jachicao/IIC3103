@@ -1,5 +1,5 @@
 class InvoicesController < ApplicationController
-  before_action :set_invoice, only: [:show, :pay, :paid, :failed]
+  before_action :set_invoice, only: [:show, :cancel, :destroy, :paid, :failed]
 
   def index
     @invoices = Invoice.all
@@ -23,12 +23,21 @@ class InvoicesController < ApplicationController
     end
   end
 
-  def pay
-    @invoice.pay
+  def cancel
+    @invoice.cancel('Cancelada vía botón')
     respond_to do |format|
-      format.html { redirect_to invoice_path(id: @invoice.id) }
+      format.html { redirect_to invoices_path }
     end
   end
+
+  def destroy
+    @invoice.cancel('Cancelada vía botón')
+    @invoice.destroy
+    respond_to do |format|
+      format.html { redirect_to invoices_path }
+    end
+  end
+
 
   def paid
     @invoice.bill_paid

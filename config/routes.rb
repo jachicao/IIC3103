@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   mount Spree::Core::Engine, at: '/spree/'
 
   resources :purchase_orders, only: [:index, :show, :destroy]
+  patch '/purchase_orders/:id/cancel', to: 'purchase_orders#cancel', :as => :cancel_purchase_order
   put '/purchase_orders/:po_id', to: 'purchase_orders#api_create'
 
   get '/store_houses/move_internally', to: 'store_houses#move_internally', :as => :move_internally_store_house
@@ -25,10 +26,11 @@ Rails.application.routes.draw do
 
   post 'spree_orders/:id', to: 'spree_orders#create_bill', as: :create_bill
 
-  resources :invoices, only: [:index, :show]
+  resources :invoices, only: [:index, :show, :destroy]
   put '/invoices/:invoice_id', to: 'invoices#api_create'
 
   post '/invoices/:id/pay', to: 'invoices#pay', :as => :pay_invoice
+  patch '/invoices/:id/cancel', to: 'invoices#cancel', :as => :cancel_invoice
 
   get '/bills/:id/paid', to: 'invoices#paid', :as => :bill_paid
   get '/bills/:id/failed', to: 'invoices#failed', :as => :bill_failed

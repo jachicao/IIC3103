@@ -11,23 +11,27 @@ class UpdateGroupStockWorker < ApplicationWorker
       else
         response = self.get_group_prices(group_number)
         if response[:code] == 200
-          body = JSON.parse(response[:body], symbolize_names: true)
-          producer.product_in_sales.each do |product_in_sale|
-            found = false
-            body.each do |product|
-              if product[:sku] == product_in_sale.product.sku
-                found = true
-                precio = product[:precio]
-                if product[:price] != nil
-                  precio = product[:price]
+          begin
+            body = JSON.parse(response[:body], symbolize_names: true)
+            producer.product_in_sales.each do |product_in_sale|
+              found = false
+              body.each do |product|
+                if product[:sku] == product_in_sale.product.sku
+                  found = true
+                  precio = product[:precio]
+                  if product[:price] != nil
+                    precio = product[:price]
+                  end
+                  product_in_sale.update(price: precio, stock: product[:stock])
                 end
-                product_in_sale.update(price: precio, stock: product[:stock])
+              end
+              if found
+              else
+                product_in_sale.update(price: product_in_sale.product.unit_cost, stock: 0)
               end
             end
-            if found
-            else
-              product_in_sale.update(price: product_in_sale.product.unit_cost, stock: 0)
-            end
+          rescue Exception => e
+            puts e
           end
         else
           producer.product_in_sales.each do |product_in_sale|
