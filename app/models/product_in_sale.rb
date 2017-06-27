@@ -54,10 +54,14 @@ class ProductInSale < ApplicationRecord
 
   def buy_to_producer_sync(quantity)
     unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
+    time = (self.average_time * unit_lote)
+    if self.producer.group_number == 2
+      time = [time, 9].max
+    end
     return CreateBusinessPurchaseOrderWorker.new.perform(
         self.producer.producer_id,
         self.product.sku,
-        (Time.now + [(self.average_time * unit_lote), 9].max.to_f.hours).to_i * 1000, #TODO, REDUCE TIME
+        (Time.now + time.to_f.hours).to_i * 1000, #TODO, REDUCE TIME
         quantity,
         self.price,
         'contra_despacho'
@@ -83,10 +87,14 @@ class ProductInSale < ApplicationRecord
 
   def buy_to_producer_async(quantity)
     unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
+    time = (self.average_time * unit_lote)
+    if self.producer.group_number == 2
+      time = [time, 9].max
+    end
     CreateBusinessPurchaseOrderWorker.perform_async(
         self.producer.producer_id,
         self.product.sku,
-        (Time.now + [(self.average_time * unit_lote), 9].max.to_f.hours).to_i * 1000, #TODO, REDUCE TIME
+        (Time.now + time.to_f.hours).to_i * 1000, #TODO, REDUCE TIME
         quantity,
         self.price,
         'contra_despacho'
