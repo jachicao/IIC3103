@@ -52,16 +52,21 @@ class ProductInSale < ApplicationRecord
     return BuyProductToFactoryWorker.new.perform(self.product.sku, quantity, self.product.unit_cost)
   end
 
-  def buy_to_producer_sync(quantity)
+  def get_delivery_time(quantity)
     unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
     time = (self.average_time * unit_lote)
+    time += (quantity.to_f / ENV['SERVER_RATE_LIMIT'].to_f).ceil / 60.to_f
     if self.producer.group_number == 2
       time = [time, 9].max
     end
+    return time
+  end
+
+  def buy_to_producer_sync(quantity)
     return CreateBusinessPurchaseOrderWorker.new.perform(
         self.producer.producer_id,
         self.product.sku,
-        (Time.now + time.to_f.hours).to_i * 1000, #TODO, REDUCE TIME
+        (Time.now + self.get_delivery_time(quantity).to_f.hours).to_i * 1000, #TODO, REDUCE TIME
         quantity,
         self.price,
         'contra_despacho'
@@ -86,15 +91,10 @@ class ProductInSale < ApplicationRecord
   end
 
   def buy_to_producer_async(quantity)
-    unit_lote = (quantity.to_f / self.product.lote.to_f).ceil
-    time = (self.average_time * unit_lote)
-    if self.producer.group_number == 2
-      time = [time, 9].max
-    end
     CreateBusinessPurchaseOrderWorker.perform_async(
         self.producer.producer_id,
         self.product.sku,
-        (Time.now + time.to_f.hours).to_i * 1000, #TODO, REDUCE TIME
+        (Time.now + self.get_delivery_time(quantity).to_f.hours).to_i * 1000, #TODO, REDUCE TIME
         quantity,
         self.price,
         'contra_despacho'

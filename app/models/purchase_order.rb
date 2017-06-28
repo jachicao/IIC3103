@@ -128,7 +128,14 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def get_invoices
-    return Invoice.where(po_id: self.po_id)
+    result = Invoice.all.select { |v| v.po_id == self.po_id }
+    if self.is_b2c
+      invoice = Invoice.find_by(_id: self.bill_id)
+      if invoice != nil
+        result << invoice
+      end
+    end
+    return result
   end
 
   def create_invoice

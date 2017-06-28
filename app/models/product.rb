@@ -187,7 +187,7 @@ class Product < ApplicationRecord
         else
           if product_in_sale.producer.has_wrong_purchase_orders_api
           else
-            if product_in_sale.stock >= quantity
+            if product_in_sale.stock - quantity >= 400
               product_in_sale.buy_product_async(quantity)
             end
           end
