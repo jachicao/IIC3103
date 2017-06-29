@@ -78,4 +78,10 @@ gem 'chartkick'
 
 gem 'net-sftp'
 
+gem 'sneakers'
+
+gem 'twitter'
+
+gem 'koala'
+
 #gem 'sidekiq-unique-jobs'
