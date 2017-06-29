@@ -81,7 +81,7 @@ gem 'net-sftp'
 gem 'sneakers'
 
 gem 'twitter'
-
+gem 'faraday', '~> 0.8'
 gem 'koala'
 
 #gem 'sidekiq-unique-jobs'

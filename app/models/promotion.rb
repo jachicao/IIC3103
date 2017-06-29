@@ -17,7 +17,9 @@ class Promotion < ApplicationRecord
       config.access_token        = '880216663676919808-xO8Bf38761m0Sw9mHwiZLciQL3BiId5'
       config.access_token_secret = 'hthHQ55rMyCgkj7w1xlESdvqsMGirYZcueJ8kvnRjt8HW'
     end
-    client.update_with_media(get_message, File.new(get_picture_twitter))
+    puts 'twitteando'
+    answer = client.update_with_media(get_message, File.new(get_picture_twitter))
+    puts answer
   end
 
   def get_message
@@ -27,28 +29,7 @@ class Promotion < ApplicationRecord
   end
 
   def get_picture_twitter
-    case self[:product_id]
-      when 1
-        return '/public/spree/products/1/original/Pollo.png'
-      when 7
-        return '/public/spree/products/2/original/Leche.png'
-      when 13
-        return '/public/spree/products/3/original/Arroz.png'
-      when 22
-        return '/public/spree/products/4/original/Mantequilla.png'
-      when 23
-        return '/public/spree/products/5/original/Harinapng'
-      when 25
-        return '/public/spree/products/6/original/Azucar.png'
-      when 34
-        return '/public/spree/products/7/original/Cerveza.png'
-      when 39
-        return '/public/spree/products/8/original/Uva.png'
-      when 46
-        return '/public/spree/products/9/original/Chocolate.png'
-      when 49
-        return  '/public/spree/products/10/original/Leche_descremada.png'
-    end
+    return Rails.root.join('app', 'assets','images',"#{self[:product_id]}.png")
   end
 
   def get_picture
