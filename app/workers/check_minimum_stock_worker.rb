@@ -1,7 +1,7 @@
 class CheckMinimumStockWorker < ApplicationWorker
   sidekiq_options queue: 'default'
 
-  def get_quantity_needed(arr, product, quantity, add)
+  def set_quantity(arr, product, quantity, add)
     is_produced_by_me = product.is_produced_by_me
     if is_produced_by_me or add
       arr.each do |p|
@@ -12,34 +12,8 @@ class CheckMinimumStockWorker < ApplicationWorker
     end
     if is_produced_by_me
       product.ingredients.each do |ingredient|
-        arr.each do |p|
-          if p[:sku] == ingredient.item.sku
-            unit_lote = (quantity.to_f / product.lote.to_f).ceil
-            self.get_quantity_needed(arr, ingredient.item, unit_lote * ingredient.quantity, true)
-          end
-        end
-      end
-    end
-  end
-
-  def analyze_quantity_needed(arr, product, quantity_needed)
-    sku = product.sku
-    arr.each do |p|
-      if sku == p[:sku]
-        if p[:stock_available] >= quantity_needed
-          p[:stock_available] -= quantity_needed
-        else
-          #p[:stock_available] = 0
-          p[:quantity_needed] += quantity_needed
-          if product.is_produced_by_me
-            if product.ingredients.size > 0
-              unit_lote = (quantity_needed.to_f / product.lote.to_f).ceil
-              product.ingredients.each do |ingredient|
-                self.analyze_quantity_needed(arr, ingredient.item, ingredient.quantity * unit_lote)
-              end
-            end
-          end
-        end
+        unit_lote = (quantity.to_f / product.lote.to_f).ceil
+        self.set_quantity(arr, ingredient.item, unit_lote * ingredient.quantity, true)
       end
     end
   end
@@ -50,7 +24,12 @@ class CheckMinimumStockWorker < ApplicationWorker
 
       products = []
       Product.all.each do |product|
-        products.push({ sku: product.sku, name: product.name, quantity_needed: 0, stock_available: product.stock })
+        products.push({sku: product.sku, name: product.name, quantity_needed: 0, stock_available: product.stock })
+      end
+
+      #cantidad requerida para tener minimo
+      Product.all.each do |product|
+        self.set_quantity(products, product, 2500, false)
       end
 
       #ordenes de fabricación hechas por mi
@@ -81,18 +60,6 @@ class CheckMinimumStockWorker < ApplicationWorker
       #productos pendientes a fabricar que están listos para fabricar
       PendingProduct.all.each do |pending_product|
         unit_lote = pending_product.quantity
-=begin
-        pending_product.product.ingredients.each do |ingredient|
-          stock_available = 0
-          products.each do |p|
-            if ingredient.item.sku == p[:sku]
-              stock_available = p[:stock_available]
-            end
-          end
-          quantity = (stock_available.to_f / ingredient.quantity.to_f).floor
-          unit_lote = [unit_lote, quantity].min
-        end
-=end
         products.each do |p|
           if pending_product.product.sku == p[:sku]
             p[:stock_available] += pending_product.product.lote * unit_lote
@@ -108,11 +75,6 @@ class CheckMinimumStockWorker < ApplicationWorker
       end
 
 
-      #cantidad requerida para tener minimo
-      Product.all.each do |product|
-        self.get_quantity_needed(products, product, 2500, false)
-      end
-
       #ordenes de compra hechas por otros
       ordered = PurchaseOrder.all.order(delivery_date: :asc)
       ordered.each do |purchase_order|
@@ -126,7 +88,7 @@ class CheckMinimumStockWorker < ApplicationWorker
               products.each do |p|
                 if sku == p[:sku]
                   quantity_to_dispatch = (purchase_order.quantity - purchase_order.quantity_dispatched)
-                  self.analyze_quantity_needed(products, product, quantity_to_dispatch)
+                  p[:stock_available] -= quantity_to_dispatch
                 end
               end
             end
@@ -138,6 +100,8 @@ class CheckMinimumStockWorker < ApplicationWorker
 
       products.each do |p|
         product = Product.find_by(sku: p[:sku])
+        p[:stock_available] = [p[:stock_available], 5000].min
+        p[:quantity_needed] = [p[:quantity_needed], 5000].min
         difference = [p[:quantity_needed] - p[:stock_available], 5000].min
         if difference > 0
           puts product.name + ' ' + difference.to_s

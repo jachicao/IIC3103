@@ -1,5 +1,6 @@
 class Producer < ApplicationRecord
   has_many :product_in_sales
+  has_many :products, through: :product_in_sales
 
   def self.get_me
     return Producer.find_by(group_number: ENV['GROUP_NUMBER'].to_i)

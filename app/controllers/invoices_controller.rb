@@ -24,14 +24,14 @@ class InvoicesController < ApplicationController
   end
 
   def cancel
-    @invoice.cancel('Cancelada vía botón')
+    @invoice.cancel('Cancelada manualmente')
     respond_to do |format|
       format.html { redirect_to invoices_path }
     end
   end
 
   def destroy
-    @invoice.cancel('Cancelada vía botón')
+    @invoice.cancel('Cancelada manualmente')
     @invoice.destroy
     respond_to do |format|
       format.html { redirect_to invoices_path }

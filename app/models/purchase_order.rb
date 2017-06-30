@@ -2,27 +2,32 @@ class PurchaseOrder < ApplicationRecord
   belongs_to :product
 
   def self.create_new(_id)
-    server = self.get_server_details(_id)
-    if server[:code] == 200
-      body = server[:body]
-      puts body
-      return PurchaseOrder.create(
-          po_id: body[:_id],
-          status: body[:estado],
-          rejected_reason: body[:rechazo],
-          cancelled_reason: body[:anulacion],
-          quantity_dispatched: body[:cantidadDespachada],
-          server_quantity_dispatched: body[:cantidadDespachada],
-          client_id: body[:cliente],
-          supplier_id: body[:proveedor],
-          delivery_date: DateTime.parse(body[:fechaEntrega]),
-          unit_price: body[:precioUnitario],
-          product: Product.find_by(sku: body[:sku]),
-          quantity: body[:cantidad],
-          channel: body[:canal],
-      )
+    purchase_order = PurchaseOrder.find_by(po_id: _id)
+    if purchase_order != nil
+      return purchase_order
     else
-      return nil
+      server = self.get_server_details(_id)
+      if server[:code] == 200
+        body = server[:body]
+        puts body
+        return PurchaseOrder.create(
+            po_id: body[:_id],
+            status: body[:estado],
+            rejected_reason: body[:rechazo],
+            cancelled_reason: body[:anulacion],
+            quantity_dispatched: body[:cantidadDespachada],
+            server_quantity_dispatched: body[:cantidadDespachada],
+            client_id: body[:cliente],
+            supplier_id: body[:proveedor],
+            delivery_date: DateTime.parse(body[:fechaEntrega]),
+            unit_price: body[:precioUnitario],
+            product: Product.find_by(sku: body[:sku]),
+            quantity: body[:cantidad],
+            channel: body[:canal],
+        )
+      else
+        return nil
+      end
     end
   end
 
@@ -123,7 +128,14 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def get_invoices
-    return Invoice.where(po_id: self.po_id)
+    result = Invoice.all.select { |v| v.po_id == self.po_id }
+    if self.is_b2c
+      invoice = Invoice.find_by(_id: self.bill_id)
+      if invoice != nil
+        result << invoice
+      end
+    end
+    return result
   end
 
   def create_invoice

@@ -4,6 +4,7 @@ class Product < ApplicationRecord
   has_many :stocks
   has_many :purchase_orders
   has_many :factory_orders
+  has_many :producers, through: :product_in_sales
 
   def self.get_api_result
     result = []
@@ -186,7 +187,7 @@ class Product < ApplicationRecord
         else
           if product_in_sale.producer.has_wrong_purchase_orders_api
           else
-            if product_in_sale.stock >= quantity
+            if product_in_sale.stock - quantity >= 400
               product_in_sale.buy_product_async(quantity)
             end
           end
