@@ -17,7 +17,8 @@ class Processor
         publish: message[:publicar]
     }
     my_products = ProductInSale.select(:product_id).where(producer_id: 1).pluck(:product_id)
-    if my_products.include?(message[:sku])
+    id = Product.select(:id).where(sku: message[:sku].to_s).pluck(:id)
+    if my_products.include?(id[0])
       promo = Promotion.create(data)
       if promo[:publish]
         promo.publish_fb
