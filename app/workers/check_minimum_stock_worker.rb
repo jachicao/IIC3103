@@ -19,7 +19,7 @@ class CheckMinimumStockWorker < ApplicationWorker
   end
 
   def perform(*args)
-    if ENV['DOCKER_RUNNING'] != nil
+    if true#ENV['DOCKER_RUNNING'] != nil
       puts 'starting CheckMinimumStockWorker'
 
       products = []

@@ -4,7 +4,7 @@ class PurchaseOrdersController < ApplicationController
   # GET /purchase_orders
   # GET /purchase_orders.json
   def index
-    @b2b_purchase_orders = PurchaseOrder.all.select { |v| v.is_b2b && !(v.is_rejected || v.is_cancelled) }
+    @b2b_purchase_orders = PurchaseOrder.all.select { |v| v.is_b2b && ((v.is_made_by_me and !(v.is_rejected || v.is_cancelled)) or (!v.is_made_by_me)) }
     @b2c_purchase_orders = PurchaseOrder.all.select { |v| v.is_b2c }
     @ftp_purchase_orders = PurchaseOrder.all.select { |v| v.is_ftp }
     respond_to do |format|
