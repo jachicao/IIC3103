@@ -200,11 +200,6 @@ class ApplicationWorker
       body = body.first
     end
 
-    if body.nil?
-      body = 'PurchaseOrder not found'
-      code = 404
-    end
-
     return {
         :body => body,
         :code => code,
@@ -224,11 +219,6 @@ class ApplicationWorker
     code = response.code
     if body.kind_of?(Array)
       body = body.first
-    end
-
-    if body.nil?
-      body = 'Invoice not found'
-      code = 404
     end
 
     return {
