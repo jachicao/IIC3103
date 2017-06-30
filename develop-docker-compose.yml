@@ -10,7 +10,8 @@ services:
       - traefik
     labels:
       - "traefik.backend=develop-redis"
-      - "traefik.frontend.rule=Host:develop-redis.localhost"
+      - "traefik.frontend.rule=Host: develop-redis.localhost"
+    env_file: .env
   develop-db:
     image: postgres:alpine
     volumes:
@@ -18,9 +19,12 @@ services:
     restart: always
     networks:
       - traefik
+    ports:
+      - "5432"
     labels:
       - "traefik.backend=develop-db"
-      - "traefik.frontend.rule=Host:develop-db.localhost"
+      - "traefik.frontend.rule=Host: develop-db.localhost"
+    env_file: .env
   develop-web:
     build: .
     volumes:
@@ -29,13 +33,10 @@ services:
       - develop-db
       - develop-redis
     restart: always
-    env_file: .env
     environment:
       RAILS_ENV: 'development'
       RACK_ENV: 'development'
-      DB_USERNAME: 'postgres'
-      DB_PASSWORD: ''
-      DB_HOST: 'develop-db'
+      POSTGRES_HOST: 'develop-db'
       REDIS_PROVIDER: 'REDIS_HOST'
       REDIS_HOST: 'develop-redis'
       DOCKER_RUNNING: 'true'
@@ -46,7 +47,8 @@ services:
       - traefik
     labels:
       - "traefik.backend=develop-web"
-      - "traefik.frontend.rule=Host: dev.integra17-1.ing.puc.cl"
+      - "traefik.frontend.rule=Host: develop-web.localhost, localhost, dev.integra17-1.ing.puc.cl"
+    env_file: .env
 
 networks:
   traefik:

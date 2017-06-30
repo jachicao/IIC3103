@@ -1,38 +1,26 @@
-require 'sneakers'
-require 'sneakers/runner'
-require 'json'
-
-class Processor
+class PromotionsWorker
   include Sneakers::Worker
   from_queue :ofertas
+
   def work(msg)
-    puts 'Promotions received: '+ msg
-    message = JSON.parse(msg)
-    data = {
-        product_id: message[:sku],
-        price: message[:precio],
-        starts_at: message[:inicio],
-        expires_at: message[:fin],
-        code: message[:codigo],
-        publish: message[:publicar]
-    }
-    my_products = ProductInSale.select(:product_id).where(producer_id: 1).pluck(:product_id)
-    id = Product.select(:id).where(sku: message[:sku].to_s).pluck(:id)
-    if my_products.include?(id[0])
-      promo = Promotion.create(data)
-      if promo[:publish]
-        promo.publish_fb
-        promo.publish_twitter
+    puts 'Promotions received: ' + msg
+    logger.info msg
+    begin
+      parse = JSON.parse(msg, symbolize_names: true)
+      product = Product.find_by(sku: parse[:sku])
+      if product.is_produced_by_me
+        Promotion.create(
+            product: product,
+            price: parse[:precio],
+            starts_at: Time.at(parse[:inicio] / 1000.0),
+            expires_at: Time.at(parse[:fin] / 1000.0),
+            code: parse[:codigo],
+            publish: parse[:publicar],
+        )
       end
+      ack!
+    rescue Exception => e
+      puts e
     end
   end
 end
-
-
-opts = {
-    :amqp => ENV['AMQP_URL']
-}
-
-Sneakers.configure(opts)
-r = Sneakers::Runner.new([Processor])
-r.run

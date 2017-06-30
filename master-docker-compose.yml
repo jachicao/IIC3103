@@ -10,17 +10,21 @@ services:
       - traefik
     labels:
       - "traefik.backend=redis"
-      - "traefik.frontend.rule=Host:redis.localhost"
+      - "traefik.frontend.rule=Host: redis.localhost"
+    env_file: .env
   db:
     image: postgres:alpine
     volumes:
       - ./pg:/var/lib/postgresql/data
     restart: always
+    ports:
+      - "5432"
     networks:
       - traefik
     labels:
       - "traefik.backend=db"
-      - "traefik.frontend.rule=Host:db.localhost"
+      - "traefik.frontend.rule=Host: db.localhost"
+    env_file: .env
   web:
     build: .
     volumes:
@@ -29,13 +33,10 @@ services:
       - db
       - redis
     restart: always
-    env_file: .env
     environment:
       RAILS_ENV: 'production'
       RACK_ENV: 'production'
-      DB_USERNAME: 'postgres'
-      DB_PASSWORD: ''
-      DB_HOST: 'db'
+      POSTGRES_HOST: 'db'
       REDIS_HOST: 'redis'
       DOCKER_RUNNING: 'true'
       RAILS_MAX_THREADS: '25'
@@ -45,7 +46,8 @@ services:
       - traefik
     labels:
       - "traefik.backend=web"
-      - "traefik.frontend.rule=Host: integra17-1.ing.puc.cl"
+      - "traefik.frontend.rule=Host: web.localhost, integra17-1.ing.puc.cl"
+    env_file: .env
 
 networks:
   traefik:

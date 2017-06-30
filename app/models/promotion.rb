@@ -2,53 +2,64 @@ class Promotion < ApplicationRecord
   belongs_to :product
   belongs_to :spree_promotion, class_name: 'Spree::Promotion', dependent: :destroy
 
+  after_create :publish_to_social_media
+  after_create :create_spree_promotion
 
-  def publish_fb
-    page = Koala::Facebook::API.new(ENV['FB_PAGE_TOKEN'])
-    message = get_message
-    picture = get_picture
-    page.put_connections(ENV['FB_PAGE_ID'], 'feed', :message => message, :picture => picture, :link => picture)
-  end
-
-  def publish_twitter
-    client = Twitter::Client.new({
-      :consumer_key        => 'Fp1qeG81KBkFvajTwF7CYSxPH',
-      :consumer_secret     => 'I2DVFtyX2R7NHearlDCmc62gukemyOUeTGVxqyQ4Iak0JGyd9n',
-      :oauth_token       => '880216663676919808-xO8Bf38761m0Sw9mHwiZLciQL3BiId5',
-      :oauth_token_secret => 'hthHQ55rMyCgkj7w1xlESdvqsMGirYZcueJ8kvnRjt8HW'
-    })
-    client.update_with_media(get_message, open(get_picture))
-  end
-
-  def get_message
-    product_name = Product.select(:name).where(sku: self[:product_id]).pluck(:name)
-    message = "GRAN PROMOCION: #{product_name[0]}  a $#{self[:price]} desde #{self[:starts_at]} hasta #{self[:expires_at]} con el código #{self[:code]}"
-    return message
-  end
-
-  def get_picture
-    case self[:product_id]
-      when 1
-        return 'http://comeronocomer.es/sites/default/files/styles/colorbox_grande/public/fotos/pollo.jpeg?itok=GMmJlR8z'
-      when 7
-        return 'http://cdn2.actitudfem.com/media/files/styles/large/public/images/2014/12/notaleche.jpg'
-      when 13
-        return 'http://www.curiosfera.com/wp-content/uploads/2016/08/Qué-es-el-arroz.jpg'
-      when 22
-        return 'https://churreriaestrella.files.wordpress.com/2013/04/image.jpg'
-      when 23
-        return 'http://www.sualba.com/wp-content/uploads/2015/09/harinas.jpg'
-      when 25
-        return 'http://contenido.com.mx/revista/wp-content/uploads/2017/04/la-moda-de-pasar-un-mes-sin-tomar-azucar-que-le-pasa-a-la-gente-que-intenta-hacerlo.jpg'
-      when 34
-        return 'http://cdn2.salud180.com/sites/default/files/styles/medium/public/field/image/2012/09/cerveza_final.jpg'
-      when 39
-        return 'https://mejorconsalud.com/wp-content/uploads/2014/02/uvas-ROJAS.jpg'
-      when 46
-        return 'http://www.stopenlinea.com.ar/PcAction/avin/chocolate.jpeg'
-      when 49
-        return 'http://www.andreu-chile.com/image/cache/data/reposteria/leche%20descremada-500x500.jpg'
+  def publish_to_social_media
+    if self.publish
+      my_product_in_sale = self.product.get_my_product_in_sale
+      message = "GRAN PROMOCIÓN: #{self.product.name} a $#{self.price.to_s} desde #{self.starts_at.to_formatted_s(:short)} hasta #{self.expires_at.to_formatted_s(:short)} con el código #{self.code}. #{my_product_in_sale.producer.get_spree_url}"
+      image_path = 'app/assets/images/' + self.product.sku + '.png'
+      if $twitter != nil
+        $twitter.update_with_media(message, File.new(Rails.root + image_path))
+      end
+      if $facebook != nil
+        $facebook.put_picture(image_path, 'image/png', { :caption => message }, ENV['FACEBOOK_PAGE_ID'])
+      end
     end
   end
 
+  def create_spree_promotion
+    my_product_in_sale = self.product.get_my_product_in_sale
+
+    spree_product = nil
+    sku = self.product.sku
+    Spree::Product.all.each do |p|
+      if p.sku == sku
+        spree_product = p
+      end
+    end
+
+    promotion = Spree::Promotion.create!(
+        name: self.product.name + ' a $' + self.price.to_s,
+        description: 'Codigo: ' + self.code,
+        advertise: self.publish,
+        code: self.code,
+        expires_at: self.expires_at,
+        starts_at: self.starts_at,
+    )
+
+    rule = Spree::Promotion::Rules::Product.create!(
+        promotion: promotion,
+    )
+    rule.products << spree_product
+    rule.save!
+
+    discount = my_product_in_sale.price - self.price
+
+    calculator = Spree::Calculator::FlexiRate.create!(preferences: {
+        first_item: discount,
+        additional_item: discount,
+    })
+
+    adjustment = Spree::Promotion::Actions::CreateItemAdjustments.create!(
+        calculator: calculator,
+        promotion: promotion,
+    )
+
+    promotion.promotion_rules << rule
+    promotion.save!
+
+    self.update(spree_promotion: promotion)
+  end
 end
