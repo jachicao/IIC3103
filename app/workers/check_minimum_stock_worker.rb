@@ -6,7 +6,7 @@ class CheckMinimumStockWorker < ApplicationWorker
     if is_produced_by_me or add
       arr.each do |p|
         if p[:sku] == product.sku
-          p[:get_quantity_needed] += quantity
+          p[:quantity_needed] += quantity
         end
       end
     end
@@ -24,7 +24,7 @@ class CheckMinimumStockWorker < ApplicationWorker
 
       products = []
       Product.all.each do |product|
-        products.push({sku: product.sku, name: product.name, get_quantity_needed: 0, stock_available: product.stock })
+        products.push({sku: product.sku, name: product.name, quantity_needed: 0, stock_available: product.stock })
       end
 
       #cantidad requerida para tener minimo
@@ -100,12 +100,12 @@ class CheckMinimumStockWorker < ApplicationWorker
 
       products.each do |p|
         product = Product.find_by(sku: p[:sku])
-        if p[:stock_available] < 5000
-          difference = [p[:get_quantity_needed] - p[:stock_available], 5000].min
-          if difference > 0
-            puts product.name + ' ' + difference.to_s
-            product.buy_min_stock(difference)
-          end
+        p[:stock_available] = [p[:stock_available], 5000].min
+        p[:quantity_needed] = [p[:quantity_needed], 5000].min
+        difference = [p[:quantity_needed] - p[:stock_available], 5000].min
+        if difference > 0
+          puts product.name + ' ' + difference.to_s
+          product.buy_min_stock(difference)
         end
       end
     end
