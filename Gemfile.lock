@@ -49,6 +49,7 @@ GEM
       activerecord (>= 3.0)
     addressable (2.5.1)
       public_suffix (~> 2.0, >= 2.0.2)
+    amq-protocol (2.2.0)
     arel (7.1.4)
     autoprefixer-rails (7.1.1)
       execjs
@@ -60,6 +61,8 @@ GEM
       autoprefixer-rails (>= 5.2.1)
       sass (>= 3.3.4)
     builder (3.2.3)
+    bunny (2.6.6)
+      amq-protocol (>= 2.1.0)
     byebug (9.0.6)
     camertron-eprun (1.1.1)
     cancancan (1.10.1)
@@ -102,6 +105,8 @@ GEM
     et-orbi (1.0.4)
       tzinfo
     execjs (2.7.0)
+    faraday (0.8.0)
+      multipart-post (>= 1.2, < 3)
     ffaker (2.2.0)
     ffi (1.9.18)
     figaro (1.1.1)
@@ -128,9 +133,14 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (5.0.5)
       railties (>= 3.2.16)
+    json (2.1.0)
     kaminari (0.17.0)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
+    koala (3.0.0)
+      addressable
+      faraday
+      json (>= 1.8)
     listen (3.0.8)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -151,6 +161,7 @@ GEM
       i18n (>= 0.6.4, < 0.9)
     multi_json (1.12.1)
     multi_xml (0.6.0)
+    multipart-post (2.0.0)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (4.1.0)
@@ -257,6 +268,8 @@ GEM
       tilt (>= 1.1, < 3)
     select2-rails (3.5.9.1)
       thor (~> 0.14)
+    serverengine (1.5.11)
+      sigdump (~> 0.2.2)
     sidekiq (5.0.0)
       concurrent-ruby (~> 1.0)
       connection_pool (~> 2.2, >= 2.2.0)
@@ -267,6 +280,13 @@ GEM
       rufus-scheduler (~> 3.2)
       sidekiq (>= 3)
       tilt (>= 1.4.0)
+    sigdump (0.2.4)
+    simple_oauth (0.3.1)
+    sneakers (2.5.0)
+      bunny (~> 2.6.4)
+      serverengine (~> 1.5.11)
+      thor
+      thread (~> 0.1.7)
     spree (3.2.1)
       spree_api (= 3.2.1)
       spree_backend (= 3.2.1)
@@ -346,11 +366,16 @@ GEM
       state_machines-activemodel (>= 0.3.0)
     stringex (2.7.1)
     thor (0.19.4)
+    thread (0.1.7)
     thread_safe (0.3.6)
     tilt (2.0.7)
     turbolinks (5.0.1)
       turbolinks-source (~> 5)
     turbolinks-source (5.0.3)
+    twitter (4.4.2)
+      faraday (~> 0.8)
+      multi_json (~> 1.3)
+      simple_oauth (~> 0.2)
     twitter_cldr (3.6.0)
       camertron-eprun
       cldr-plurals-runtime-rb (~> 1.0)
@@ -387,10 +412,12 @@ DEPENDENCIES
   byebug
   chartkick
   coffee-rails (~> 4.2)
+  faraday (~> 0.8)
   figaro
   httparty
   jbuilder (~> 2.5)
   jquery-rails
+  koala
   listen (~> 3.0.5)
   net-sftp
   pg (~> 0.18)
@@ -402,12 +429,14 @@ DEPENDENCIES
   sass-rails (~> 5.0)
   sidekiq
   sidekiq-scheduler
+  sneakers
   spree (~> 3.2.0)
   spree_auth_devise (~> 3.2)
   spree_gateway (~> 3.2)
   spring
   spring-watcher-listen (~> 2.0.0)
   turbolinks (~> 5)
+  twitter
   tzinfo-data
   uglifier (>= 1.3.0)
   web-console (>= 3.3.0)
