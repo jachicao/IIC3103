@@ -11,25 +11,19 @@ class Promotion < ApplicationRecord
   end
 
   def publish_twitter
-    client = Twitter::Client.new do |config|
-      config.consumer_key        = 'Fp1qeG81KBkFvajTwF7CYSxPH'
-      config.consumer_secret     = 'I2DVFtyX2R7NHearlDCmc62gukemyOUeTGVxqyQ4Iak0JGyd9n'
-      config.access_token        = '880216663676919808-xO8Bf38761m0Sw9mHwiZLciQL3BiId5'
-      config.access_token_secret = 'hthHQ55rMyCgkj7w1xlESdvqsMGirYZcueJ8kvnRjt8HW'
-    end
-    puts 'twitteando'
-    answer = client.update_with_media(get_message, File.new(get_picture_twitter))
-    puts answer
+    client = Twitter::Client.new({
+      :consumer_key        => 'Fp1qeG81KBkFvajTwF7CYSxPH',
+      :consumer_secret     => 'I2DVFtyX2R7NHearlDCmc62gukemyOUeTGVxqyQ4Iak0JGyd9n',
+      :oauth_token       => '880216663676919808-xO8Bf38761m0Sw9mHwiZLciQL3BiId5',
+      :oauth_token_secret => 'hthHQ55rMyCgkj7w1xlESdvqsMGirYZcueJ8kvnRjt8HW'
+    })
+    client.update_with_media(get_message, open(get_picture))
   end
 
   def get_message
     product_name = Product.select(:name).where(sku: self[:product_id]).pluck(:name)
     message = "GRAN PROMOCION: #{product_name[0]}  a $#{self[:price]} desde #{self[:starts_at]} hasta #{self[:expires_at]} con el código #{self[:code]}"
     return message
-  end
-
-  def get_picture_twitter
-    return Rails.root.join('app', 'assets','images',"#{self[:product_id]}.png")
   end
 
   def get_picture
