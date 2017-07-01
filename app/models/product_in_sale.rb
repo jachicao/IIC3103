@@ -65,7 +65,7 @@ class ProductInSale < ApplicationRecord
   end
 
   def buy_to_producer_sync(quantity)
-    puts 'Buying ' + quantity.to_s + ' of '  + self.product.name + ' to ' + self.producer.group_number
+    puts 'Buying ' + quantity.to_s + ' of '  + self.product.name + ' to ' + self.producer.group_number.to_s
     return CreateBusinessPurchaseOrderWorker.new.perform(
         self.producer.producer_id,
         self.product.sku,
@@ -95,7 +95,7 @@ class ProductInSale < ApplicationRecord
   end
 
   def buy_to_producer_async(quantity)
-    puts 'Buying ' + quantity.to_s + ' of '  + self.product.name + ' to ' + self.producer.group_number
+    puts 'Buying ' + quantity.to_s + ' of '  + self.product.name + ' to ' + self.producer.group_number.to_s
     CreateBusinessPurchaseOrderWorker.perform_async(
         self.producer.producer_id,
         self.product.sku,

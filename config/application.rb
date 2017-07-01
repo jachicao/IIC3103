@@ -25,6 +25,7 @@ module Myapp
         Rails.configuration.cache_classes ? require(c) : load(c)
       end
     end
+    config.time_zone = 'Santiago'
     config.cache_store = :redis_store, 'redis://' + ENV.fetch('REDIS_HOST') { 'localhost' } + ':6379/0/cache', { expires_in: 90.seconds }
     config.active_job.queue_adapter = :sidekiq
   end
