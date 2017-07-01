@@ -62,13 +62,13 @@ class CleanStoreHousesWorker < ApplicationWorker
       if StoreHouse.is_dispatching_products
       else
         StoreHouse.all.each do |from_store_house|
-          if from_store_house.recepcion
+          if from_store_house.pulmon
             from_used_space = from_store_house.used_space
             if from_used_space > 0
               StoreHouse.all.each do |to_store_house|
-                if to_store_house.otro
+                if to_store_house.recepcion
                   if to_store_house.available_space > 0
-                    puts 'Limpiando recepcion'
+                    puts 'Limpiando pulmon'
                     self.clean(from_store_house._id, to_store_house._id)
                     return
                   end
@@ -78,13 +78,13 @@ class CleanStoreHousesWorker < ApplicationWorker
           end
         end
         StoreHouse.all.each do |from_store_house|
-          if from_store_house.pulmon
+          if from_store_house.recepcion
             from_used_space = from_store_house.used_space
             if from_used_space > 0
               StoreHouse.all.each do |to_store_house|
-                if to_store_house.recepcion
+                if to_store_house.otro
                   if to_store_house.available_space > 0
-                    puts 'Limpiando pulmon'
+                    puts 'Limpiando recepcion'
                     self.clean(from_store_house._id, to_store_house._id)
                     return
                   end

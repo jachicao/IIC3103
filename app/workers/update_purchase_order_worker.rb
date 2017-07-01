@@ -28,6 +28,8 @@ class UpdatePurchaseOrderWorker < ApplicationWorker
                                 cancelled_reason: body[:anulacion],
                                 quantity_dispatched: quantity_dispatched,
                                 server_quantity_dispatched: server_quantity_dispatched,
+                                created_at: DateTime.parse(body[:created_at]),
+                                updated_at: DateTime.parse(body[:updated_at]),
           )
         else
           #purchase_order.destroy

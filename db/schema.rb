@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170701035212) do
+ActiveRecord::Schema.define(version: 20170701230357) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "bank_transactions", force: :cascade do |t|
+    t.string   "_id"
+    t.string   "from"
+    t.string   "to"
+    t.integer  "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["_id"], name: "index_bank_transactions_on__id", using: :btree
+  end
 
   create_table "bill_items", force: :cascade do |t|
     t.integer  "invoice_id"
@@ -31,6 +41,7 @@ ActiveRecord::Schema.define(version: 20170701035212) do
     t.datetime "available"
     t.integer  "quantity"
     t.integer  "product_id"
+    t.string   "trx_id"
     t.index ["fo_id"], name: "index_factory_orders_on_fo_id", using: :btree
     t.index ["product_id"], name: "index_factory_orders_on_product_id", using: :btree
   end
@@ -83,6 +94,8 @@ ActiveRecord::Schema.define(version: 20170701035212) do
     t.boolean  "analyzing",        default: false
     t.boolean  "accepted",         default: false
     t.string   "trx_id"
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.index ["_id"], name: "index_invoices_on__id", using: :btree
   end
 
@@ -134,9 +147,8 @@ ActiveRecord::Schema.define(version: 20170701035212) do
     t.datetime "expires_at"
     t.string   "code"
     t.boolean  "publish"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
-    t.integer  "spree_promotion_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer  "spree_id"
     t.index ["product_id"], name: "index_promotions_on_product_id", using: :btree
   end

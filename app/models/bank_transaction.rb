@@ -1,0 +1,2 @@
+class BankTransaction < ApplicationRecord
+end

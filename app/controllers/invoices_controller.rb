@@ -3,6 +3,10 @@ class InvoicesController < ApplicationController
 
   def index
     @invoices = Invoice.all
+    respond_to do |format|
+      format.html { render :index }
+      format.json { render json: @invoices }
+    end
   end
 
   def show

@@ -1,58 +1,19 @@
-whenever --set environment=development --update-crontab
+rails generate second_base:migration CreateAzureStoreHouse _id:string:index total_space:integer store_type:string 
 
-crontab -r
+rails generate second_base:migration CreateAzureProduct sku:string:index name:string product_type:string unit:string unit_cost:integer 
 
-psql
-CREATE USER postgres;
-ALTER USER postgres WITH SUPERUSER;
+rails generate second_base:migration CreateAzureBankTransaction _id:string:index from:string to:string amount:integer created_at:datetime updated_at:datetime
 
-rails g scaffold Producer producer_id:string:index group_number:integer account:string
+rails generate second_base:migration CreateAzurePurchaseOrder azure_product:references _id:string:index payment_method:string store_reception_id:string quantity:integer client:string supplier:string unit_price:integer delivery_date:datetime channel:string created_at:datetime updated_at:datetime
 
-rails g scaffold Product sku:string name:string product_type:string unit:string unit_cost:integer lote:integer
+rails generate second_base:migration CreateAzureInvoice azure_purchase_order:references azure_bank_transaction:references _id:string:index po_id:string client:string supplier:string amount:integer bank_id:string created_at:datetime updated_at:datetime
 
-rails g scaffold Ingredient product:references item_id:bigint quantity:integer
+rails generate second_base:migration CreateAzureDate date:datetime description:string minute:integer hour:integer day:integer day_of_the_week:string day_of_the_year:integer week_of_the_year:integer month:string year:integer
 
-rails g scaffold ProductInSale producer:references product:references price:integer average_time:decimal
+rails generate second_base:migration CreateAzureStoreHouseOverTime azure_date:references azure_store_house:references used_space:integer available_space:integer
 
-rails g scaffold PurchaseOrder po_id:string:index payment_method:string store_reception_id:string status:string
+rails generate second_base:migration CreateAzureProductStockOverTime azure_date:references azure_product:references stock:integer stock_available:integer
 
-rails g scaffold FactoryOrder fo_id:string:index sku:string group:integer dispatched:boolean available:datetime quantity:integer
+rails generate second_base:migration CreateAzurePurchaseOrderOverTime azure_date:references azure_purchase_order:references status:string quantity_dispatched:integer
 
-
-class Producer < ApplicationRecord
-  has_many :product_in_sales
-end
-
-class Product < ApplicationRecord
-  has_many :ingredients
-  has_many :product_in_sales
-end
-
-class Ingredient < ApplicationRecord
-  belongs_to :product
-  belongs_to :item, class_name: 'Product', foreign_key: :item_id
-end
-
-#config/routes.rb
-Rails.application.routes.draw do
-  resources :purchase_orders
-  resources :product_in_sales
-  resources :ingredients
-  resources :products
-  resources :producers
-
-  namespace :api, defaults: {format: 'json'} do
-    get '/products', to: 'products#index'
-
-    put '/invoices/:invoice_id', to: 'invoices#create'
-    patch '/invoices/:invoice_id/accepted', to: 'invoices#update_accepted'
-    patch '/invoices/:invoice_id/rejected', to: 'invoices#update_rejected'
-    patch '/invoices/:invoice_id/paid', to: 'invoices#update_paid'
-    patch '/invoices/:invoice_id/delivered', to: 'invoices#update_delivered'
-
-    put '/purchase_orders/:po_id', to: 'purchase_orders#create'
-    patch '/purchase_orders/:po_id/accepted', to: 'purchase_orders#update_accepted'
-    patch '/purchase_orders/:po_id/rejected', to: 'purchase_orders#update_rejected'
-  end
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
-end
+rails generate second_base:migration CreateAzureInvoiceOverTime azure_date:references azure_invoice:references status:string

@@ -20,6 +20,8 @@ class UpdateInvoiceWorker < ApplicationWorker
               status: body[:estado],
               rejected_reason: body[:rechazo],
               cancelled_reason: body[:anulacion],
+              created_at: DateTime.parse(body[:created_at]),
+              updated_at: DateTime.parse(body[:updated_at]),
           )
         else
           #invoice.destroy

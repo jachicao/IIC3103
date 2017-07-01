@@ -75,6 +75,7 @@ class ApplicationWorker
         product: product,
         quantity: body[:cantidad],
         available: DateTime.parse(body[:disponible]),
+        trx_id: trx_id,
     )
     return {
         :body => body,
