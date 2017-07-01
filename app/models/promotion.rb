@@ -1,6 +1,6 @@
 class Promotion < ApplicationRecord
   belongs_to :product
-  belongs_to :spree_promotion, class_name: 'Spree::Promotion', foreign_key: :spree_promotion_id, dependent: :destroy
+  belongs_to :spree_promotion, class_name: 'Spree::Promotion', foreign_key: :spree_id, dependent: :destroy
 
   after_create :publish_to_social_media
   after_create :create_spree_promotion
