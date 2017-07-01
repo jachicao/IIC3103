@@ -10,13 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170701225752) do
+ActiveRecord::Schema.define(version: 20170701234303) do
 
   create_table "azure_bank_transactions", force: :cascade do |t|
-    t.string  "_id"
-    t.string  "from"
-    t.string  "to"
-    t.integer "amount"
+    t.string   "_id"
+    t.string   "from"
+    t.string   "to"
+    t.integer  "amount"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.index ["_id"], name: "index_azure_bank_transactions_on__id"
   end
 
@@ -52,6 +54,7 @@ ActiveRecord::Schema.define(version: 20170701225752) do
     t.string   "bank_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "status"
     t.index ["_id"], name: "index_azure_invoices_on__id"
     t.index ["azure_bank_transaction_id"], name: "index_azure_invoices_on_azure_bank_transaction_id"
     t.index ["azure_purchase_order_id"], name: "index_azure_invoices_on_azure_purchase_order_id"
@@ -72,6 +75,8 @@ ActiveRecord::Schema.define(version: 20170701225752) do
     t.string  "product_type"
     t.string  "unit"
     t.integer "unit_cost"
+    t.integer "stock"
+    t.integer "stock_available"
     t.index ["sku"], name: "index_azure_products_on_sku"
   end
 
@@ -97,6 +102,8 @@ ActiveRecord::Schema.define(version: 20170701225752) do
     t.string   "channel"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "status"
+    t.integer  "quantity_dispatched"
     t.index ["_id"], name: "index_azure_purchase_orders_on__id"
     t.index ["azure_product_id"], name: "index_azure_purchase_orders_on_azure_product_id"
   end
@@ -114,6 +121,8 @@ ActiveRecord::Schema.define(version: 20170701225752) do
     t.string  "_id"
     t.integer "total_space"
     t.string  "store_type"
+    t.integer "used_space"
+    t.integer "available_space"
     t.index ["_id"], name: "index_azure_store_houses_on__id"
   end
 

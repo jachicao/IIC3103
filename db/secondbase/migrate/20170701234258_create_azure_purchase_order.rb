@@ -13,6 +13,8 @@ class CreateAzurePurchaseOrder < ActiveRecord::Migration[5.0]
       t.string :channel
       t.datetime :created_at
       t.datetime :updated_at
+      t.string :status
+      t.integer :quantity_dispatched
     end
     add_index :azure_purchase_orders, :_id
   end

@@ -5,6 +5,8 @@ class CreateAzureBankTransaction < ActiveRecord::Migration[5.0]
       t.string :from
       t.string :to
       t.integer :amount
+      t.datetime :created_at
+      t.datetime :updated_at
     end
     add_index :azure_bank_transactions, :_id
   end

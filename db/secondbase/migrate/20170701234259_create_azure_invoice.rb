@@ -11,6 +11,7 @@ class CreateAzureInvoice < ActiveRecord::Migration[5.0]
       t.string :bank_id
       t.datetime :created_at
       t.datetime :updated_at
+      t.string :status
     end
     add_index :azure_invoices, :_id
   end

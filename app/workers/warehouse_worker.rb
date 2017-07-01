@@ -5,9 +5,8 @@ class WarehouseWorker < ApplicationWorker
   end
 
   def perform(*args)
-    if Rails.env.production?
-    else
-      return nil
+    if ENV['DOCKER_RUNNING'].nil?
+      #return nil
     end
     current_time = self.get_azure_date(DateTime.current)
     puts current_time.as_json
@@ -20,6 +19,7 @@ class WarehouseWorker < ApplicationWorker
     StoreHouse.all.each do |store_house|
       azure_store_house = AzureStoreHouse.find_by(_id: store_house._id)
       if azure_store_house != nil
+        azure_store_house.update(used_space: store_house.used_space, available_space: store_house.available_space)
         azure_store_house_over_time = AzureStoreHouseOverTime.create(azure_store_house: azure_store_house, azure_date: current_time, used_space: store_house.used_space, available_space: store_house.available_space)
       end
     end
@@ -34,6 +34,7 @@ class WarehouseWorker < ApplicationWorker
     Product.all.each do |product|
       azure_product = AzureProduct.find_by(sku: product)
       if azure_product != nil
+        azure_product.update(stock: product.stock, stock_available: product.stock_available)
         azure_product_stock_over_time = AzureProductStockOverTime.create(azure_date: current_time, azure_product: azure_product, stock: product.stock, stock_available: product.stock_available)
       end
     end
@@ -64,6 +65,7 @@ class WarehouseWorker < ApplicationWorker
     PurchaseOrder.all.each do |purchase_order|
       azure_purchase_order = AzurePurchaseOrder.find_by(_id: purchase_order.po_id)
       if azure_purchase_order != nil
+        azure_purchase_order.update(status: purchase_order.status, quantity_dispatched: purchase_order.quantity_dispatched)
         azure_purchase_order_over_time = AzurePurchaseOrderOverTime.create(azure_date: current_time, azure_purchase_order: azure_purchase_order, status: purchase_order.status, quantity_dispatched: purchase_order.quantity_dispatched)
       end
     end
@@ -80,6 +82,7 @@ class WarehouseWorker < ApplicationWorker
     Invoice.all.each do |invoice|
       azure_invoice = AzureInvoice.find_by(_id: invoice._id)
       if azure_invoice != nil
+        azure_invoice.update(status: invoice.status)
         azure_bank_transaction = AzureBankTransaction.find_by(_id: invoice.trx_id)
         if azure_bank_transaction != nil
           azure_invoice.update(azure_bank_transaction: azure_bank_transaction)
