@@ -2,7 +2,7 @@ FROM ruby:alpine
 
 ENV BUILD_PACKAGES="curl-dev ruby-dev build-base bash" \
     DEV_PACKAGES="zlib-dev libxml2-dev libxslt-dev tzdata yaml-dev postgresql-dev" \
-    RUBY_PACKAGES="ruby-json yaml nodejs imagemagick unixodbc unixodbc-dev freetds"
+    RUBY_PACKAGES="ruby-json yaml nodejs imagemagick unixodbc unixodbc-dev freetds freetds-dev"
 
 RUN apk update && \
     apk upgrade && \

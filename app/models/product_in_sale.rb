@@ -41,7 +41,7 @@ class ProductInSale < ApplicationRecord
       lotes = [lotes, ingredient_lotes].min
     end
     if lotes > 0
-      puts 'Producing ' + quantity + ' of '  + self.product.name + ' to factory'
+      puts 'Producing ' + quantity.to_s + ' of '  + self.product.name + ' to factory'
       PendingProduct.create(product: self.product, quantity: lotes)
       return { :success => true }
     end
@@ -49,7 +49,7 @@ class ProductInSale < ApplicationRecord
   end
 
   def buy_to_factory_sync(quantity)
-    puts 'Buying ' + quantity + ' of '  + self.product.name + ' to factory'
+    puts 'Buying ' + quantity.to_s + ' of '  + self.product.name + ' to factory'
     quantity = self.product.lote * (quantity.to_f / self.product.lote.to_f).ceil
     return BuyProductToFactoryWorker.new.perform(self.product.sku, quantity, self.product.unit_cost)
   end
@@ -65,7 +65,7 @@ class ProductInSale < ApplicationRecord
   end
 
   def buy_to_producer_sync(quantity)
-    puts 'Buying ' + quantity + ' of '  + self.product.name + ' to ' + self.producer.group_number
+    puts 'Buying ' + quantity.to_s + ' of '  + self.product.name + ' to ' + self.producer.group_number
     return CreateBusinessPurchaseOrderWorker.new.perform(
         self.producer.producer_id,
         self.product.sku,
@@ -89,13 +89,13 @@ class ProductInSale < ApplicationRecord
   end
 
   def buy_to_factory_async(quantity)
-    puts 'Buying ' + quantity + ' of '  + self.product.name + ' to factory'
+    puts 'Buying ' + quantity.to_s + ' of '  + self.product.name + ' to factory'
     quantity = self.product.lote * (quantity.to_f / self.product.lote.to_f).ceil
     BuyProductToFactoryWorker.perform_async(self.product.sku, quantity, self.product.unit_cost)
   end
 
   def buy_to_producer_async(quantity)
-    puts 'Buying ' + quantity + ' of '  + self.product.name + ' to ' + self.producer.group_number
+    puts 'Buying ' + quantity.to_s + ' of '  + self.product.name + ' to ' + self.producer.group_number
     CreateBusinessPurchaseOrderWorker.perform_async(
         self.producer.producer_id,
         self.product.sku,
