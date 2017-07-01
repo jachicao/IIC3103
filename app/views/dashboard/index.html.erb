@@ -1,118 +1,196 @@
 <p id="notice"><%= notice %></p>
 
-<center>
-  <h1>Grupo 1</h1>
-</center>
+<nav id="navbar-yellow" class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">GRUPO1</a>
+    </div>
 
-<iframe width="960" height="596" src="https://msit.powerbi.com/view?r=eyJrIjoiMDJmNzdmYjItZWEwNy00YmM0LWJhODMtOGM4OTRmNDgyZGI3IiwidCI6IjcyZjk4OGJmLTg2ZjEtNDFhZi05MWFiLTJkN2NkMDExZGI0NyIsImMiOjV9" frameborder="0" allowFullScreen="true"></iframe>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Dashboard
+          <span class="sr-only">(current)</span>
+          <span class="glyphicon glyphicon-blackboard" aria-hidden="true"></span>
+        </a></li>
 
-<div class="container">
-  <h2> Almacenes </h2>
-  <table class="table table-striped">
-    <thead>
-    <tr>
-      <th>Tipo</th>
-      <th>Capacidad</th>
-      <th>Disponible</th>
-      <th>Utilizado</th>
-      <th colspan="3"></th>
-    </tr>
-    </thead>
+        <li><a href="/spree">Store
+          <span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
+        </a>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
 
-    <tbody>
-    <% @almacenes.each do |almacen| %>
-        <tr>
-          <td><%= almacen.type %></td>
-          <td><%= almacen.total_space %></td>
-          <td><%= (almacen.total_space - almacen.used_space) %></td>
-          <td><%= almacen.used_space %></td>
-        </tr>
-    <% end %>
-    </tbody>
-  </table>
+<div class=container>
+  <center>
+    <h1> Dashboard </h1>
+  </center>
 </div>
 
-<div class="container">
-  <h2>Productos</h2>
-  <table class="table table-striped">
-    <thead>
-    <tr>
-      <th>Sku</th>
-      <th>Nombre</th>
-      <th>Stock</th>
-      <th>Stock Disponible</th>
-      <th colspan="3"></th>
-    </tr>
-    </thead>
+<div class=container>
+  <h2> Tablas </h2>
+  <div>
 
-    <tbody>
-    <% @productos.each do |producto| %>
-        <tr>
-          <td><%= producto[:sku] %></td>
-          <td><%= producto[:name] %></td>
-          <td><%= producto[:stock] %></td>
-          <td><%= producto[:stock_available] %></td>
-        </tr>
-    <% end %>
-    </tbody>
-  </table>
-</div>
+    <div class="panel panel-default">
+      <div class="container">
+        <h3> Almacenes
+          <span class="glyphicon glyphicon-th-large" aria-hidden="true"></span>
+        </h3>
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Capacidad</th>
+            <th>Disponible</th>
+            <th>Utilizado</th>
+            <th colspan="3"></th>
+          </tr>
+          </thead>
 
-<div class="container">
-  <h2> Ordenes de Producción </h2>
-  <% if @factory_orders != nil %>
-      <table class="table table-striped">
-        <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Cantidad</th>
-          <th>Fecha Disponible</th>
-          <th colspan="3"></th>
-        </tr>
-        </thead>
+          <tbody>
+          <% @almacenes.each do |almacen| %>
+              <tr>
+                <td><%= almacen.type %></td>
+                <td><%= almacen.total_space %></td>
+                <td><%= (almacen.total_space - almacen.used_space) %></td>
+                <td><%= almacen.used_space %></td>
+              </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
 
-        <tbody>
-        <% @factory_orders.each do |factoryOrder| %>
-            <tr>
-              <td><%= factoryOrder.product.name %></td>
-              <td><%= factoryOrder.quantity %></td>
-              <td><%= factoryOrder.available %></td>
-            </tr>
+      <div class="container">
+        <h3>Productos
+          <span class="glyphicon glyphicon-apple" aria-hidden="true"></span>
+        </h3>
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>Sku</th>
+            <th>Nombre</th>
+            <th>Stock</th>
+            <th>Stock Disponible</th>
+            <th colspan="3"></th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <% @productos.each do |producto| %>
+              <tr>
+                <td><%= producto[:sku] %></td>
+                <td><%= producto[:name] %></td>
+                <td><%= producto[:stock] %></td>
+                <td><%= producto[:stock_available] %></td>
+              </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="container">
+        <h3> Ordenes de Producción
+          <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+
+        </h3>
+        <% if @factory_orders != nil %>
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Fecha Disponible</th>
+                <th colspan="3"></th>
+              </tr>
+              </thead>
+
+              <tbody>
+              <% @factory_orders.each do |factoryOrder| %>
+                  <tr>
+                    <td><%= factoryOrder.product.name %></td>
+                    <td><%= factoryOrder.quantity %></td>
+                    <td><%= factoryOrder.available %></td>
+                  </tr>
+              <% end %>
+              </tbody>
+            </table>
+        <% else %>
+            <h3> Servidor colapsado </h3>
         <% end %>
-        </tbody>
-      </table>
-  <% else %>
-      <h3> Servidor colapsado </h3>
-  <% end %>
+      </div>
+    </div>
+
+    <div class=container>
+      <h2> Gráficos </h2>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel panel-default">
+        <div class="panel-heading">Boletas</div>
+        <div class="panel-body">
+          <ul>
+            <li style="float:left">
+              <div class="box">
+                <center><h4> (Unidades)</h4></center>
+                <%= column_chart [['Boletas', @bills.size]],
+                                 title: 'Cantidad Boletas', width: '500px'%>
+              </div>
+            </li>
+            <li style="float:left">
+              <div class=box>
+                <center><h4> (Monto)</h4></center>
+                <%= column_chart [['Boletas', @bills_sum]],
+                                 title: 'Ventas Boletas ', width: '500px'%>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">Transacciones</div>
+        <div class="panel-body">
+          <ul>
+            <li style="float:left">
+              <div class="box">
+                <center><h4> (Unidades)</h4></center>
+                <%= column_chart [['Transacciones Exitosas', @transactions.count], ['Transacciones Fallidas', @failed.count]],
+                                 title: 'Cantidad Transacciones', width: '500px'%>
+              </div>
+            </li>
+            <li style="float:left">
+              <div class="box">
+                <center><h4> (Montos)</h4></center>
+                <%= column_chart [['Transacciones Exitosas', @transactions.sum {|h| h[:monto]} ],
+                                  ['Transacciones Fallidas', @failed.sum(:amount)]],
+                                 title: 'Monto a Transferir', width: '500px'%>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">Ordenes Distribuidores</div>
+        <div class="panel-body">
+          <div class="box">
+            <h4>            (Unidades)</h4>
+            <%= column_chart [['Recibidas', @ftp.count],
+                              ['Completadas', @complete_ftp.count],
+                              ['Rechazadas', @rejected_ftp.count]],
+                             title: 'Cantidad Ordenes a distribuidores', width: '500px'%>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br>
+  </div>
 </div>
-
-
-
-<div class="container">
-  <h2> Unidades</h2>
-  <%= column_chart [['Boletas', @bills.size]],
-                   title: 'Cantidad de Boletas Generadas', width: '500px'%>
-  <h2> Monto</h2>
-  <%= column_chart [['Boletas', @bills_sum]],
-                   title: 'Monto total ventas con boleta', width: '500px'%>
-</div>
-
-<div class="container">
-  <h2> Unidades</h2>
-  <%= column_chart [['Transacciones Exitosas', @transactions.count], ['Transacciones Fallidas', @failed.count]],
-                   title: 'Cantidad de transacciones', width: '500px'%>
-  <h2> Monto</h2>
-  <%= column_chart [['Transacciones Exitosas', @transactions.sum {|h| h[:monto]} ],
-                    ['Transacciones Fallidas', @failed.sum(:amount)]],
-                   title: 'Monto total a transferir', width: '500px'%>
-</div>
-
-<div class="container">
-  <h2> Ordenes Distribuidores</h2>
-  <%= column_chart [['Recibidas', @ftp.count],
-                    ['Completadas', @complete_ftp.count],
-                    ['Rechazadas', @rejected_ftp.count]],
-                   title: '', width: '500px'%>
-</div>
-
-<br>
