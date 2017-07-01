@@ -50,6 +50,9 @@
   update_invoices:
     cron: '0 * * * * *'     # Runs every minute
     class: UpdateInvoicesWorker
+  promotions:
+    cron: '0 * * * * *'     # Runs every minute
+    class: PromotionsWorker
   update_store_houses:
     cron: '*/15 * * * * *'    # Runs every 15 seconds
     class: UpdateStoreHousesWorker

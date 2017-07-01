@@ -1,6 +1,6 @@
 class Promotion < ApplicationRecord
   belongs_to :product
-  belongs_to :spree_promotion, class_name: 'Spree::Promotion', dependent: :destroy
+  belongs_to :spree_promotion, class_name: 'Spree::Promotion', foreign_key: :spree_promotion_id, dependent: :destroy
 
   after_create :publish_to_social_media
   after_create :create_spree_promotion
@@ -11,7 +11,7 @@ class Promotion < ApplicationRecord
       message = "GRAN PROMOCIÓN: #{self.product.name} a $#{self.price.to_s} desde #{self.starts_at.to_formatted_s(:short)} hasta #{self.expires_at.to_formatted_s(:short)} con el código #{self.code}. #{my_product_in_sale.producer.get_spree_url}"
       image_path = 'app/assets/images/' + self.product.sku + '.png'
       if $twitter != nil
-        $twitter.update_with_media(message, File.new(Rails.root + image_path))
+        $twitter.update_with_media(message[0, 140], File.new(Rails.root + image_path))
       end
       if $facebook != nil
         $facebook.put_picture(image_path, 'image/png', { :caption => message }, ENV['FACEBOOK_PAGE_ID'])

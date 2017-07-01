@@ -1,0 +1,1 @@
+$bunny = Bunny.new(ENV['AMQP_URL'])
