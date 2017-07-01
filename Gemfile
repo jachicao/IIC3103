@@ -84,7 +84,7 @@ gem 'twitter'
 
 gem 'dotenv-rails', groups: [:development, :test]
 
-gem 'ruby-odbc'
-gem 'activerecord-sqlserver-adapter'
+#gem 'ruby-odbc'
+#gem 'activerecord-sqlserver-adapter'
 
-gem 'secondbase'
+#gem 'secondbase'
