@@ -76,7 +76,7 @@ gem 'chartkick'
 
 gem 'net-sftp'
 
-gem 'sneakers'
+gem 'bunny'
 
 gem 'koala'
 

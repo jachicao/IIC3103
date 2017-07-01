@@ -1,10 +1,18 @@
-class PromotionsWorker
-  include Sneakers::Worker
-  from_queue :ofertas
+class PromotionsWorker < ApplicationWorker
 
-  def work(msg)
+  def perform(*args)
+    $bunny.start
+    ch = $bunny.create_channel
+    q = ch.queue('ofertas', auto_delete: true)
+    delivery_info, metadata, payload = q.pop
+    $bunny.stop
+    if payload != nil
+      load_message(payload)
+    end
+  end
+
+  def load_message(msg)
     puts 'Promotions received: ' + msg
-    logger.info msg
     begin
       parse = JSON.parse(msg, symbolize_names: true)
       product = Product.find_by(sku: parse[:sku])
@@ -18,7 +26,6 @@ class PromotionsWorker
             publish: parse[:publicar],
         )
       end
-      ack!
     rescue Exception => e
       puts e
     end
