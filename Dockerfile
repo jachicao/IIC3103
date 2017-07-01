@@ -2,7 +2,7 @@ FROM ruby:alpine
 
 ENV BUILD_PACKAGES="curl-dev ruby-dev build-base bash" \
     DEV_PACKAGES="zlib-dev libxml2-dev libxslt-dev tzdata yaml-dev postgresql-dev" \
-    RUBY_PACKAGES="ruby-json yaml nodejs imagemagick unixodbc freetds"
+    RUBY_PACKAGES="ruby-json yaml nodejs imagemagick unixodbc unixodbc-dev freetds"
 
 RUN apk update && \
     apk upgrade && \
@@ -14,6 +14,9 @@ RUN apk update && \
 
 RUN mkdir /myapp
 WORKDIR /myapp
+
+RUN gem install ruby-odbc -- --with-odbc-dir=/usr
+
 ADD Gemfile /myapp/Gemfile
 ADD Gemfile.lock /myapp/Gemfile.lock
 RUN bundle install --jobs 20 --retry 5
