@@ -182,13 +182,21 @@ class Product < ApplicationRecord
     if my_product_in_sale != nil
       my_product_in_sale.buy_product_async(quantity)
     else
-      self.product_in_sales.each do |product_in_sale|
+      quantity_left = quantity
+      ordered = self.product_in_sales.order(stock: :desc)
+      ordered.each do |product_in_sale|
         if product_in_sale.is_mine
         else
           if product_in_sale.producer.has_wrong_purchase_orders_api
           else
-            if product_in_sale.stock - quantity >= 400
-              product_in_sale.buy_product_async(quantity)
+            producer_stock = product_in_sale.stock
+            if product_in_sale.producer.group_number == 2
+              producer_stock -= 400
+            end
+            quantity_to_purchase = [producer_stock, quantity_left].min
+            if quantity_to_purchase > 0
+              product_in_sale.buy_product_async(quantity_to_purchase)
+              quantity_left -= quantity_to_purchase
             end
           end
         end
