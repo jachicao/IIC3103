@@ -11,7 +11,7 @@ ENV FREE_TDS_VERSION freetds-1.00.47
 RUN wget https://github.com/jachicao/IIC3103_NodeJS/raw/master/${FREE_TDS_VERSION}.tar.gz && \
     tar -xzf ${FREE_TDS_VERSION}.tar.gz && \
     cd ${FREE_TDS_VERSION} && \
-    ./configure --prefix=/usr/local && \
+    ./configure --prefix=/usr/local --with-tdsver=7.3 && \
     make && \
     make install
 
