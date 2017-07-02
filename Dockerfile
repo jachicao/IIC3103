@@ -8,6 +8,8 @@ RUN apt-get update -qq && apt-get install -y freetds-bin freetds-common freetds-
 RUN mkdir /myapp
 WORKDIR /myapp
 
+RUN gem install i18n
+
 ADD Gemfile /myapp/Gemfile
 ADD Gemfile.lock /myapp/Gemfile.lock
 RUN bundle install --jobs 20 --retry 5
