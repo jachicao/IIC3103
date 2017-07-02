@@ -8,7 +8,7 @@ RUN apt-get update -qq && apt-get install -y wget
 
 ENV FREE_TDS_VERSION freetds-1.00.47
 
-RUN wget ftp://ftp.freetds.org/pub/freetds/stable/${FREE_TDS_VERSION}.tar.gz && \
+RUN wget https://github.com/jachicao/IIC3103_NodeJS/raw/master/${FREE_TDS_VERSION}.tar.gz && \
     tar -xzf ${FREE_TDS_VERSION}.tar.gz && \
     cd ${FREE_TDS_VERSION} && \
     ./configure --prefix=/usr/local && \
