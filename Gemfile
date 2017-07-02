@@ -78,6 +78,8 @@ gem 'net-sftp'
 
 gem 'bunny'
 
+gem 'faraday'
+
 gem 'koala'
 
 gem 'twitter'

@@ -94,8 +94,8 @@ ActiveRecord::Schema.define(version: 20170701230357) do
     t.boolean  "analyzing",        default: false
     t.boolean  "accepted",         default: false
     t.string   "trx_id"
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.index ["_id"], name: "index_invoices_on__id", using: :btree
   end
 
@@ -147,8 +147,9 @@ ActiveRecord::Schema.define(version: 20170701230357) do
     t.datetime "expires_at"
     t.string   "code"
     t.boolean  "publish"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.integer  "spree_promotion_id"
     t.integer  "spree_id"
     t.index ["product_id"], name: "index_promotions_on_product_id", using: :btree
   end
