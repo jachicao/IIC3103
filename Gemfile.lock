@@ -439,6 +439,7 @@ DEPENDENCIES
   faraday
   figaro
   httparty
+  i18n
   jbuilder (~> 2.5)
   jquery-rails
   koala
