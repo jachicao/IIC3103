@@ -6,7 +6,7 @@ RUN apt-get update -qq && apt-get install -y unixodbc unixodbc-dev unixodbc-bin
 RUN apt-get update -qq && apt-get install -y wget
 #RUN apt-get update -qq && apt-get install -y freetds-bin freetds-common freetds-dev
 
-ENV FREE_TDS_VERSION freetds-1.00.47
+ENV FREE_TDS_VERSION freetds-1.00.27
 
 RUN wget https://github.com/jachicao/IIC3103_NodeJS/raw/master/${FREE_TDS_VERSION}.tar.gz && \
     tar -xzf ${FREE_TDS_VERSION}.tar.gz && \
