@@ -461,6 +461,7 @@ DEPENDENCIES
   spree_gateway (~> 3.2)
   spring
   spring-watcher-listen (~> 2.0.0)
+  tiny_tds
   turbolinks (~> 5)
   twitter
   tzinfo-data

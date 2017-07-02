@@ -9,6 +9,8 @@ RUN mkdir /myapp
 WORKDIR /myapp
 
 RUN gem install i18n
+RUN gem install tiny_tds
+RUN gem install ruby-odbc
 
 ADD Gemfile /myapp/Gemfile
 #ADD Gemfile.lock /myapp/Gemfile.lock
