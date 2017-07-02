@@ -1,7 +1,6 @@
 class ChangeInvoices < ActiveRecord::Migration[5.0]
   def change
-    change_table :invoices do |t|
-      t.timestamps
-    end
+    add_column :invoices, :created_at, :datetime
+    add_column :invoices, :updated_at, :datetime
   end
 end
