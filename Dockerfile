@@ -3,14 +3,17 @@ FROM ruby:slim
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs
 RUN apt-get update -qq && apt-get install -y imagemagick
 RUN apt-get update -qq && apt-get install -y unixodbc unixodbc-dev unixodbc-bin
+RUN apt-get update -qq && apt-get install -y wget
 #RUN apt-get update -qq && apt-get install -y freetds-bin freetds-common freetds-dev
 
-RUN wget ftp://ftp.freetds.org/pub/freetds/stable/freetds-1.00.47.tar.gz
-RUN tar -xzf freetds-1.00.47.tar.gz
-RUN cd freetds-1.00.47
-RUN ./configure --prefix=/usr/local
-RUN make
-RUN make install
+ENV FREE_TDS_VERSION freetds-1.00.47
+
+RUN wget ftp://ftp.freetds.org/pub/freetds/stable/${FREE_TDS_VERSION}.tar.gz && \
+    tar -xzf ${FREE_TDS_VERSION}.tar.gz && \
+    cd ${FREE_TDS_VERSION} && \
+    ./configure --prefix=/usr/local && \
+    make && \
+    make install
 
 RUN mkdir /myapp
 WORKDIR /myapp
