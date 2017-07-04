@@ -25,30 +25,6 @@ default: &default
   password: <%= ENV.fetch("POSTGRES_PASSWORD") { "" } %>
   host: <%= ENV.fetch("POSTGRES_HOST") { "localhost"  } %>
 
-secondbase:
-  development:
-    adapter: sqlserver
-    mode: dblib
-    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 10 } %>
-    host: <%= ENV.fetch("AZURE_DB_HOST") { "" } %>
-    database: iic3103dev
-    username: <%= ENV.fetch("AZURE_DB_USER") { "" } %>
-    port: <%= ENV.fetch("AZURE_DB_PORT") { "" } %>
-    password: <%= ENV.fetch("AZURE_DB_PASSWORD") { "" } %>
-    timeout: 5000
-    azure: true
-  production:
-    adapter: sqlserver
-    mode: dblib
-    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 10 } %>
-    host: <%= ENV.fetch("AZURE_DB_HOST") { "" } %>
-    database: iic3103prod
-    username: <%= ENV.fetch("AZURE_DB_USER") { "" } %>
-    port: <%= ENV.fetch("AZURE_DB_PORT") { "" } %>
-    password: <%= ENV.fetch("AZURE_DB_PASSWORD") { "" } %>
-    timeout: 5000
-    azure: true
-
 development:
   <<: *default
   database: myapp_development

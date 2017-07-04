@@ -86,11 +86,3 @@ gem 'koala'
 gem 'twitter'
 
 gem 'dotenv-rails', groups: [:development, :test]
-
-gem 'tiny_tds'
-gem 'ruby-odbc'
-
-gem 'ruby-odbc'
-gem 'activerecord-sqlserver-adapter'
-
-gem 'secondbase'

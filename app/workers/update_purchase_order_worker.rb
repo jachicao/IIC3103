@@ -19,6 +19,9 @@ class UpdatePurchaseOrderWorker < ApplicationWorker
                   quantity_dispatched = server_quantity_dispatched
                 end
               end
+              if server_quantity_dispatched >= quantity_dispatched
+                quantity_dispatched = server_quantity_dispatched
+              end
             else
               quantity_dispatched = server_quantity_dispatched
             end

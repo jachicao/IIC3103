@@ -20,9 +20,6 @@
   - low
 
 :schedule:
-  warehouse:
-    cron: '0 0 * * * *'     # Runs every hour
-    class: WarehouseWorker
   min_stock:
     cron: '0 */30 * * * *'       # Runs every 30 minutes
     class: CheckMinimumStockWorker
