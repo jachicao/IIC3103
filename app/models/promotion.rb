@@ -20,7 +20,6 @@ class Promotion < ApplicationRecord
   end
 
   def create_spree_promotion
-    my_product_in_sale = self.product.get_my_product_in_sale
 
     spree_product = nil
     sku = self.product.sku
@@ -30,36 +29,39 @@ class Promotion < ApplicationRecord
       end
     end
 
-    promotion = Spree::Promotion.create!(
-        name: self.product.name + ' a $' + self.price.to_s,
-        description: 'Codigo: ' + self.code,
-        advertise: self.publish,
-        code: self.code,
-        expires_at: self.expires_at,
-        starts_at: self.starts_at,
-    )
+    if spree_product != nil
 
-    rule = Spree::Promotion::Rules::Product.create!(
-        promotion: promotion,
-    )
-    rule.products << spree_product
-    rule.save!
+      promotion = Spree::Promotion.create!(
+          name: self.product.name + ' a $' + self.price.to_s,
+          description: 'Codigo: ' + self.code,
+          advertise: self.publish,
+          code: self.code,
+          expires_at: self.expires_at,
+          starts_at: self.starts_at,
+      )
 
-    discount = my_product_in_sale.price - self.price
+      rule = Spree::Promotion::Rules::Product.create!(
+          promotion: promotion,
+      )
+      rule.products << spree_product
+      rule.save!
 
-    calculator = Spree::Calculator::FlexiRate.create!(preferences: {
-        first_item: discount,
-        additional_item: discount,
-    })
+      discount = [spree_product.price - self.price, 0].max
 
-    adjustment = Spree::Promotion::Actions::CreateItemAdjustments.create!(
-        calculator: calculator,
-        promotion: promotion,
-    )
+      calculator = Spree::Calculator::FlexiRate.create!(preferences: {
+          first_item: discount,
+          additional_item: discount,
+      })
 
-    promotion.promotion_rules << rule
-    promotion.save!
+      adjustment = Spree::Promotion::Actions::CreateItemAdjustments.create!(
+          calculator: calculator,
+          promotion: promotion,
+      )
 
-    self.update(spree_promotion: promotion)
+      promotion.promotion_rules << rule
+      promotion.save!
+
+      self.update(spree_promotion: promotion)
+    end
   end
 end
